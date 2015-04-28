@@ -1,0 +1,15 @@
+db.pages.find({geo_point_mongo: {$ne: {type: "Point", coordinates: {$size: 2}}}})
+
+db.pages.find({geo_point_mongo: {type: "Point", coordinates: {$size: 2}}})
+
+db.pages.find({geo_point_mongo: {type: "Point"}})
+
+db.pages.find({geo_point_mongo: {$ne: "foo"}})
+
+db.pages.find({geo_point_mongo: {$exists: false}})
+
+db.pages.find({geo_point_mongo: {type: {$ne: "Point"}, coordinates: {$ne: {$size: 2}}}})
+
+db.pages.find({geo_point_mongo: {type: {$eq: "Point"}, coordinates: {$eq: {$size: 2}}}})
+
+db.pages.ensureIndex({geo_point_mongo: "2dsphere"});
