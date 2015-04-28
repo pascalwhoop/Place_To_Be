@@ -1,20 +1,8 @@
-var model = require('./model');
-var fbEventParser = require('./services/fbEventParser.js');
+var express = require('express');
+var app = express();
+var places = require('routes/placesRoute.js');
 
-
-fbEventParser.authenticateWithFB(function(){
-    fbEventParser.fetchAllPagesForCity();
+// respond with "hello world" when a GET request is made to the homepage
+app.get('/', function(req, res) {
+    res.send('hello world');
 });
-
-
-
-
-//getAllCitiesInDB
-//city has no bounds
-    //fetchCityBounds and Save
-//create twoDimArrayForCity
-//iterate over City Array calling FB API to fetch pages for each node
-    //save each page into DB
-//iterate over pages in DB to fetch all Events
-    //save each event into DB
-
