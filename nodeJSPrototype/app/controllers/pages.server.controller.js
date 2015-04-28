@@ -8,6 +8,10 @@ var mongoose = require('mongoose'),
 	Page = mongoose.model('Page'),
 	_ = require('lodash');
 
+
+
+
+
 /**
  * Create a Page
  */
@@ -72,7 +76,7 @@ exports.delete = function(req, res) {
 /**
  * List of Pages
  */
-exports.list = function(req, res) { 
+exports.list = function(req, res) {
 	Page.find().sort('-created').populate('user', 'displayName').exec(function(err, pages) {
 		if (err) {
 			return res.status(400).send({
@@ -83,6 +87,22 @@ exports.list = function(req, res) {
 		}
 	});
 };
+
+/*
+
+exports.list = function(req, res) {
+    Page.find({},{name: 1, geo_point_mongo: 1, _id: 0}).exec(function(err, pages) {
+        if (err) {
+            return res.status(400).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+
+
+            res.jsonp(pages.slice(1, 40));
+        }
+    });
+};*/
 
 /**
  * Page middleware

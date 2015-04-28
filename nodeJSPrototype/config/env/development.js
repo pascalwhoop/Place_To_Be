@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-	db: 'mongodb://localhost/placetobe-dev',
+	db: 'mongodb://localhost/placetobe',
 	app: {
 		title: 'placeToBe - Development Environment'
 	},

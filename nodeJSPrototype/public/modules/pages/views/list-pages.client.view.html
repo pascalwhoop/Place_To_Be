@@ -4,12 +4,6 @@
     </div>
     <div class="list-group">
         <a data-ng-repeat="page in pages" data-ng-href="#!/pages/{{page._id}}" class="list-group-item">
-			<small class="list-group-item-text">
-				Posted on
-				<span data-ng-bind="page.created | date:'medium'"></span>
-				by
-				<span data-ng-bind="page.user.displayName"></span>
-			</small>
 			<h4 class="list-group-item-heading" data-ng-bind="page.name"></h4>
         </a>
     </div>
