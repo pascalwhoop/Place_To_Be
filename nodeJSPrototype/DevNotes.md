@@ -8,4 +8,3 @@
 	* mongoose modul 
 		* für DB access auf MongoDB
 	* restheart Java REST Client für MongoDB für manuelle Queries
-* 
