@@ -1,4 +1,5 @@
 ﻿using placeToBe.Model;
+using placeToBe.Model.Entities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,24 +15,22 @@ namespace placeToBe.Services
     public class GenderizeService
     {
 
-        public string result = string.Empty;
+        public String result;
+        public String name;
+        public String gender;
         public void GetGender(String name)
         {
             HttpWebRequest request;
-            string getData = "name=" + name;
+            String getData = "name=" + name;
             URL = "http://api.genderize.io/?";
             Uri uri = new Uri(URL + getData);
             request = (HttpWebRequest)WebRequest.Create(uri);
 
             request.Method = "GET";
 
-            //request.ContentType = "application/x-www-form-urlencoded";
-
             request.AllowAutoRedirect = true;
 
             UTF8Encoding enc = new UTF8Encoding();
-
-
 
             HttpWebResponse Response;
             try
@@ -54,6 +53,12 @@ namespace placeToBe.Services
             }
         }
 
+        public void GenderToObject(string result)
+        {
+            String json = @result;
+            Gender gender = new Gender(json);
+        }
+
         public String GetGenderInternal()
         {
             return result;
@@ -64,6 +69,6 @@ namespace placeToBe.Services
 
         }
 
-        public string URL { get; set; }
+        public String URL { get; set; }
     }
 }
