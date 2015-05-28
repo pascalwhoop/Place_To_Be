@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web.Http;
+using placeToBe.Model;
+using placeToBe.Model.Repositories;
+using placeToBe.Model.Entities;
 
 namespace placeToBe.Controllers
 {
-    public class UserController : Controller
+    public class UserController : ApiController
     {
-            /*
-             * Transfer User-data
-             * 
+            /*    
+        
+            // Transfer User-data
+              
             MongoDbRepository<User> repo = new MongoDbRepository<User>();
         
             // GET api/User
@@ -38,16 +44,10 @@ namespace placeToBe.Controllers
             {
                 repo.UpdateAsync(User);
             }
-
-            // DELETE api/User/5
-            public void Delete(int id)
-            {
-                User user = await repo.GetByIdAsync(id);
-                repo.DeleteAsync(User);
-            }
-             * 
-             * 
-             * */
+        
+            */
+      
         }
+     
     }
 }
