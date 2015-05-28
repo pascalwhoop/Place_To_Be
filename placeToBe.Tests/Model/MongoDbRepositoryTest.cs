@@ -15,10 +15,40 @@ namespace placeToBe.Tests.Model
         {
             //Arrange
             MongoDbRepository <Event> model = new MongoDbRepository <Event> ();
-            //Event test = ;
+
+            //event test werte zuweisen?
+            Event test = new Event();
 
             //Act
-            // model.InsertAsync(test);
+           model.InsertAsync(test);
+
+            //Arrange
+        }
+
+        [TestMethod]
+        public void UpdateAsync()
+        {
+            //Arrange
+            MongoDbRepository<Event> model = new MongoDbRepository<Event>();
+            Event test = new Event();
+
+            //Act
+            model.UpdateAsync(test);
+
+            //Arrange
+        }
+
+        [TestMethod]
+        public void DeleteAsync()
+        {
+            //Arrange
+            MongoDbRepository<Event> model = new MongoDbRepository<Event>();
+            Event test = new Event();
+
+            //Act
+            model.DeleteAsync(test);
+
+            //Arrange
         }
     }
 }
