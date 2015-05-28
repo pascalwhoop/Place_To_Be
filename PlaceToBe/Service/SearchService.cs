@@ -20,7 +20,8 @@ namespace placeToBe.Services
             return list;
         }
 
-        public async Task<IList<Event>> Get(String filter){
+        public async Task<IList<Event>> Get(String filter)
+        {
             IList<Event> list = await repo.SearchForAsync(filter);
             return list;
         }

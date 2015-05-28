@@ -127,6 +127,7 @@
   <ItemGroup>
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -136,6 +137,7 @@
     </Compile>
     <Compile Include="Model\Entities\Category.cs" />
     <Compile Include="Model\Entities\CityAdministrationUser.cs" />
+    <Compile Include="Model\Entities\Gender.cs" />
     <Compile Include="Model\Entities\CompanyUser.cs" />
     <Compile Include="Model\Entities\CoverPhoto.cs" />
     <Compile Include="Model\Entities\EntityBase.cs" />
@@ -150,6 +152,10 @@
     <Compile Include="Model\Repositories\IRepository.cs" />
     <Compile Include="Model\Repositories\MongoDbRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\AccountService.cs" />
+    <Compile Include="Service\GenderizeService.cs" />
+    <Compile Include="Service\SearchService.cs" />
+    <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Frontend\dist\404.html" />
