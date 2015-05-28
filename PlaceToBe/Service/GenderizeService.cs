@@ -18,6 +18,11 @@ namespace placeToBe.Services
         public String result;
         public String name;
         public String gender;
+
+        /// <summary>
+        /// The 
+        /// </summary>
+        /// <param name="name">using a name of a person to get the gender</param>
         public void GetGender(String name)
         {
             HttpWebRequest request;
