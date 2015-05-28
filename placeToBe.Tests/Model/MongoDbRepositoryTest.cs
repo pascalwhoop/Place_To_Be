@@ -17,6 +17,7 @@ namespace placeToBe.Tests.Model
             MongoDbRepository <Event> model = new MongoDbRepository <Event> ();
 
             //event test werte zuweisen?
+            //wie zuweisen?
             Event test = new Event();
 
             //Act
