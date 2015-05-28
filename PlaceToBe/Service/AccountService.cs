@@ -9,6 +9,34 @@ namespace placeToBe.Services
 {
     public class AccountService
     {
+        public void Register()
+        {
 
+        }
+
+        public void Login()
+        {
+
+        }
+
+        public void Logoff()
+        {
+
+        }
+
+        public void ConfirmEmail()
+        {
+
+        }
+
+        public void ForgetPassword()
+        {
+
+        }
+
+        public void ResetPassword()
+        {
+
+        }
     }
 }
