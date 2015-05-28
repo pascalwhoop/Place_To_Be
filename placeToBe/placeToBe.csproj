@@ -237,7 +237,6 @@
     <Content Include="Frontend\dist\favicon.ico" />
     <Content Include="Frontend\dist\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Frontend\dist\images\Heatmap.png" />
-    <Content Include="Frontend\dist\images\yeoman.8cb970fb.png" />
     <Content Include="Frontend\dist\index.html" />
     <Content Include="Frontend\dist\robots.txt" />
     <Content Include="Frontend\dist\scripts\scripts.ae64ec5e.js" />
