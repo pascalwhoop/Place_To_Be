@@ -50,4 +50,3 @@ namespace placeToBe.Controllers
         }
      
     }
-}
