@@ -43,8 +43,7 @@ namespace placeToBe.Model.Repositories {
             
         }
 
-        public async Task<IList<TEntity>> 
-            SearchForAsync(string filterText) {
+        public async Task<IList<TEntity>> SearchForAsync(string filterText) {
             var filter = Builders<TEntity>.Filter.Text(filterText);
             return await _collection.Find(filter).ToListAsync();
 

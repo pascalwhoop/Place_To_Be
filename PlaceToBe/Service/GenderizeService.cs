@@ -18,9 +18,10 @@ namespace placeToBe.Services
         public String result;
         public String name;
         public String gender;
+        GenderizeService genderize = new GenderizeService();
 
         /// <summary>
-        /// The 
+        /// GetGender uses the genderize.io API to get the gender of a prename
         /// </summary>
         /// <param name="name">using a name of a person to get the gender</param>
         public void GetGender(String name)
@@ -69,7 +70,7 @@ namespace placeToBe.Services
             return result;
         }
 
-        public void GenderStat(Event eventGen)
+        public void GenderStat(Event eventGenStat)
         {
 
         }
