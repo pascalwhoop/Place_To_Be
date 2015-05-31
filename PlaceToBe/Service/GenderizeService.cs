@@ -5,12 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Helpers;
 
 namespace placeToBe.Services
 {
@@ -18,7 +15,7 @@ namespace placeToBe.Services
     {
 
          MongoDbRepository<Gender> repo = new MongoDbRepository<Gender>();
-
+         MongoDbRepository<Event> repoEvent = new MongoDbRepository<Event>();
         public String URL { get; set; }
 
         /// <summary>
@@ -81,9 +78,39 @@ namespace placeToBe.Services
                 throw ex;
             }
         }
-        public void GenderStat(Event eventGenStat)
-        {
 
+        /// <summary>
+        /// Get the amount of males and females for an event
+        /// </summary>
+        /// <param name="eventGenStat"></param>
+        /// <returns>returns an object with param male and female, which contain the amount of each</returns>
+        public async Task<GenderStat> GetGenderStat(Event eventGenStat)//event oder doch direkt ueber id?
+        {
+            int male=0;
+            int female=0;
+
+            String id= eventGenStat.fbId;
+            Event Event = await repoEvent.GetByIdAsync(id);
+            //Get list of people going to the event
+            List<Rsvp> list = Event.attending;
+            Rsvp[] array = list.ToArray();
+
+            for (int i = 0; i < array.Length; i++)
+            {
+               Gender gender= await GetGender(array[i].name);
+               if (gender.gender == "male")
+               {
+                   male++;
+               }
+               else
+               {
+                   female++;
+               }
+            }
+
+            GenderStat genderStat = new GenderStat(male, female);
+            return genderStat;
+            
         }
 
         #region HelperMethods

@@ -216,6 +216,7 @@
     <Compile Include="Model\Entities\FbEvent.cs" />
     <Compile Include="Model\Entities\FbPage.cs" />
     <Compile Include="Model\Entities\FbUser.cs" />
+    <Compile Include="Model\Entities\GenderStat.cs" />
     <Compile Include="Model\Entities\Location.cs" />
     <Compile Include="Model\Entities\LocationTimePoint.cs" />
     <Compile Include="Model\Entities\Page.cs" />
