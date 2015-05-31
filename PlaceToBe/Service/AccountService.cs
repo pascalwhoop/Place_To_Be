@@ -14,7 +14,6 @@ namespace placeToBe.Services
     public class AccountService
     {
         MongoDbRepository<User> repo = new MongoDbRepository<User>();
-        AccountService aService = new AccountService();
         int saltLength = 20;
 
         /// <summary>
@@ -25,14 +24,13 @@ namespace placeToBe.Services
         public void Register(String email, String password)
         {
             byte[] plainText = Encoding.UTF8.GetBytes(password);
-            byte[] salt = aService.GenerateSalt();
+            byte[] salt = GenerateSalt();
             byte[] passwordSalt= GenerateSaltedHash(plainText, salt);
 
             User user = new User();
             user.email = email;
             user.passwordSalt = passwordSalt;
             repo.InsertAsync(user);
-
         }
 
         /// <summary>
@@ -70,10 +68,6 @@ namespace placeToBe.Services
 
             return algorithm.ComputeHash(plainTextWithSaltBytes);
         }
-        public void Login()
-        {
-
-        }
 
         public static bool CompareByteArrays(byte[] array1, byte[] array2)
         {
@@ -91,6 +85,11 @@ namespace placeToBe.Services
             }
 
             return true;
+        }
+
+        public void Login()
+        {
+
         }
 
         public void Logoff()
