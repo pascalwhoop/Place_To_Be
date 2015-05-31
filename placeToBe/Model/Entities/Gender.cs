@@ -6,12 +6,11 @@ using System.Web;
 
 namespace placeToBe.Model.Entities
 {
-    public class Gender
+    public class Gender : EntityBase
     {
         public Gender(string json)
         {
-            JObject jObject = JObject.Parse(json);
-            JToken jGender = jObject["user"];
+            JObject jGender = JObject.Parse(json);
             name = (string)jGender["name"];
             gender = (string)jGender["gender"];
             probability = (float)jGender["probability"];

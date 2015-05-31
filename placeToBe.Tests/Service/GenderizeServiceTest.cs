@@ -25,12 +25,12 @@ namespace placeToBe.Tests.Service
 
             //Act
 
-            service.GetGender(namefemale);
+            service.SetGender(namefemale);
 
 
             //Assert
 
-            string wholestringf = service.GetGenderInternal();
+            string wholestringf = service.GetGender();
             string substringf = wholestringf.Substring(16,17);
             Assert.AreEqual(substringf, expectedfemale);
 
@@ -43,12 +43,12 @@ namespace placeToBe.Tests.Service
 
             //Act
 
-            service.GetGender(namemale);
+            service.SetGender(namemale);
 
 
             //Assert
 
-            string wholestringm = service.GetGenderInternal();
+            string wholestringm = service.GetGender();
             string substringm = wholestringm.Substring(16, 15);
             Assert.AreEqual(substringm, expectedmale);
 
@@ -67,7 +67,7 @@ namespace placeToBe.Tests.Service
 
             //Act
 
-            service.GetGender(nameunisex);
+            service.SetGender(nameunisex);
 
             //Assert
 
@@ -77,7 +77,7 @@ namespace placeToBe.Tests.Service
             //Assert.AreEqual(substringu1, expectedunisex1);       //gender male
 
 
-            string wholestringu2 = service.GetGenderInternal();
+            string wholestringu2 = service.GetGender();
             string substringu2 = wholestringu2.Substring(14, 17); //Test
             Assert.AreEqual(substringu2, expectedunisex2);       //gender female
 

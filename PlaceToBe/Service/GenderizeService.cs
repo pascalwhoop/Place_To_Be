@@ -1,5 +1,6 @@
 ﻿using placeToBe.Model;
 using placeToBe.Model.Entities;
+using placeToBe.Model.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,13 +19,16 @@ namespace placeToBe.Services
         public String result;
         public String name;
         public String gender;
-        GenderizeService genderize = new GenderizeService();
+
+        MongoDbRepository<Gender> repo = new MongoDbRepository<Gender>();
+
+        public String URL { get; set; }
 
         /// <summary>
         /// GetGender uses the genderize.io API to get the gender of a prename
         /// </summary>
         /// <param name="name">using a name of a person to get the gender</param>
-        public void GetGender(String name)
+        public void SetGender(String name)
         {
             HttpWebRequest request;
             String getData = "name=" + name;
@@ -65,16 +69,16 @@ namespace placeToBe.Services
             Gender gender = new Gender(json);
         }
 
-        public String GetGenderInternal()
+        public void PushGenderToDb(String name)
         {
-            return result;
+            SetGender(name);
+           
+
         }
 
         public void GenderStat(Event eventGenStat)
         {
 
         }
-
-        public String URL { get; set; }
     }
 }
