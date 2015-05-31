@@ -2,6 +2,7 @@
 using placeToBe.Model.Entities;
 using placeToBe.Model.Repositories;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -14,8 +15,8 @@ namespace placeToBe.Services
     public class GenderizeService
     {
 
-         MongoDbRepository<Gender> repo = new MongoDbRepository<Gender>();
-         MongoDbRepository<Event> repoEvent = new MongoDbRepository<Event>();
+        MongoDbRepository<Gender> repo = new MongoDbRepository<Gender>();
+        MongoDbRepository<Event> repoEvent = new MongoDbRepository<Event>();
         public String URL { get; set; }
 
         /// <summary>
@@ -25,8 +26,8 @@ namespace placeToBe.Services
         /// <returns>gender of the name</returns>
         public async Task<Gender> GetGender(String name)
         {
-          Gender gender =  await repo.GetByIdAsync(name);
-          return gender;
+            Gender gender =  await repo.GetByIdAsync(name);//so moeglich oder getall und dann suche innerhalb der methode?
+            return gender;
         }
 
         /// <summary>
@@ -83,15 +84,18 @@ namespace placeToBe.Services
         /// Get the amount of males and females for an event
         /// </summary>
         /// <param name="eventGenStat"></param>
-        /// <returns>returns an object with param male and female, which contain the amount of each</returns>
+        /// <returns>returns an object with param male and female,
+        /// which contain the amount of each</returns>
         public async Task<GenderStat> GetGenderStat(Event eventGenStat)//event oder doch direkt ueber id?
         {
             int male=0;
             int female=0;
 
+            //GET Event by searching for the EventId/ fbId
             String id= eventGenStat.fbId;
             Event Event = await repoEvent.GetByIdAsync(id);
-            //Get list of people going to the event
+
+            //GET list of people attending the event
             List<Rsvp> list = Event.attending;
             Rsvp[] array = list.ToArray();
 

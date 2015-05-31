@@ -12,19 +12,21 @@ namespace placeToBe.Services
     public class SearchService
     {
         MongoDbRepository<Event> repo = new MongoDbRepository<Event>();
-        public void HeatSearch()
+        public void HeatSearch(double latitude, double longitude)
         {
 
         }
 
-        public async void TextSearch(String filter)
+        public async Task<IList<Event>> TextSearch(String filter)
         {
-          IList<Event> list = await repo.SearchForAsync(filter);
+            IList<Event> list = await repo.SearchForAsync(filter);
+            return list;
         }
 
-        public void EventSearch()
+        public async Task<Event> EventSearch(Guid id)
         {
-
+            Event _event = await repo.GetByIdAsync(id);
+            return _event;
         }
 
         public void FriendSearch()
