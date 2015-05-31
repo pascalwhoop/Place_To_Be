@@ -16,13 +16,18 @@ namespace placeToBe.Services
     public class GenderizeService
     {
 
-        public String result;
-        public String name;
-        public String gender;
-
-        MongoDbRepository<Gender> repo = new MongoDbRepository<Gender>();
+         MongoDbRepository<Gender> repo = new MongoDbRepository<Gender>();
 
         public String URL { get; set; }
+
+        public Gender GetGender(String name)
+        {
+            Gender gender;
+
+           // gender = repo.SearchForAsync(name);
+
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// GetGender uses the genderize.io API to get the gender of a prename
@@ -30,6 +35,9 @@ namespace placeToBe.Services
         /// <param name="name">using a name of a person to get the gender</param>
         public void SetGender(String name)
         {
+            String result;
+            Gender gender;
+
             HttpWebRequest request;
             String getData = "name=" + name;
             URL = "http://api.genderize.io/?";
@@ -51,7 +59,15 @@ namespace placeToBe.Services
                     {
                         using (StreamReader readStream = new StreamReader(responseStream, Encoding.UTF8))
                         {
-                            this.result = readStream.ReadToEnd();
+                            //String of the json from genderize.io
+                            result = readStream.ReadToEnd();
+
+                            //convert String to c# Object
+                            gender = GenderToObject(result);
+
+                            //push the Object to DB
+                            PushGenderToDb(gender);
+
                         }
                     }
                 }
@@ -62,23 +78,24 @@ namespace placeToBe.Services
                 throw ex;
             }
         }
-
-        public void GenderToObject(string result)
-        {
-            String json = @result;
-            Gender gender = new Gender(json);
-        }
-
-        public void PushGenderToDb(String name)
-        {
-            SetGender(name);
-           
-
-        }
-
         public void GenderStat(Event eventGenStat)
         {
 
         }
+
+        #region HelperMethods
+        private Gender GenderToObject(String result)
+        {
+            String json = @result;
+            Gender gender = new Gender(json);
+            return gender;
+        }
+
+        private void PushGenderToDb(Gender gender)
+        {
+            repo.InsertAsync(gender);
+        }
+
+        #endregion
     }
 }
