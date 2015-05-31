@@ -59,6 +59,12 @@ namespace placeToBe.Model.Repositories {
             return await _collection.Find(filter).FirstOrDefaultAsync();
         }
 
+        public async Task<TEntity> GetByIdAsync(String name)
+        {
+            var filter = Builders<TEntity>.Filter.Eq("name", name);
+            return await _collection.Find(filter).FirstOrDefaultAsync();
+        }
+
         #region Private Helper Methods
         private void GetDatabase()
         {

@@ -33,11 +33,43 @@ namespace placeToBe.Services
             repo.InsertAsync(user);
         }
 
+        public void Login()
+        {
+
+        }
+
+        public void Logoff()
+        {
+
+        }
+
+        public void ExternalLogin()
+        {
+
+        }
+
+        public void ConfirmEmail()
+        {
+
+        }
+
+        public void ForgetPassword()
+        {
+
+        }
+
+        public void ResetPassword()
+        {
+
+        }
+
+        #region Helper Methods
         /// <summary>
         /// Generate Salt
         /// </summary>
         /// <returns>Salt</returns>
-        private byte[] GenerateSalt(){
+        private byte[] GenerateSalt()
+        {
             byte[] saltCrypt = new byte[saltLength];
             RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
             rng.GetBytes(saltCrypt);
@@ -86,30 +118,7 @@ namespace placeToBe.Services
 
             return true;
         }
-
-        public void Login()
-        {
-
-        }
-
-        public void Logoff()
-        {
-
-        }
-
-        public void ConfirmEmail()
-        {
-
-        }
-
-        public void ForgetPassword()
-        {
-
-        }
-
-        public void ResetPassword()
-        {
-
-        }
+        #endregion
     }
+        
 }

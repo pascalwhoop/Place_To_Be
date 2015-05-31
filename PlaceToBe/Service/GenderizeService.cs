@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Helpers;
 
@@ -20,13 +21,15 @@ namespace placeToBe.Services
 
         public String URL { get; set; }
 
-        public Gender GetGender(String name)
+        /// <summary>
+        /// Search for a gender by name and returns it.
+        /// </summary>
+        /// <param name="name">name of a person</param>
+        /// <returns>gender of the name</returns>
+        public async Task<Gender> GetGender(String name)
         {
-            Gender gender;
-
-           // gender = repo.SearchForAsync(name);
-
-            throw new NotImplementedException();
+          Gender gender =  await repo.GetByIdAsync(name);
+          return gender;
         }
 
         /// <summary>
