@@ -207,6 +207,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Model\Entities\Category.cs" />
+    <Compile Include="Model\Entities\City.cs" />
     <Compile Include="Model\Entities\Gender.cs" />
     <Compile Include="Model\Entities\EntityBase.cs" />
     <Compile Include="Model\Entities\Event.cs" />
