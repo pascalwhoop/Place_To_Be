@@ -7,9 +7,15 @@ namespace placeToBe.Model.Entities
 {
     public class User: EntityBase
     {
-        public string UserId { get; set; }
+        public User(String email, byte[] passwordSalt, byte[] salt)
+        {
+            this.email = email;
+            this.passwordSalt = passwordSalt;
+            this.salt = salt;
+        }
+        public string userId { get; set; }
         public string email { get; set; }
         public byte[] passwordSalt { get; set; }
-
+        public byte[] salt { get; set; }
     }
 }
