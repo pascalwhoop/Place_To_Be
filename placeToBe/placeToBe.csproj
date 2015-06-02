@@ -214,6 +214,7 @@
     <Compile Include="Model\Entities\Location.cs" />
     <Compile Include="Model\Entities\Page.cs" />
     <Compile Include="Model\Entities\User.cs" />
+    <Compile Include="Model\Repositories\EventRepository.cs" />
     <Compile Include="Model\Repositories\IRepository.cs" />
     <Compile Include="Model\Repositories\MongoDbRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
