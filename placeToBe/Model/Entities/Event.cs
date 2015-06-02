@@ -22,7 +22,25 @@ namespace placeToBe.Model
         public string fbId { get; set; }
         public List<Rsvp> attending { get; set; }
         public List<Rsvp> maybe { get; set; }
+
+        public int attendingMale { get; set; }
+
+        public int attendingFemale { get; set; }
+
+        public int attendingCount { get; set; }
+
+        public CoverPhoto cover { get; set; }
+
+        public Page place { get; set; }
+
+
     }
+
+    public class CoverPhoto
+    {
+
+    }
+
 
     public class Owner
     {
