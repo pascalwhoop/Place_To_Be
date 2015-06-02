@@ -7,5 +7,7 @@ namespace placeToBe.Model.Entities
 {
     public class Category
     {
+
+        //Mergim lass heiraten
     }
 }
