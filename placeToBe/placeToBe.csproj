@@ -210,7 +210,6 @@
     <Compile Include="Model\Entities\CityAdministrationUser.cs" />
     <Compile Include="Model\Entities\Gender.cs" />
     <Compile Include="Model\Entities\CompanyUser.cs" />
-    <Compile Include="Model\Entities\CoverPhoto.cs" />
     <Compile Include="Model\Entities\EntityBase.cs" />
     <Compile Include="Model\Entities\Event.cs" />
     <Compile Include="Model\Entities\FbUser.cs" />
