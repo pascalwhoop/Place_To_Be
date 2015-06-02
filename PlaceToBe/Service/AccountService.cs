@@ -14,7 +14,7 @@ namespace placeToBe.Services
     public class AccountService
     {
         MongoDbRepository<User> repo = new MongoDbRepository<User>();
-        int saltLength = 20;
+        int saltSize = 20;
 
         /// <summary>
         /// Registers a new User.
@@ -24,12 +24,10 @@ namespace placeToBe.Services
         public void Register(String email, String password)
         {
             byte[] plainText = Encoding.UTF8.GetBytes(password);
-            byte[] salt = GenerateSalt();
+            byte[] salt = GenerateSalt(saltSize);
             byte[] passwordSalt= GenerateSaltedHash(plainText, salt);
 
-            User user = new User();
-            user.email = email;
-            user.passwordSalt = passwordSalt;
+            User user = new User(email, passwordSalt, salt);
             repo.InsertAsync(user);
         }
 
@@ -68,9 +66,9 @@ namespace placeToBe.Services
         /// Generate Salt
         /// </summary>
         /// <returns>Salt</returns>
-        private byte[] GenerateSalt()
+        private byte[] GenerateSalt(int saltSize)
         {
-            byte[] saltCrypt = new byte[saltLength];
+            byte[] saltCrypt = new byte[saltSize];
             RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
             rng.GetBytes(saltCrypt);
             return saltCrypt;
