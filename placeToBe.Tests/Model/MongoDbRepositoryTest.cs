@@ -10,15 +10,19 @@ namespace placeToBe.Tests.Model
     [TestClass]
     public class MongoDbRepositoryTest
     {
+        MongoDbRepository<Event> model = new MongoDbRepository<Event>();
+
+
         [TestMethod]
         public void InsertAsync()
         {
             //Arrange
             MongoDbRepository <Event> model = new MongoDbRepository <Event> ();
 
-            //event test werte zuweisen?
-            //wie zuweisen?
+            
             Event test = new Event();
+            test.name = "Hallo";
+            test.privacy = "public";
 
             //Act
            model.InsertAsync(test);
