@@ -21,6 +21,11 @@ namespace placeToBe.Model.Entities
 
     public class Coordinates
     {
+        public Coordinates(double latitude, double longitude)
+        {
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
         public double latitude { get; set; }
         public double longitude { get; set; }
     }

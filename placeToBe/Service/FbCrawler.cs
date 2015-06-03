@@ -31,7 +31,7 @@ namespace placeToBe.Service
         {
             String result;
             HttpWebRequest request;
-            url = "https://graph.facebook.com/";
+            url = "https://graph.facebook.com/v2.2/";
             Uri uri = new Uri(url + getData);
 
             request = (HttpWebRequest)WebRequest.Create(uri);
@@ -77,14 +77,40 @@ namespace placeToBe.Service
 
         }
 
-        //public [] GetCoordinatesArray(City city){
-        //    int hops = 50;
-        //}
+        /**
+        * returns a 50x50 array with coordinates of the form {lat: Number, lng: Number}
+        * @param city
+        */
+        public List<Coordinates> GetCoordinatesArray(City city){
+            int hops = 50;
+            List<Coordinates> cityCoordArray= new List<Coordinates>();
 
-        //public double GetHopDistance(City city, int hops)
-        //{
-        //    return Math.Abs((city.area[] - city.geometry.bounds.northeast[angle]) / hops);
-        //}
+            double latHopDist = GetHopDistance(city, "latitude", hops);
+            double lngHopDist = GetHopDistance(city, "longitude", hops);
+
+            Coordinates southWest= city.area[1][2];//Southwest
+
+            for(int i=0; i<hops; i++){
+                for(int j=0; j<hops;j++){
+                    Coordinates coord = new Coordinates(southWest.latitude + latHopDist * i,southWest.longitude + lngHopDist * j);
+                    cityCoordArray.Add(coord);
+                }
+            }
+
+            return cityCoordArray;
+        }
+
+        public double GetHopDistance(City city, String angle, int hops)
+        {
+            //First Coordinate: Southwest, Second: Northeast
+
+            if(angle=="latitude")
+                return Math.Abs((city.area[1][2].latitude - city.area[2][1].latitude) / hops);
+            else
+            {
+                return Math.Abs((city.area[1][2].longitude - city.area[2][1].longitude) / hops);
+            }
+        }
 
 
     }
