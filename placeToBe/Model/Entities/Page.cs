@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Web;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace placeToBe.Model{
 
+                       [DataContract]
                        public class Page  : EntityBase
                        {
-                           public string id { get; set; }
+                           [DataMember(Name = "id")]
+                           public string fbId { get; set; }
                            public string about { get; set; }
                            public string attire { get; set; }
                            public bool can_post { get; set; }

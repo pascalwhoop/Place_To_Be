@@ -6,7 +6,7 @@ using System.Web;
 
 namespace placeToBe.Model.Repositories
 {
-    public class EventRepository<TEntity>: MongoDbRepository<Event>
+    public class EventRepository: MongoDbRepository<Event>
     {
         public void GetCityMap(City city)
         {
