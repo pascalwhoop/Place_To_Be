@@ -14,8 +14,8 @@ namespace placeToBe.Controllers
 {
     public class EventController : ApiController
     {
-        SearchService search = new SearchService();
-        MongoDbRepository<Event> repo = new MongoDbRepository<Event>();
+        readonly SearchService search = new SearchService();
+        readonly MongoDbRepository<Event> repo = new MongoDbRepository<Event>();
         private double longitude;
         private double latitude;
         private string filter;
