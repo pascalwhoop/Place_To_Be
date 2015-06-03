@@ -23,9 +23,8 @@ namespace placeToBe.Controllers
         // GET api/event/getallevents
         //Gibt eine Liste von allen Events zurück.
         public async Task<IList<Event>> GetAllEvents() {
-           // Nils weiß noch nicht wie er es implementieren soll -> Deswegen kommentiert ->Void Problem.
-           //IList<Event> allEvents = await search.HeatSearch(latitude, longitude);
-            return null; //Hier müssen "allEvents" verschickt werden.
+           IList<Event> allEvents = await search.HeatSearch(latitude, longitude);
+            return allEvents;
 
             /** Pascal code - direkter MongoDb Zugriff
             IList<Event> list = await repo.GetAllAsync();
