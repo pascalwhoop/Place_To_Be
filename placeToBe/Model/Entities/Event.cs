@@ -59,9 +59,8 @@ namespace placeToBe.Model.Entities
     public class Location
     {
         public string type { get; set; }
-        public double[] coordinates { get; set; }
+        public Coordinates coordinates { get; set; }
     }
-
     public class CoverPhoto
     {
         public string id { get; set; }
