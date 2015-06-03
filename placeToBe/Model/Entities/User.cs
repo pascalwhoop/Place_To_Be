@@ -24,7 +24,7 @@ namespace placeToBe.Model.Entities
     }
     public class CompanyUser : User
     {
-        public string CompanyUser { get; set; }        
+        public string company { get; set; }        
     }
 
 
