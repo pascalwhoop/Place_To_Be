@@ -212,7 +212,6 @@
     <Compile Include="Model\Entities\EntityBase.cs" />
     <Compile Include="Model\Entities\Event.cs" />
     <Compile Include="Model\Entities\GenderStat.cs" />
-    <Compile Include="Model\Entities\Location.cs" />
     <Compile Include="Model\Entities\Page.cs" />
     <Compile Include="Model\Entities\User.cs" />
     <Compile Include="Model\Repositories\EventRepository.cs" />

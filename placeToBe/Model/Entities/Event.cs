@@ -1,12 +1,12 @@
-﻿using System;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Web;
-using MongoDB.Bson.Serialization.Attributes;
-using placeToBe.Model.Entities;
 
-namespace placeToBe.Model
+namespace placeToBe.Model.Entities
+
 {
     [DataContract]
     public class Event : EntityBase
@@ -37,8 +37,6 @@ namespace placeToBe.Model
         public Page place { get; set; }
 
         public Venue venue { get; set; }
-
-        public Category[] categoryList { get; set;  }
 
         public Location location { get; set;}
     }

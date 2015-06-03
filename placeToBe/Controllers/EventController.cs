@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using placeToBe.Model;
+using placeToBe.Model.Entities;
 using placeToBe.Model.Repositories;
 using placeToBe.Services;
 using System.Collections;

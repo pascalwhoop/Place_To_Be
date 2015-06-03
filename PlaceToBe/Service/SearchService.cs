@@ -1,4 +1,4 @@
-﻿using placeToBe.Model;
+﻿using placeToBe.Model.Entities;
 using placeToBe.Model.Repositories;
 using System;
 using System.Collections.Generic;
