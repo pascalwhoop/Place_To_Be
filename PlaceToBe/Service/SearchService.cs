@@ -14,7 +14,7 @@ namespace placeToBe.Services
 
 
         EventRepository repo = new EventRepository();
-        public async Task<IList<Event>> HeatSearch(double latitude, double longitude) {
+        public async Task<IList<Event>> HeatSearch(string latitude, string longitude) {
       
             //Methode muss bearbeitet werden, sodass bestimmter Scope empfangen wird
             IList<Event> allEvents = await repo.GetAllAsync();
