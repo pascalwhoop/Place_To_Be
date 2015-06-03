@@ -53,8 +53,7 @@ namespace placeToBe.Model.Entities
         public Location location { get; set;}
         [DataMember]
         public Category[] categoryList { get; set;  }
-        [DataMember]
-        public string timezone { get; set; }
+
     }
 
     public class Location
