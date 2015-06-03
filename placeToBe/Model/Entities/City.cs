@@ -14,20 +14,9 @@ namespace placeToBe.Model.Entities
     {
         
         public String name { get; set; }
-        public Point northWest { get; set; }
-        Point northEast { get; set; }
-        Point southEast { get; set; }
-        Point southWest { get; set; }
+        public double[][] area { get; set; }
+
 
     }
-    public class Point {
 
-        public double dx { get; set; }
-        public double dy { get; set; }
-
-        public Point(double dx, double dy){
-            this.dx = dx;
-            this.dy = dy;
-         }
-    }
 }

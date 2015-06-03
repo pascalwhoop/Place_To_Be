@@ -24,6 +24,10 @@ namespace placeToBe.Model.Repositories {
             GetCollection();
         }
 
+        public IMongoCollection<TEntity> GetCollection() {
+            return _collection;
+        } 
+
         public async Task<Guid> InsertAsync(TEntity entity)
         {
             entity.Id = Guid.NewGuid();
