@@ -14,19 +14,19 @@ namespace placeToBe.Model.Repositories {
         /// </summary>
         /// <param name="entity">Entity to insert</param>
         /// <returns>True if the insert has been successful otherwise false</returns>
-        void InsertAsync(TEntity entity);
+        Task<Guid> InsertAsync(TEntity entity);
         /// <summary>
         /// Saves (updates) an entity that is already in the repository
         /// </summary>
         /// <param name="entity">Entity to update</param>
         /// <returns>True if the update was successful otherwise false</returns>
-        void UpdateAsync(TEntity entity);
+        Task<Guid> UpdateAsync(TEntity entity);
         /// <summary>
         /// Removes an entity from the repository
         /// </summary>
         /// <param name="entity">Entity to remove</param>
         /// <returns>True if an entity was deleted otherwise false</returns>
-        void DeleteAsync(TEntity entity);
+        Task<Guid> DeleteAsync(TEntity entity);
         /// <summary>
         /// Searches for a list of entities that match a specified filter
         /// </summary>
