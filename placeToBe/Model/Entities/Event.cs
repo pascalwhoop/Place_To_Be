@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Web;
 using MongoDB.Bson.Serialization.Attributes;
 using placeToBe.Model.Entities;
 
 namespace placeToBe.Model
 {
-
+    [DataContract]
     public class Event : EntityBase
     {
         public string description { get; set; }
@@ -19,7 +20,8 @@ namespace placeToBe.Model
         public string timezone { get; set; }
         public string updated_time { get; set; }
         
-        [BsonElement("Id")]
+        
+        [DataMember(Name = "id")]
         public string fbId { get; set; }
         public List<Rsvp> attending { get; set; }
         public List<Rsvp> maybe { get; set; }
