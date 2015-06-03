@@ -24,13 +24,15 @@ namespace placeToBe.Model.Entities
         [DataMember]
         public string start_time { get; set; }
         [DataMember]
+        public string end_time { get; set; }
+        [DataMember]
         public string timezone { get; set; }
         [DataMember]
-        public string updated_time { get; set; }
-        
-        
+        public string updated_time { get; set; }      
         [DataMember(Name = "id")]
         public string fbId { get; set; }
+        [DataMember]
+        public int invitedCount { get; set; }
         [DataMember]
         public List<Rsvp> attending { get; set; }
         [DataMember]
@@ -51,6 +53,8 @@ namespace placeToBe.Model.Entities
         public Location location { get; set;}
         [DataMember]
         public Category[] categoryList { get; set;  }
+        [DataMember]
+        public string timezone { get; set; }
     }
 
     public class Location
@@ -63,8 +67,8 @@ namespace placeToBe.Model.Entities
     {
         public string id { get; set; }
         public string source { get; set; }
-        public int offset_x { get; set; }
-        public int offset_y { get; set; }
+        public float offset_x { get; set; }
+        public float offset_y { get; set; }
     }
 
     public class Venue
