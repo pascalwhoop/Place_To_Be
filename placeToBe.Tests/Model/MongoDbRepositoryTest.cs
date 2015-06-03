@@ -17,15 +17,13 @@ namespace placeToBe.Tests.Model
         public void InsertAsync()
         {
             //Arrange
-            MongoDbRepository <Event> model = new MongoDbRepository <Event> ();
 
-            
             Event test = new Event();
             test.name = "Hallo";
             test.privacy = "public";
 
             //Act
-           model.InsertAsync(test);
+            model.InsertAsync(test);
 
             //Arrange
         }
@@ -34,8 +32,10 @@ namespace placeToBe.Tests.Model
         public void UpdateAsync()
         {
             //Arrange
-            MongoDbRepository<Event> model = new MongoDbRepository<Event>();
             Event test = new Event();
+            test.name = "Hallo";
+            test.privacy = "public";
+            test.description = "Dies ist ein Testevent!";
 
             //Act
             model.UpdateAsync(test);
@@ -47,7 +47,6 @@ namespace placeToBe.Tests.Model
         public void DeleteAsync()
         {
             //Arrange
-            MongoDbRepository<Event> model = new MongoDbRepository<Event>();
             Event test = new Event();
 
             //Act
@@ -55,5 +54,44 @@ namespace placeToBe.Tests.Model
 
             //Arrange
         }
+
+        [TestMethod]
+        public void SearchForAsync()
+        {
+            //Arrange
+            string filtertext = "filter";
+
+            //Act
+            model.SearchForAsync(filtertext);
+
+            //Arrange
+        }
+
+        [TestMethod]
+        public void GetAllAsync()
+        {
+            //Arrange
+
+
+            //Act
+            model.GetAllAsync();
+
+            //Arrange
+        }
+
+        [TestMethod]
+        public void GetByIdAsync()
+        {
+            //Arrange
+            String name = "";
+
+
+            //Act
+            model.GetByIdAsync(name);
+
+            //Arrange
+        }
+
     }
+
 }
