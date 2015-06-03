@@ -24,22 +24,25 @@ namespace placeToBe.Model.Repositories {
             GetCollection();
         }
 
-        public async void InsertAsync(TEntity entity)
+        public async Task<Guid> InsertAsync(TEntity entity)
         {
             entity.Id = Guid.NewGuid();
             await _collection.InsertOneAsync(entity);
-            
-            
+            return entity.Id;
+
         }
 
-        public async void UpdateAsync(TEntity entity)
+        public async Task<Guid> UpdateAsync(TEntity entity)
         {
                 await _collection.InsertOneAsync(entity);
+            return entity.Id;
         }
 
-        public async void DeleteAsync(TEntity entity) {
+        public async Task<Guid> DeleteAsync(TEntity entity)
+        {
             var filter = Builders<TEntity>.Filter.Eq("_id", entity.Id);
             await _collection.DeleteOneAsync(filter);
+            return entity.Id;
             
         }
 

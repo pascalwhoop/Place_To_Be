@@ -62,15 +62,15 @@ namespace placeToBe.Controllers
 
         // POST api/event
 
-        public void Post([FromBody]Event Event)
+        public async Task<Guid> Post([FromBody]Event Event)
         {
-           repo.InsertAsync(Event);
+           return await repo.InsertAsync(Event);
         }
 
         // PUT api/event/5
-        public void Put(Guid id, [FromBody]Event Event)
+        public async Task<Guid> Put(Guid id, [FromBody]Event Event)
         {
-            repo.UpdateAsync(Event);
+            return await repo.UpdateAsync(Event);
         }
 
         // DELETE api/event/5
