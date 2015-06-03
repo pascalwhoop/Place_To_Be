@@ -5,7 +5,7 @@ using System.Web;
 
 namespace placeToBe.Model.Entities
 {
-    public class User: EntityBase
+    public class User : EntityBase
     {
         public User(String email, byte[] passwordSalt, byte[] salt)
         {
@@ -17,16 +17,8 @@ namespace placeToBe.Model.Entities
         public string email { get; set; }
         public byte[] passwordSalt { get; set; }
         public byte[] salt { get; set; }
-    }
-    public class CityUser : User
-    {
+        public string company { get; set; }
         public string city { get; set; }
+
     }
-    public class CompanyUser : User
-    {
-        public string company { get; set; }        
-    }
-
-
-
 }
