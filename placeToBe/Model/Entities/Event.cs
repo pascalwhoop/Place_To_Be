@@ -37,6 +37,15 @@ namespace placeToBe.Model
         public Venue venue { get; set; }
 
         public Category[] categoryList { get; set;  }
+
+        public Location location { get; set;}
+    }
+
+    public struct Location
+    {
+        public string type { get; set; }
+        public double[] coordinates { get; set; }
+
     }
 
     public class CoverPhoto
@@ -57,6 +66,7 @@ namespace placeToBe.Model
         public string zip { get; set; }
         public string id { get; set; }
     } 
+
 
 
     public class Owner
