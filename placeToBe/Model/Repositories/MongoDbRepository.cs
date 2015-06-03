@@ -15,8 +15,8 @@ namespace placeToBe.Model.Repositories {
         IRepository<TEntity> where 
             TEntity : EntityBase
     {
-        private IMongoDatabase _database;
-        private IMongoCollection<TEntity> _collection;
+        protected IMongoDatabase _database;
+        protected IMongoCollection<TEntity> _collection;
 
         public MongoDbRepository()
         {
@@ -94,6 +94,7 @@ namespace placeToBe.Model.Repositories {
         {
             _collection = _database
                 .GetCollection<TEntity>(typeof(TEntity).Name);
+            
         }
         #endregion
     }

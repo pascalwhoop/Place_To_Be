@@ -32,6 +32,14 @@ namespace placeToBe.Controllers
              * */
         }
 
+
+        /**
+         * Diese Methode soll ein JSON Array von Events zurückgeben, welche für die Heatmap genutzt werden. 
+         */
+        public async Task<IList<Event>> getEventsByTimeAndPlace(string place, string time) {
+            
+        } 
+
         // GET api/event/5
         // Gibt ein bestimmtes Event zurück
         public async Task<Event> GetEvent(Guid id)

@@ -11,9 +11,11 @@ namespace placeToBe.Services
 {
     public class SearchService
     {
-        MongoDbRepository<Event> repo = new MongoDbRepository<Event>();
-        public async Task<IList<Event>> HeatSearch(double latitude, double longitude)
-        {
+
+
+        EventRepository repo = new EventRepository();
+        public async Task<IList<Event>> HeatSearch(double latitude, double longitude) {
+      
             //Methode muss bearbeitet werden, sodass bestimmter Scope empfangen wird
             IList<Event> allEvents = await repo.GetAllAsync();
             return allEvents;
