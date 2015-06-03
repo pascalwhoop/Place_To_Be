@@ -112,6 +112,21 @@ namespace placeToBe.Service
             }
         }
 
+        public Event fillEmptyEventFields(Event e)
+        {
+            //Setting location of an Event in right dataformat for geospital Index
 
+            if (e.venue.latitude!=0&&e.venue.longitude!=0){
+                e.location.coordinates.latitude = e.venue.latitude;
+                e.location.coordinates.longitude = e.venue.longitude;
+            }
+            else
+            {
+                
+            }
+
+
+            return e;
+        }
     }
 }
