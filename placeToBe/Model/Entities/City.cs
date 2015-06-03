@@ -14,9 +14,15 @@ namespace placeToBe.Model.Entities
     {
         
         public String name { get; set; }
-        public double[][] area { get; set; }
+        public Coordinates[][] area { get; set; }
 
 
+    }
+
+    public class Coordinates
+    {
+        public double latitude { get; set; }
+        public double longitude { get; set; }
     }
 
 }
