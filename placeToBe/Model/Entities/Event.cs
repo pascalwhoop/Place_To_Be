@@ -11,41 +11,52 @@ namespace placeToBe.Model.Entities
     [DataContract]
     public class Event : EntityBase
     {
+        [DataMember]
         public string description { get; set; }
+        [DataMember]
         public bool is_date_only { get; set; }
+        [DataMember]
         public string name { get; set; }
+        [DataMember]
         public Owner owner { get; set; }
+        [DataMember]
         public string privacy { get; set; }
+        [DataMember]
         public string start_time { get; set; }
+        [DataMember]
         public string timezone { get; set; }
+        [DataMember]
         public string updated_time { get; set; }
         
         
         [DataMember(Name = "id")]
         public string fbId { get; set; }
+        [DataMember]
         public List<Rsvp> attending { get; set; }
+        [DataMember]
         public List<Rsvp> maybe { get; set; }
-
+        [DataMember]
         public int attendingMale { get; set; }
-
+        [DataMember]
         public int attendingFemale { get; set; }
-
+        [DataMember]
         public int attendingCount { get; set; }
-
+        [DataMember]
         public CoverPhoto cover { get; set; }
-
+        [DataMember]
         public Page place { get; set; }
-
+        [DataMember]
         public Venue venue { get; set; }
-
+        [DataMember]
         public Location location { get; set;}
+        [DataMember]
+        public Category[] categoryList { get; set;  }
     }
 
-    public struct Location
+    public class Location
     {
         public string type { get; set; }
         public double[] coordinates { get; set; }
-
     }
 
     public class CoverPhoto
@@ -66,7 +77,6 @@ namespace placeToBe.Model.Entities
         public string zip { get; set; }
         public string id { get; set; }
     } 
-
 
 
     public class Owner
