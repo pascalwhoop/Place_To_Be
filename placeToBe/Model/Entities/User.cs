@@ -18,4 +18,15 @@ namespace placeToBe.Model.Entities
         public byte[] passwordSalt { get; set; }
         public byte[] salt { get; set; }
     }
+    public class CityUser : User
+    {
+        public string city { get; set; }
+    }
+    public class CompanyUser : User
+    {
+        public string CompanyUser { get; set; }        
+    }
+
+
+
 }

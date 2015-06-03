@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace placeToBe.Model
+namespace placeToBe.Model.Entities
 {
 
     public class Event : EntityBase
@@ -33,13 +33,29 @@ namespace placeToBe.Model
 
         public Page place { get; set; }
 
+        public Venue venue { get; set; }
 
+        public Category[] categoryList { get; set;  }
     }
 
     public class CoverPhoto
     {
-
+        public string id { get; set; }
+        public string source { get; set; }
+        public int offset_x { get; set; }
+        public int offset_y { get; set; }
     }
+
+    public class Venue
+    {
+        public string city { get; set; }
+        public string country { get; set; }
+        public double latitude { get; set; }
+        public double longitude { get; set; }
+        public string street{ get; set; }
+        public string zip { get; set; }
+        public string id { get; set; }
+    } 
 
 
     public class Owner

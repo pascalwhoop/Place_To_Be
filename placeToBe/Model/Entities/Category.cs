@@ -7,7 +7,8 @@ namespace placeToBe.Model.Entities
 {
     public class Category
     {
+        public string id { get; set; }
 
-        //Mergim lass heiraten
+        public string name { get; set; }
     }
 }
