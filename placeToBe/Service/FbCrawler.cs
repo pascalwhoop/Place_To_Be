@@ -38,18 +38,22 @@ namespace placeToBe.Service
             String result;
             HttpWebRequest request;
 
-            if(condition=="GOOGLE")
+            if (condition == "GOOGLE")
             {
                 url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + getData + "&key=" + AppGoogleKey;
             }
-            else if (condition=="pageData")
+            else if (condition == "pageData")
             {
                 url = "https://graph.facebook.com/v2.2/" + getData + "&access_token=" + fbAppId + "|" + fbAppSecret;
             }
             else if (condition == "searchPlace")
             {
-                String[] split= getData.Split(new char['|']);
-                url = "https://graph.facebook.com/v2.2/search?q=\"\"&type=place&center=" + split[0] + "," + split[1] + "&distance=" + split[2] + "&limit=" + split[3] + "&access_token=" + fbAppId + "|" + fbAppSecret;
+                String[] split = getData.Split(new char['|']);
+                url = "https://graph.facebook.com/v2.2/search?q=\"\"&type=place&center=" + split[0] + "," + split[1] + "&distance=" + split[2] + "&limit=" + split[3] + "&fields=id&access_token=" + fbAppId + "|" + fbAppSecret;
+            }
+            else if (condition == "nextPage")
+            {
+                url = getData;
             }
 
             Uri uri = new Uri(url);
@@ -108,8 +112,8 @@ namespace placeToBe.Service
 
         public void FindPagesForCities(City city)
         {
-            String distance="2000";
-            String limit="5000";
+            String distance = "2000";
+            String limit = "5000";
 
             //Get all Coordinates of a part of the City
             List<Coordinates> coordListCity = GetCoordinatesArray(city);
@@ -120,9 +124,9 @@ namespace placeToBe.Service
 
             foreach (Coordinates coord in coordArrayCityShuffled)
             {
-                String getData=coord.latitude+"|"+coord.longitude+"|"+distance+"|"+limit;
+                String getData = coord.latitude + "|" + coord.longitude + "|" + distance + "|" + limit;
                 String place = GraphApiGet(getData, "searchPlace");
-                HandlePlacesResponse(place);
+                MergePlacesResponse(place);
             }
         }
 
@@ -132,19 +136,69 @@ namespace placeToBe.Service
         * facebook uses paging so we got to go ahead and follow through the paging process until there is no more paging
         * @param response
         */
-        public void HandlePlacesResponse(String response)
+
+        public void MergePlacesResponse(String response)
         {
-            List<String> placeIdList;
-            JObject responseJson = JObject.Parse(response);
-            //JsonArray users = (JsonArray)JsonArray.Load(response);
-            //HandlePagingNext(response);
+            List<String> placeIdList = new List<String>();
+            List<String> addPlaceIdList = new List<String>();
+            
+            //GEt from GraphApi
+            addPlaceIdList=HandlePlacesResponse(response);
+            //Get NExt Page
+            int sizeList = addPlaceIdList.Count;
+            String nextPage = addPlaceIdList[sizeList - 1];
+
+
+
+            //Search for more Pages until the end
+            while (nextPage.Substring(0, 5) == "https")
+            {
+                //Delete Page from id List
+                addPlaceIdList.RemoveAt(sizeList - 1);
+                //Merge lists
+                placeIdList.AddRange(addPlaceIdList);
+                //clear addPlaceIdList
+                addPlaceIdList.Clear();
+                //Get from Graph APi
+                addPlaceIdList = HandlePlacesResponse(response);
+                //Get NExt Page
+                sizeList = addPlaceIdList.Count;
+                nextPage = addPlaceIdList[sizeList - 1];
+            }
+            //Paging complete now the next step to get more information with these id's
+            HandlePlacesIdArrays(placeIdList.ToArray());
+        }
+        public List<String> HandlePlacesResponse(String response)
+        {
+            //new List for PageId
+            List<String> placeIdList = new List<String>();
+
+            //Convert Json to c# Object facebookPageResults
+            FacebookPageResults facebookPageResults;
+            facebookPageResults = JsonConvert.DeserializeObject<FacebookPageResults>(response);
+            //get the data part of the FacebookPageresults which contain the id's
+            FacebookResults[] data = facebookPageResults.data;
+            //add the id's to list
+            foreach (FacebookResults facebookResults in data)
+            {
+                placeIdList.Add(facebookResults.id);
+            }
+
+            try
+            {
+                //add the nextPage response at the end of the list, for the next request
+                String next = facebookPageResults.paging.next;
+                String nextResponse = GraphApiGet(next, "nextPage");
+                placeIdList.Add(nextResponse);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Page end, there's no next page!");
+            }
+            return placeIdList;
 
         }
 
-        public void HandlePagingNext(String response)
-        {
-
-        }
 
         public async Task<Page> PageSearchDb(String fbId)
         {
@@ -191,10 +245,10 @@ namespace placeToBe.Service
                 {
                     page = await PageSearchDb(id);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    Console.WriteLine("Exception: "+e);
-                    page=null;
+                    Console.WriteLine("Exception: " + e);
+                    page = null;
 
                 }
 
@@ -259,19 +313,20 @@ namespace placeToBe.Service
 
             if (e.venue.latitude != 0 && e.venue.longitude != 0)
             {
-                
+
                 e.locationCoordinates.coordinates[0] = e.venue.latitude;
                 e.locationCoordinates.coordinates[1] = e.venue.longitude;
             }
             else
             {
 
-                String getData="";
+                String getData = "";
 
-                if(e.venue.name!=null){
+                if (e.venue.name != null)
+                {
                     getData += "e.venue.name"; //Needs to be more defined (first exsample was: name = Alexanderplatz, Berlin)
                 }
-                
+
                 JObject googleLocation = JObject.Parse(GraphApiGet(getData, "GOOGLE"));
                 try
                 {
