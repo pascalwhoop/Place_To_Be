@@ -29,18 +29,6 @@ angular.module('frontendApp')
 
           });
 
-          //MOCK DATA
-          heatmapData.push(
-            {
-              location: new google.maps.LatLng(50.937531, 6.96027860000),
-              weight: Math.pow(2, 200)
-            });
-
-          heatmapData.push(
-            {
-              location: new google.maps.LatLng(50.857531, 6.96027860000),
-              weight: Math.pow(2, 200)
-            });
 
           heatmapData = new google.maps.MVCArray(heatmapData);
 
