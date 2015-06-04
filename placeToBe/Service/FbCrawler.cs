@@ -160,7 +160,7 @@ namespace placeToBe.Service
                 //clear addPlaceIdList
                 addPlaceIdList.Clear();
                 //Get from Graph APi
-                addPlaceIdList = HandlePlacesResponse(response);
+                addPlaceIdList = HandlePlacesResponse(nextPage);
                 //Get NExt Page
                 sizeList = addPlaceIdList.Count;
                 nextPage = addPlaceIdList[sizeList - 1];
