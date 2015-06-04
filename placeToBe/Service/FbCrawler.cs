@@ -20,6 +20,7 @@ namespace placeToBe.Service
         PageRepository repo = new PageRepository();
         String fbAppSecret = "469300d9c3ed9fe6ff4144d025bc1148";
         String fbAppId = "857640940981214";
+        String AppGoogleKey = "AIzaSyArx67_z9KxbrVMurzBhS2mzqDhrpz66s0";
         String accessToken { get; set; }
         String url;
 
@@ -39,7 +40,7 @@ namespace placeToBe.Service
 
             if(condition=="GOOGLE")
             {
-                url= "googleAdresse" + getData;
+                url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + getData + "&key=" + AppGoogleKey;
             }
             else if (condition=="pageData")
             {
@@ -238,10 +239,9 @@ namespace placeToBe.Service
             }
             else
             {
-                String getData = "GOOGLE§";
-                getData += "Hier kommt zu Suchende Adresse rein";
-                getData = GraphApiGet(getData, "GOOGLE");
 
+                String getData = "Hier kommt zu Suchende Adresse rein";
+                getData = GraphApiGet(getData, "GOOGLE");
             }
 
 
