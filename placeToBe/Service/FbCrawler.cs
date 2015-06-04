@@ -73,15 +73,11 @@ namespace placeToBe.Service
         * @param city
         */
 
-        Random _random = new Random();
+
 
         public Coordinates[] shuffle(Coordinates[] o)
-        public void FindPagesForCities(City city)
         {
-            //Get all Coordinates of a part of the City
-            List<Coordinates> coordListCity = GetCoordinatesArray(city);
-            //transform list into array
-            Coordinates[] coordArrayCity = coordListCity.ToArray();
+            Random _random = new Random();
             int n = o.Length;
 
             for (int i = 0; i < n; i++)
@@ -95,9 +91,13 @@ namespace placeToBe.Service
             return o;
         }
 
-        public void shuffle()
+        public void FindPagesForCities(City city)
         {
-            
+            //Get all Coordinates of a part of the City
+            List<Coordinates> coordListCity = GetCoordinatesArray(city);
+            //transform list into array
+            Coordinates[] coordArrayCity = coordListCity.ToArray();
+
         }
 
         public async Task<Page> PageSearch(String fbId)
