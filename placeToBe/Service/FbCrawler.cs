@@ -1,4 +1,5 @@
 ﻿using Facebook;
+using Newtonsoft.Json.Linq;
 using placeToBe.Model;
 using placeToBe.Model.Entities;
 using System;
@@ -9,31 +10,34 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web;
+using placeToBe.Model.Repositories;
+using Newtonsoft.Json;
 
 namespace placeToBe.Service
 {
     public class FbCrawler
     {
-        String fbAppSecret;
-        String fbAppId;
+        MongoDbRepository<Page> repo = new MongoDbRepository<Page>();
+        String fbAppSecret = "469300d9c3ed9fe6ff4144d025bc1148";
+        String fbAppId="857640940981214";
         String accessToken { get; set; }
         String url;
 
-        //Get the accesToken for the given AppSecret and AppId
-        public void AuthenticateWithFb(String fbAppId, String fbAppSecret)
-        {
-            String _response=GraphApiGet("oauth/access_token?client_id="+fbAppId+"&client_secret="+fbAppSecret+"&grant_type=client_credentials");
-            //String [] split = _response.Split(new char[]{'|'});
-            accessToken = _response;
-        }
+        ////Get the accesToken for the given AppSecret and AppId
+        //public void AuthenticateWithFb(String fbAppId, String fbAppSecret)
+        //{
+        //    String _response=GraphApiGet("oauth/access_token?client_id="+fbAppId+"&client_secret="+fbAppSecret+"&grant_type=client_credentials");
+        //    //String [] split = _response.Split(new char[]{'|'});
+        //    accessToken = _response;
+        //}
 
         //GET Request to the Facebook GraphApi
         public String GraphApiGet(String getData)
         {
             String result;
             HttpWebRequest request;
-            url = "https://graph.facebook.com/v2.2/";
-            Uri uri = new Uri(url + getData);
+            url = "https://graph.facebook.com/v2.2/"+getData+"&access_token="+fbAppId+"|"+fbAppSecret;
+            Uri uri = new Uri(url);
 
             request = (HttpWebRequest)WebRequest.Create(uri);
             request.Method = "GET";
@@ -106,26 +110,29 @@ namespace placeToBe.Service
         * @param place
         * @param callback
         */
-    //    public void HandlePlace(Page page)
-    //    {
-    //        if (!page.is_community_page && page.hasOwnProperty("is_community_page")) {         //we only save non-community-pages since only they will actually create events
-    //         //place._id = place.id;           
-    //         //_id is needed for mongoDB
-    //        page = new Page();
-    //        //a place that is not community owned is == to a page in the facebook world
-    //        try{
-    //        page.
-    //        }
-    //        page.save(function (err, page) {
-    //        if (err) {
-    //            if(err.code != 11000){
-    //                console.log(err); //todo error handling
-    //            }
-    //        }
-    //        callback();
-    //    });
-    //}
-    //    }
+            public void HandlePlace(String place)
+            {
+                JObject _place = JObject.Parse(place);
+                String isCommunityPage=(String) _place ["is_community_page"];
+                if (isCommunityPage=="false") {         
+                 //we only save non-community-pages since only they will actually create events
+                Page page = new Page();
+                page = JsonConvert.DeserializeObject<Page>(place);
+                //a place that is not community owned is == to a page in the facebook world
+                //insert in db
+                PushToDb(page);
+                }
+                else if (isCommunityPage == "true")
+                {
+                    //CommunityPage save?
+                }
+        }
+
+
+            public async void PushToDb(Page page)
+            {
+               await repo.InsertAsync(page);
+            }
 
         public double GetHopDistance(City city, String angle, int hops)
         {
