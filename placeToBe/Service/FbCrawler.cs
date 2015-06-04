@@ -35,7 +35,7 @@ namespace placeToBe.Service
         {
             String result;
             HttpWebRequest request;
-            url = "https://graph.facebook.com/v2.2/"+getData+"&access_token="+fbAppId+"|"+fbAppSecret;
+            url = "https://graph.facebook.com/v2.2/" + getData + "&access_token=" + fbAppId + "|" + fbAppSecret;
             Uri uri = new Uri(url);
 
             request = (HttpWebRequest)WebRequest.Create(uri);
@@ -109,8 +109,9 @@ namespace placeToBe.Service
 
         public void HandlePlacesIdArrays(String[] placesId)
         {
-            foreach(String id in placesId){
-                
+            foreach (String id in placesId)
+            {
+
             }
         }
 
@@ -119,31 +120,31 @@ namespace placeToBe.Service
         * @param place
         * @param callback
         */
-            public void HandlePlace(String place)
-            {
-                JObject _place = JObject.Parse(place);
+        public void HandlePlace(String place)
+        {
+            JObject _place = JObject.Parse(place);
             String isCommunityPage = (String)_place["is_community_page"];
             if (isCommunityPage == "false")
             {
-                 //we only save non-community-pages since only they will actually create events
+                //we only save non-community-pages since only they will actually create events
                 Page page = new Page();
                 //Convert json to Object
                 page = JsonConvert.DeserializeObject<Page>(place);
                 //a place that is not community owned is == to a page in the facebook world
                 //insert in db
                 PushToDb(page);
-                }
-                else if (isCommunityPage == "true")
-                {
-                    //CommunityPage save?
-                }
+            }
+            else if (isCommunityPage == "true")
+            {
+                //CommunityPage save?
+            }
         }
 
 
-            public async void PushToDb(Page page)
-            {
-               await repo.InsertAsync(page);
-            }
+        public async void PushToDb(Page page)
+        {
+            await repo.InsertAsync(page);
+        }
 
         public double GetHopDistance(City city, String angle, int hops)
         {
@@ -172,7 +173,7 @@ namespace placeToBe.Service
                 String getData = "GOOGLE§";
                 getData += "Hier kommt zu Suchende Adresse rein";
                 getData = GraphApiGet(getData);
-                
+
             }
 
 
