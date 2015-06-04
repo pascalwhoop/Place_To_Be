@@ -122,7 +122,7 @@ namespace placeToBe.Service
             {
                 String getData=coord.latitude+"|"+coord.longitude+"|"+distance+"|"+limit;
                 String place = GraphApiGet(getData, "searchPlace");
-                HandlePlacesReponse(place);
+                HandlePlacesResponse(place);
             }
         }
 
@@ -132,7 +132,7 @@ namespace placeToBe.Service
         * facebook uses paging so we got to go ahead and follow through the paging process until there is no more paging
         * @param response
         */
-        public void HandlePlacesReponse(String response)
+        public void HandlePlacesResponse(String response)
         {
             String [] placeIdArray;
 
@@ -210,6 +210,7 @@ namespace placeToBe.Service
         {
             JObject _place = JObject.Parse(place);
             String isCommunityPage = (String)_place["is_community_page"];
+            JToken token = _place["Location"];
             if (isCommunityPage == "false")
             {
                 //we only save non-community-pages since only they will actually create events
