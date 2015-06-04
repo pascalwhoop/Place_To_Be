@@ -73,6 +73,12 @@ namespace placeToBe.Model.Repositories {
             return await _collection.Find(filter).FirstOrDefaultAsync();
         }
 
+        public async Task<TEntity> GetByFbIdAsync(String fbId)
+        {
+            var filter = Builders<TEntity>.Filter.Eq("fbId", fbId);
+            return await _collection.Find(filter).FirstOrDefaultAsync();
+        }
+
         #region Private Helper Methods
         private void GetDatabase()
         {
