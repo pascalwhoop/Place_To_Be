@@ -1,4 +1,5 @@
 ﻿using Facebook;
+using placeToBe.Model;
 using placeToBe.Model.Entities;
 using System;
 using System.Collections.Generic;
@@ -99,6 +100,32 @@ namespace placeToBe.Service
 
             return cityCoordArray;
         }
+
+        /**
+        * handles a single FB place and saves it in the DB
+        * @param place
+        * @param callback
+        */
+    //    public void HandlePlace(Page page)
+    //    {
+    //        if (!page.is_community_page && page.hasOwnProperty("is_community_page")) {         //we only save non-community-pages since only they will actually create events
+    //         //place._id = place.id;           
+    //         //_id is needed for mongoDB
+    //        page = new Page();
+    //        //a place that is not community owned is == to a page in the facebook world
+    //        try{
+    //        page.
+    //        }
+    //        page.save(function (err, page) {
+    //        if (err) {
+    //            if(err.code != 11000){
+    //                console.log(err); //todo error handling
+    //            }
+    //        }
+    //        callback();
+    //    });
+    //}
+    //    }
 
         public double GetHopDistance(City city, String angle, int hops)
         {
