@@ -72,30 +72,26 @@ namespace placeToBe.Service
         * to do paging 3x per query its 7500 calls to the API.. yeah might be obvious what we intend
         * @param city
         */
-        //public void FindPagesOfCity(City city)
-        //{
-        //    double [][]coordinates= city.area;
-        //}
-
-        public void shuffle()
-        {
-
-        }
 
         public void FindPagesForCities(City city)
         {
             //Get all Coordinates of a part of the City
             List<Coordinates> coordListCity = GetCoordinatesArray(city);
             //transform list into array
-            Coordinates[] coordArrayCity =coordListCity.ToArray();
-            
+            Coordinates[] coordArrayCity = coordListCity.ToArray();
+
         }
 
-        //public async Task<Page> EventSearch(Guid fbId)
-        //{
-        //    Page page = await repo.GetByIdAsync(id);
-        //    return page;
-        //}
+        public void shuffle()
+        {
+
+        }
+
+        public async Task<Page> PageSearch(String fbId)
+        {
+            Page page = await repo.GetByIdAsync(fbId);
+            return page;
+        }
 
         /**
         * returns a 50x50 array with coordinates of the form {lat: Number, lng: Number}
