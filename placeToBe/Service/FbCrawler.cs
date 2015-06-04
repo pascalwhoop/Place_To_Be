@@ -132,11 +132,33 @@ namespace placeToBe.Service
             return cityCoordArray;
         }
 
-        public void HandlePlacesIdArrays(String[] placesId)
+        /**
+         * handles an array of placeIDs and gets the full information for each of them from the FB API
+         * @param arr
+         */
+        public async void HandlePlacesIdArrays(String[] placesId)
         {
+            Page page;
             foreach (String id in placesId)
             {
+                try
+                {
+                    page = await PageSearch(id);
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine("Exception: "+e);
+                    page=null;
 
+                }
+
+                if (page == null)
+                {
+                    //Get page information
+                    String pageData = GraphApiGet(id);
+                    //handle the page and push it to db
+                    HandlePlace(pageData);
+                }
             }
         }
 
