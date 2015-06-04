@@ -18,7 +18,7 @@ namespace placeToBe.Service
     {
         MongoDbRepository<Page> repo = new MongoDbRepository<Page>();
         String fbAppSecret = "469300d9c3ed9fe6ff4144d025bc1148";
-        String fbAppId="857640940981214";
+        String fbAppId = "857640940981214";
         String accessToken { get; set; }
         String url;
 
@@ -35,7 +35,7 @@ namespace placeToBe.Service
         {
             String result;
             HttpWebRequest request;
-            url = "https://graph.facebook.com/v2.2/"+getData+"&access_token="+fbAppId+"|"+fbAppSecret;
+            url = "https://graph.facebook.com/v2.2/" + getData + "&access_token=" + fbAppId + "|" + fbAppSecret;
             Uri uri = new Uri(url);
 
             request = (HttpWebRequest)WebRequest.Create(uri);
@@ -85,18 +85,21 @@ namespace placeToBe.Service
         * returns a 50x50 array with coordinates of the form {lat: Number, lng: Number}
         * @param city
         */
-        public List<Coordinates> GetCoordinatesArray(City city){
+        public List<Coordinates> GetCoordinatesArray(City city)
+        {
             int hops = 50;
-            List<Coordinates> cityCoordArray= new List<Coordinates>();
+            List<Coordinates> cityCoordArray = new List<Coordinates>();
 
             double latHopDist = GetHopDistance(city, "latitude", hops);
             double lngHopDist = GetHopDistance(city, "longitude", hops);
 
-            Coordinates southWest= city.area[1][2];//Southwest
+            Coordinates southWest = city.area[1][2];//Southwest
 
-            for(int i=0; i<hops; i++){
-                for(int j=0; j<hops;j++){
-                    Coordinates coord = new Coordinates(southWest.latitude + latHopDist * i,southWest.longitude + lngHopDist * j);
+            for (int i = 0; i < hops; i++)
+            {
+                for (int j = 0; j < hops; j++)
+                {
+                    Coordinates coord = new Coordinates(southWest.latitude + latHopDist * i, southWest.longitude + lngHopDist * j);
                     cityCoordArray.Add(coord);
                 }
             }
@@ -104,40 +107,49 @@ namespace placeToBe.Service
             return cityCoordArray;
         }
 
+        public void HandlePlacesIdArrays(String[] placesId)
+        {
+            foreach(String id in placesId){
+                
+            }
+        }
+
         /**
         * handles a single FB place and saves it in the DB
         * @param place
         * @param callback
         */
-            public void HandlePlace(String place)
+        public void HandlePlace(String place)
+        {
+            JObject _place = JObject.Parse(place);
+            String isCommunityPage = (String)_place["is_community_page"];
+            if (isCommunityPage == "false")
             {
-                JObject _place = JObject.Parse(place);
-                String isCommunityPage=(String) _place ["is_community_page"];
-                if (isCommunityPage=="false") {         
-                 //we only save non-community-pages since only they will actually create events
+                //we only save non-community-pages since only they will actually create events
                 Page page = new Page();
+                //Convert json to Object
                 page = JsonConvert.DeserializeObject<Page>(place);
                 //a place that is not community owned is == to a page in the facebook world
                 //insert in db
                 PushToDb(page);
-                }
-                else if (isCommunityPage == "true")
-                {
-                    //CommunityPage save?
-                }
+            }
+            else if (isCommunityPage == "true")
+            {
+                //CommunityPage save?
+            }
         }
 
 
-            public async void PushToDb(Page page)
-            {
-               await repo.InsertAsync(page);
-            }
+        public async void PushToDb(Page page)
+        {
+            await repo.InsertAsync(page);
+        }
 
         public double GetHopDistance(City city, String angle, int hops)
         {
             //First Coordinate: Southwest, Second: Northeast
 
-            if(angle=="latitude")
+            if (angle == "latitude")
                 return Math.Abs((city.area[1][2].latitude - city.area[2][1].latitude) / hops);
             else
             {
@@ -149,14 +161,15 @@ namespace placeToBe.Service
         {
             //Setting location of an Event in right dataformat for geospital Index
 
-            if (e.venue.latitude!=0&&e.venue.longitude!=0){
+            if (e.venue.latitude != 0 && e.venue.longitude != 0)
+            {
                 e.locationCoordinates.coordinates = new double[2];
                 e.locationCoordinates.coordinates[0] = e.venue.latitude;
                 e.locationCoordinates.coordinates[1] = e.venue.longitude;
             }
             else
             {
-                
+
             }
 
 
