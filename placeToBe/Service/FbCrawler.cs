@@ -35,7 +35,18 @@ namespace placeToBe.Service
         {
             String result;
             HttpWebRequest request;
-            url = "https://graph.facebook.com/v2.2/"+getData+"&access_token="+fbAppId+"|"+fbAppSecret;
+
+            if (getData.Substring(0,7) == "GOOGLE§")
+            {
+                url = "googleadresse" + getData.Split
+            }
+            else
+            {
+                url = "https://graph.facebook.com/v2.2/" + getData + "&access_token=" + fbAppId + "|" + fbAppSecret;
+            }
+
+            
+            
             Uri uri = new Uri(url);
 
             request = (HttpWebRequest)WebRequest.Create(uri);
@@ -156,6 +167,9 @@ namespace placeToBe.Service
             }
             else
             {
+                String getData = "GOOGLE§";
+                getData += "Hier kommt zu Suchende Adresse rein";
+                getData = GraphApiGet(getData);
                 
             }
 

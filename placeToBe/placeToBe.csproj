@@ -217,6 +217,7 @@
     <Compile Include="Model\Repositories\EventRepository.cs" />
     <Compile Include="Model\Repositories\IRepository.cs" />
     <Compile Include="Model\Repositories\MongoDbRepository.cs" />
+    <Compile Include="Model\Repositories\PageRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\AccountService.cs" />
     <Compile Include="Service\FbCrawler.cs" />
