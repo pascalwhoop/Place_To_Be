@@ -17,7 +17,7 @@ namespace placeToBe.Service
 {
     public class FbCrawler
     {
-        MongoDbRepository<Page> repo = new MongoDbRepository<Page>();
+        PageRepository repo = new PageRepository();
         String fbAppSecret = "469300d9c3ed9fe6ff4144d025bc1148";
         String fbAppId = "857640940981214";
         String accessToken { get; set; }
@@ -32,11 +32,25 @@ namespace placeToBe.Service
         //}
 
         //GET Request to the Facebook GraphApi
-        public String GraphApiGet(String getData)
+        public String GraphApiGet(String getData, String condition)
         {
             String result;
             HttpWebRequest request;
-            url = "https://graph.facebook.com/v2.2/" + getData + "&access_token=" + fbAppId + "|" + fbAppSecret;
+
+            if(condition=="GOOGLE")
+            {
+                url= "googleAdresse" + getData;
+            }
+            else if (condition=="pageData")
+            {
+                url = "https://graph.facebook.com/v2.2/" + getData + "&access_token=" + fbAppId + "|" + fbAppSecret;
+            }
+            else if (condition == "searchPlace")
+            {
+                String[] split= getData.Split(new char['|']);
+                url = "https://graph.facebook.com/v2.2/search?q=\"\"&type=place&center="+split[0]+","+split[1]+"&distance="+split[2]+"&limit="+split[3];
+            }
+
             Uri uri = new Uri(url);
 
             request = (HttpWebRequest)WebRequest.Create(uri);
@@ -93,14 +107,38 @@ namespace placeToBe.Service
 
         public void FindPagesForCities(City city)
         {
+            String distance="2000";
+            String limit="5000";
+
             //Get all Coordinates of a part of the City
             List<Coordinates> coordListCity = GetCoordinatesArray(city);
             //transform list into array
             Coordinates[] coordArrayCity = coordListCity.ToArray();
+            //Shuffle the Array
+            Coordinates[] coordArrayCityShuffled = shuffle(coordArrayCity);
+
+            foreach (Coordinates coord in coordArrayCityShuffled)
+            {
+                String getData=coord.latitude+"|"+coord.longitude+"|"+distance+"|"+limit;
+                String place = GraphApiGet(getData, "searchPlace");
+                HandlePlacesReponse(place);
+            }
+        }
+
+        /**
+        * this function handles the response from the facebook API query of form
+        * /search?q=<query>&type=place&center=<lat,lng>&distance<distance>. We want to make sure we get all the places and
+        * facebook uses paging so we got to go ahead and follow through the paging process until there is no more paging
+        * @param response
+        */
+        public void HandlePlacesReponse(String response)
+        {
+            String [] placeIdArray;
+
 
         }
 
-        public async Task<Page> PageSearch(String fbId)
+        public async Task<Page> PageSearchDb(String fbId)
         {
             Page page = await repo.GetByIdAsync(fbId);
             return page;
@@ -143,7 +181,7 @@ namespace placeToBe.Service
             {
                 try
                 {
-                    page = await PageSearch(id);
+                    page = await PageSearchDb(id);
                 }
                 catch(Exception e)
                 {
@@ -155,7 +193,7 @@ namespace placeToBe.Service
                 if (page == null)
                 {
                     //Get page information
-                    String pageData = GraphApiGet(id);
+                    String pageData = GraphApiGet(id, "pageData");
                     //handle the page and push it to db
                     HandlePlace(pageData);
                 }
@@ -218,7 +256,7 @@ namespace placeToBe.Service
             {
                 String getData = "GOOGLE§";
                 getData += "Hier kommt zu Suchende Adresse rein";
-                getData = GraphApiGet(getData);
+                getData = GraphApiGet(getData, "GOOGLE");
 
             }
 
