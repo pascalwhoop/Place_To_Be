@@ -11,6 +11,7 @@ using System.Text;
 using System.Web;
 using placeToBe.Model.Repositories;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace placeToBe.Service
 {
@@ -81,6 +82,21 @@ namespace placeToBe.Service
 
         }
 
+        public void FindPagesForCities(City city)
+        {
+            //Get all Coordinates of a part of the City
+            List<Coordinates> coordListCity = GetCoordinatesArray(city);
+            //transform list into array
+            Coordinates[] coordArrayCity =coordListCity.ToArray();
+            
+        }
+
+        //public async Task<Page> EventSearch(Guid fbId)
+        //{
+        //    Page page = await repo.GetByIdAsync(id);
+        //    return page;
+        //}
+
         /**
         * returns a 50x50 array with coordinates of the form {lat: Number, lng: Number}
         * @param city
@@ -139,7 +155,6 @@ namespace placeToBe.Service
                 //CommunityPage save?
             }
         }
-
 
         public async void PushToDb(Page page)
         {
