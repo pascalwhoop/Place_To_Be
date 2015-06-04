@@ -45,6 +45,11 @@ namespace placeToBe.Service
             {
                 url = "https://graph.facebook.com/v2.2/" + getData + "&access_token=" + fbAppId + "|" + fbAppSecret;
             }
+            else if (condition == "searchPlace")
+            {
+                String[] split= getData.Split(new char['|']);
+                url = "https://graph.facebook.com/v2.2/search?q=\"\"&type=place&center="+split[0]+","+split[1]+"&distance="+split[2]+"&limit="+split[3];
+            }
 
             Uri uri = new Uri(url);
 
@@ -102,11 +107,22 @@ namespace placeToBe.Service
 
         public void FindPagesForCities(City city)
         {
+            String distance="2000";
+            String limit="5000";
+
             //Get all Coordinates of a part of the City
             List<Coordinates> coordListCity = GetCoordinatesArray(city);
             //transform list into array
             Coordinates[] coordArrayCity = coordListCity.ToArray();
+            //Shuffle the Array
+            Coordinates[] coordArrayCityShuffled = shuffle(coordArrayCity);
 
+            foreach (Coordinates coord in coordArrayCityShuffled)
+            {
+                String getData=coord.latitude+"|"+coord.longitude+"|"+distance+"|"+limit;
+                String place = GraphApiGet(getData, "searchPlace");
+                HandlePlacesReponse(place);
+            }
         }
 
         /**
