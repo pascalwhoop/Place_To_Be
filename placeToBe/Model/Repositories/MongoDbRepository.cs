@@ -21,7 +21,8 @@ namespace placeToBe.Model.Repositories {
         public MongoDbRepository()
         {
             GetDatabase();
-            GetCollection();
+            setCollection();
+
         }
 
         public IMongoCollection<TEntity> GetCollection() {
@@ -94,7 +95,8 @@ namespace placeToBe.Model.Repositories {
                 .Get("MongoDBDatabaseName");
         }
 
-        private void GetCollection()
+
+        private void setCollection()
         {
             _collection = _database
                 .GetCollection<TEntity>(typeof(TEntity).Name);
