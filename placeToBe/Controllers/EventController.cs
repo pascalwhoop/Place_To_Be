@@ -16,13 +16,7 @@ namespace placeToBe.Controllers
     {
         readonly SearchService search = new SearchService();
         readonly MongoDbRepository<Event> repo = new MongoDbRepository<Event>();
-        private double longitude;
-        private double latitude;
-        private string filter;
- 
-
-
-
+       
         /**
          * Diese Methode soll ein JSON Array von Events zurückgeben, welche für die Heatmap genutzt werden. 
          */

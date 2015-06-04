@@ -14,9 +14,20 @@ namespace placeToBe.Model.Entities
     {
         
         public String name { get; set; }
-        public double[][] area { get; set; }
+        public Coordinates[][] area { get; set; }
 
 
+    }
+
+    public class Coordinates
+    {
+        public Coordinates(double latitude, double longitude)
+        {
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
+        public double latitude { get; set; }
+        public double longitude { get; set; }
     }
 
 }
