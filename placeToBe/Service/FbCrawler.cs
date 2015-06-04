@@ -165,6 +165,8 @@ namespace placeToBe.Service
                 sizeList = addPlaceIdList.Count;
                 nextPage = addPlaceIdList[sizeList - 1];
             }
+            //Merge lists last time
+            placeIdList.AddRange(addPlaceIdList);
             //Paging complete now the next step to get more information with these id's
             HandlePlacesIdArrays(placeIdList.ToArray());
         }
