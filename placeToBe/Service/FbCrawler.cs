@@ -77,9 +77,21 @@ namespace placeToBe.Service
         //    double [][]coordinates= city.area;
         //}
 
-        public void shuffle()
-        {
+        Random _random = new Random();
 
+        public Coordinates[] shuffle(Coordinates[] o)
+        {
+            int n = o.Length;
+
+            for (int i = 0; i < n; i++)
+            {
+                //NextDouble() gibt eine Zufallszahl zwischen 0 und 1 wie Math.Random() RR-RANDOOM Java.
+                int r = i + (int)(_random.NextDouble() * (n - i));
+                Coordinates t = o[r];
+                o[r] = o[i];
+                o[i] = t;
+            }
+            return o;
         }
 
         public void FindPagesForCities(City city)
