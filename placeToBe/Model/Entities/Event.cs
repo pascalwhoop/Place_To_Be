@@ -33,6 +33,7 @@ namespace placeToBe.Model.Entities
         public string fbId { get; set; }
         [DataMember]
         public int invitedCount { get; set; }
+
         [DataMember]
         public List<Rsvp> attending { get; set; }
         [DataMember]
@@ -41,7 +42,8 @@ namespace placeToBe.Model.Entities
         public int attendingMale { get; set; }
         [DataMember]
         public int attendingFemale { get; set; }
-        [DataMember]
+
+        [DataMember(Name = "attending_count")]
         public int attendingCount { get; set; }
         [DataMember]
         public CoverPhoto cover { get; set; }
@@ -73,6 +75,7 @@ namespace placeToBe.Model.Entities
 
     public class Venue
     {
+        public string name { get; set; }
         public string city { get; set; }
         public string country { get; set; }
         public double latitude { get; set; }

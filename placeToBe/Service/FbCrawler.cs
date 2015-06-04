@@ -255,20 +255,35 @@ namespace placeToBe.Service
         {
             //Setting location of an Event in right dataformat for geospital Index
 
+            e.locationCoordinates.coordinates = new double[2];
+
             if (e.venue.latitude != 0 && e.venue.longitude != 0)
             {
-                e.locationCoordinates.coordinates = new double[2];
+                
                 e.locationCoordinates.coordinates[0] = e.venue.latitude;
                 e.locationCoordinates.coordinates[1] = e.venue.longitude;
             }
             else
             {
 
-                String getData = "Hier kommt zu Suchende Adresse rein";
-                getData = GraphApiGet(getData, "GOOGLE");
+                String getData="";
+
+                if(e.venue.name!=null){
+                    getData += "e.venue.name"; //Needs to be more defined (first exsample was: name = Alexanderplatz, Berlin)
+                }
+                
+                JObject googleLocation = JObject.Parse(GraphApiGet(getData, "GOOGLE"));
+                try
+                {
+                    e.locationCoordinates.coordinates[0] = Convert.ToDouble(googleLocation.SelectToken("results[1].geometry.location.lat").ToString());
+                    e.locationCoordinates.coordinates[1] = Convert.ToDouble(googleLocation.SelectToken("results[1].geometry.location.lng").ToString());
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Google wasn't able to find coordinates of: {0}", getData);
+                    Console.WriteLine(ex.StackTrace);
+                }
             }
-
-
             return e;
         }
     }
