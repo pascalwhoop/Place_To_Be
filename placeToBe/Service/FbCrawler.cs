@@ -17,7 +17,7 @@ namespace placeToBe.Service
 {
     public class FbCrawler
     {
-        MongoDbRepository<Page> repo = new MongoDbRepository<Page>();
+        PageRepository repo = new PageRepository();
         String fbAppSecret = "469300d9c3ed9fe6ff4144d025bc1148";
         String fbAppId = "857640940981214";
         String accessToken { get; set; }
@@ -109,7 +109,20 @@ namespace placeToBe.Service
 
         }
 
-        public async Task<Page> PageSearch(String fbId)
+        /**
+        * this function handles the response from the facebook API query of form
+        * /search?q=<query>&type=place&center=<lat,lng>&distance<distance>. We want to make sure we get all the places and
+        * facebook uses paging so we got to go ahead and follow through the paging process until there is no more paging
+        * @param response
+        */
+        public void HandlePlacesReponse(String response)
+        {
+            String [] placeIdArray;
+
+
+        }
+
+        public async Task<Page> PageSearchDb(String fbId)
         {
             Page page = await repo.GetByIdAsync(fbId);
             return page;
@@ -152,7 +165,7 @@ namespace placeToBe.Service
             {
                 try
                 {
-                    page = await PageSearch(id);
+                    page = await PageSearchDb(id);
                 }
                 catch(Exception e)
                 {
