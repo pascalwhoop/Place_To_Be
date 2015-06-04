@@ -32,11 +32,20 @@ namespace placeToBe.Service
         //}
 
         //GET Request to the Facebook GraphApi
-        public String GraphApiGet(String getData)
+        public String GraphApiGet(String getData, String condition)
         {
             String result;
             HttpWebRequest request;
-            url = "https://graph.facebook.com/v2.2/" + getData + "&access_token=" + fbAppId + "|" + fbAppSecret;
+
+            if(condition=="GOOGLE")
+            {
+                url= "googleAdresse" + getData;
+            }
+            else if (condition=="pageData")
+            {
+                url = "https://graph.facebook.com/v2.2/" + getData + "&access_token=" + fbAppId + "|" + fbAppSecret;
+            }
+
             Uri uri = new Uri(url);
 
             request = (HttpWebRequest)WebRequest.Create(uri);
@@ -155,7 +164,7 @@ namespace placeToBe.Service
                 if (page == null)
                 {
                     //Get page information
-                    String pageData = GraphApiGet(id);
+                    String pageData = GraphApiGet(id, "pageData");
                     //handle the page and push it to db
                     HandlePlace(pageData);
                 }
@@ -218,7 +227,7 @@ namespace placeToBe.Service
             {
                 String getData = "GOOGLE§";
                 getData += "Hier kommt zu Suchende Adresse rein";
-                getData = GraphApiGet(getData);
+                getData = GraphApiGet(getData, "GOOGLE");
 
             }
 
