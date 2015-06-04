@@ -49,7 +49,7 @@ namespace placeToBe.Service
             else if (condition == "searchPlace")
             {
                 String[] split= getData.Split(new char['|']);
-                url = "https://graph.facebook.com/v2.2/search?q=\"\"&type=place&center="+split[0]+","+split[1]+"&distance="+split[2]+"&limit="+split[3];
+                url = "https://graph.facebook.com/v2.2/search?q=\"\"&type=place&center=" + split[0] + "," + split[1] + "&distance=" + split[2] + "&limit=" + split[3] + "&access_token=" + fbAppId + "|" + fbAppSecret;
             }
 
             Uri uri = new Uri(url);
@@ -134,8 +134,15 @@ namespace placeToBe.Service
         */
         public void HandlePlacesResponse(String response)
         {
-            String [] placeIdArray;
+            List<String> placeIdList;
+            JObject responseJson = JObject.Parse(response);
+            //JsonArray users = (JsonArray)JsonArray.Load(response);
+            //HandlePagingNext(response);
 
+        }
+
+        public void HandlePagingNext(String response)
+        {
 
         }
 
