@@ -1,5 +1,4 @@
-﻿using Facebook;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using placeToBe.Model;
 using placeToBe.Model.Entities;
 using System;
