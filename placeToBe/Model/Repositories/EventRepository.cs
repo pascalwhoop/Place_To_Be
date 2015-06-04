@@ -11,7 +11,7 @@ namespace placeToBe.Model.Repositories
     {
         //a constructor that makes sure we have a geospherical index over our event list. 
         public EventRepository() {
-            _collection.Indexes.CreateOneAsync(Builders<Event>.IndexKeys.Geo2DSphere(_ => _.location));
+            _collection.Indexes.CreateOneAsync(Builders<Event>.IndexKeys.Geo2DSphere(_ => _.locationCoordinates));
         }
 
         public void GetCityMap(City city)

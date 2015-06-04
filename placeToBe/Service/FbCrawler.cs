@@ -117,8 +117,9 @@ namespace placeToBe.Service
             //Setting location of an Event in right dataformat for geospital Index
 
             if (e.venue.latitude!=0&&e.venue.longitude!=0){
-                e.location.coordinates.latitude = e.venue.latitude;
-                e.location.coordinates.longitude = e.venue.longitude;
+                e.locationCoordinates.coordinates = new double[2];
+                e.locationCoordinates.coordinates[0] = e.venue.latitude;
+                e.locationCoordinates.coordinates[1] = e.venue.longitude;
             }
             else
             {

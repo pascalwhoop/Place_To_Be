@@ -49,8 +49,10 @@ namespace placeToBe.Model.Entities
         public Page place { get; set; }
         [DataMember]
         public Venue venue { get; set; }
+        [DataMember(Name = "location")]
+        public string locationName { get; set; }
         [DataMember]
-        public Location location { get; set;}
+        public Location locationCoordinates { get; set;}
         [DataMember]
         public Category[] categoryList { get; set;  }
 
@@ -59,7 +61,7 @@ namespace placeToBe.Model.Entities
     public class Location
     {
         public string type { get; set; }
-        public Coordinates coordinates { get; set; }
+        public double[] coordinates { get; set; }
     }
     public class CoverPhoto
     {
