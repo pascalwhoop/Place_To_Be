@@ -436,7 +436,13 @@ namespace placeToBe.Service
                 return Math.Abs((city.polygon[3, 1] - city.polygon[1, 1]) / hops);
             }
         }
+        /// <summary>
+        /// Adds location data (latitude, longitude) to an Event
+        /// </summary>
+        /// <param name="entity">Event modified with location data</param>
+        /// <returns>modified Event if sucsessful, otherwise just the original Event</returns>
         public Event FillEmptyEventFields(Event e)
+
         {
             try
             {
