@@ -172,7 +172,9 @@ angular.module('frontendApp')
 
 
       //this is the HTML template for the directive
-      templateUrl: 'scripts/directives/heatmapdirective.html',
+      template:
+        '<h2>Eventmap for <input type="text" ng-model="city.name" ng-disabled="true"/>' +
+        '</h2><map center="city.center" style="height: 700px;"></map>',
       //we set it so only element tags are relevant
       restrict: 'E',
       //linking the attribute "city" value to the scope.city variable (maybe others too)
