@@ -21,14 +21,14 @@ namespace placeToBe.Services
         /// </summary>
         /// <param name="email"></param>
         /// <param name="password"></param>
-        public void Register(String email, String password)
+        public async void Register(String email, String password)
         {
             byte[] plainText = Encoding.UTF8.GetBytes(password);
             byte[] salt = GenerateSalt(saltSize);
             byte[] passwordSalt= GenerateSaltedHash(plainText, salt);
 
             User user = new User(email, passwordSalt, salt);
-            repo.InsertAsync(user);
+            await repo.InsertAsync(user);
         }
 
         public void Login()
