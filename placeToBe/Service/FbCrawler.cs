@@ -18,7 +18,7 @@ namespace placeToBe.Service
     public class FbCrawler
     {
         PageRepository repo = new PageRepository();
-        EventRepository repoEvent= new EventRepository();
+        EventRepository repoEvent = new EventRepository();
         String fbAppSecret = "469300d9c3ed9fe6ff4144d025bc1148";
         String fbAppId = "857640940981214";
         String AppGoogleKey = "AIzaSyArx67_z9KxbrVMurzBhS2mzqDhrpz66s0";
@@ -151,7 +151,7 @@ namespace placeToBe.Service
         //find events on every page in db
         public void FindEventOnPage(String pageId)
         {
-            Event eventNew= new Event();
+            Event eventNew = new Event();
             String response = GraphApiGet(pageId, "searchEvent");
             MergePlacesResponse(response, "searchEvent", eventNew);
         }
@@ -218,7 +218,7 @@ namespace placeToBe.Service
                 //add the id's to list
                 foreach (ResultAttending facebookResults in data)
                 {
-                    placeIdList.Add(facebookResults.id+","+facebookResults.name+","+facebookResults.rsvp_status);
+                    placeIdList.Add(facebookResults.id + "," + facebookResults.name + "," + facebookResults.rsvp_status);
                 }
 
 
@@ -231,24 +231,24 @@ namespace placeToBe.Service
             }
             else
             {
-            //Convert Json to c# Object facebookPageResults
-            FacebookPageResults facebookPageResults;
-            facebookPageResults = JsonConvert.DeserializeObject<FacebookPageResults>(response);
-            //get the data part of the FacebookPageresults which contain the id's
-            FacebookResults[] data = facebookPageResults.data;
-            //add the id's to list
-            foreach (FacebookResults facebookResults in data)
-            {
-                placeIdList.Add(facebookResults.id);
-            }
+                //Convert Json to c# Object facebookPageResults
+                FacebookPageResults facebookPageResults;
+                facebookPageResults = JsonConvert.DeserializeObject<FacebookPageResults>(response);
+                //get the data part of the FacebookPageresults which contain the id's
+                FacebookResults[] data = facebookPageResults.data;
+                //add the id's to list
+                foreach (FacebookResults facebookResults in data)
+                {
+                    placeIdList.Add(facebookResults.id);
+                }
 
 
-            if (facebookPageResults.paging.next != null)
-            {
-                //add the nextPage response at the end of the list, for the next request
-                String next = facebookPageResults.paging.next;
-                placeIdList.Add(next);
-            }
+                if (facebookPageResults.paging.next != null)
+                {
+                    //add the nextPage response at the end of the list, for the next request
+                    String next = facebookPageResults.paging.next;
+                    placeIdList.Add(next);
+                }
             }
 
             return placeIdList;
@@ -264,7 +264,7 @@ namespace placeToBe.Service
 
         public async Task<Event> EventSearchDb(String fbId)
         {
-            Event eventNew=await repoEvent.GetByFbIdAsync(fbId);
+            Event eventNew = await repoEvent.GetByFbIdAsync(fbId);
             return eventNew;
         }
         /**
@@ -279,13 +279,14 @@ namespace placeToBe.Service
             double latHopDist = GetHopDistance(city, "latitude", hops);
             double lngHopDist = GetHopDistance(city, "longitude", hops);
 
-            Coordinates southWest = city.area[1][2];//Southwest
+            double southWestLat = city.polygon[3,0];//SouthwestLatitude
+            double southWestLng= city.polygon[3,1];//SouthwestLongitude
 
             for (int i = 0; i < hops; i++)
             {
                 for (int j = 0; j < hops; j++)
                 {
-                    Coordinates coord = new Coordinates(southWest.latitude + latHopDist * i, southWest.longitude + lngHopDist * j);
+                    Coordinates coord = new Coordinates(southWestLat + latHopDist * i, southWestLng + lngHopDist * j);
                     cityCoordArray.Add(coord);
                 }
             }
@@ -364,7 +365,7 @@ namespace placeToBe.Service
             foreach (String rsvp in peopleId)
             {
                 char splitChar = ',';
-                String[] rsvpSplit=rsvp.Split(splitChar);
+                String[] rsvpSplit = rsvp.Split(splitChar);
                 Rsvp eventRsvp = new Rsvp();
                 eventRsvp.id = rsvpSplit[0];
                 eventRsvp.name = rsvpSplit[1];
@@ -379,7 +380,7 @@ namespace placeToBe.Service
         * @param place
         * @param callback
         */
-        public void HandlePlace(String place, String condition ,String id)
+        public void HandlePlace(String place, String condition, String id)
         {
             //Place
             if (condition == "searchPlace")
@@ -402,7 +403,7 @@ namespace placeToBe.Service
                     //CommunityPage save?
                 }
             }
-                //Event
+            //Event
             else if (condition == "searchEvent")
             {
                 Event eventNew = new Event();
@@ -423,16 +424,16 @@ namespace placeToBe.Service
             eventNew.attending = list;
             await repoEvent.InsertAsync(eventNew);
         }
-        
+
         public double GetHopDistance(City city, String angle, int hops)
         {
             //First Coordinate: Southwest, Second: Northeast
 
             if (angle == "latitude")
-                return Math.Abs((city.area[1][2].latitude - city.area[2][1].latitude) / hops);
+                return Math.Abs((city.polygon[3, 0] - city.polygon[1, 0]) / hops);
             else
             {
-                return Math.Abs((city.area[1][2].longitude - city.area[2][1].longitude) / hops);
+                return Math.Abs((city.polygon[3, 1] - city.polygon[1, 1]) / hops);
             }
         }
 
