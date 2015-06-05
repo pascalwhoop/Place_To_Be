@@ -187,16 +187,14 @@ namespace placeToBe.Service
                 placeIdList.Add(facebookResults.id);
             }
 
-            try
+
+            if (facebookPageResults.paging.next != null)
             {
                 //add the nextPage response at the end of the list, for the next request
                 String next = facebookPageResults.paging.next;
                 placeIdList.Add(next);
             }
-            catch (Exception e)
-            {
-                Console.WriteLine("Page end, there's no next page!");
-            }
+
             return placeIdList;
 
         }
