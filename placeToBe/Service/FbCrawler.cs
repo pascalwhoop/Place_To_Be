@@ -63,7 +63,7 @@ namespace placeToBe.Service
             }
             else if (condition == "searchEventData")
             {
-                url = "https://graph.facebook.com/v2.2/" + getData + "?fields=id,name,description,place,location,owner,attending_count,declined_count,maybe_count,start_time,end_time,venue&access_token=" + fbAppId + "|" + fbAppSecret;
+                url = "https://graph.facebook.com/v2.2/" + getData + "/?fields=id,name,description,location,owner,attending_count,declined_count,maybe_count,start_time,end_time,venue&access_token=" + fbAppId + "|" + fbAppSecret;
             }
             else if (condition == "attendingList")
             {
