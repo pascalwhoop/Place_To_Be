@@ -97,7 +97,7 @@ namespace placeToBe.Service
          * Shuffles an array of type Coordinates
          * */
 
-        public Coordinates[] shuffle(Coordinates[] o)
+        public Coordinates[] Shuffle(Coordinates[] o)
         {
             Random _random = new Random();
             int n = o.Length;
@@ -123,7 +123,7 @@ namespace placeToBe.Service
             //transform list into array
             Coordinates[] coordArrayCity = coordListCity.ToArray();
             //Shuffle the Array
-            Coordinates[] coordArrayCityShuffled = shuffle(coordArrayCity);
+            Coordinates[] coordArrayCityShuffled = Shuffle(coordArrayCity);
 
             foreach (Coordinates coord in coordArrayCityShuffled)
             {
