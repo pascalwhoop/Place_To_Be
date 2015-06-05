@@ -93,6 +93,9 @@ namespace placeToBe.Service
         */
 
 
+        /*
+         * Shuffles an array of type Coordinates
+         * */
 
         public Coordinates[] shuffle(Coordinates[] o)
         {
@@ -101,7 +104,7 @@ namespace placeToBe.Service
 
             for (int i = 0; i < n; i++)
             {
-                //NextDouble() gibt eine Zufallszahl zwischen 0 und 1 wie Math.Random() RR-RANDOOM Java.
+                //NextDouble -> random number between 0 and 1
                 int r = i + (int)(_random.NextDouble() * (n - i));
                 Coordinates t = o[r];
                 o[r] = o[i];
