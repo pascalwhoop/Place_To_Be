@@ -129,7 +129,7 @@ namespace placeToBe.Service
         public void FindPagesForCities(City city)
         {
             String distance = "2000";
-            String limit = "5000";
+            String limit = "2000";
 
             //Get all Coordinates of a part of the City
             List<Coordinates> coordListCity = GetCoordinatesArray(city);
