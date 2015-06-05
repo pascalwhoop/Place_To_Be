@@ -458,7 +458,9 @@ namespace placeToBe.Service
                     getData += "e.venue.name"; //Needs to be more defined (first exsample was: name = Alexanderplatz, Berlin)
                 }
 
-                JObject googleLocation = JObject.Parse(GraphApiGet(getData, "GOOGLE"));
+                getData = GraphApiGet(getData, "GOOGLE");
+                JObject googleLocation = JObject.Parse(getData);
+
                 try
                 {
                     e.locationCoordinates.coordinates[0] = Convert.ToDouble(googleLocation.SelectToken("results[1].geometry.location.lat").ToString());

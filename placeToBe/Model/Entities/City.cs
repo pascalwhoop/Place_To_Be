@@ -14,7 +14,7 @@ namespace placeToBe.Model.Entities
     {
         
         public String name { get; set; }
-        public Coordinates[][] area { get; set; }
+        public double [,] polygon { get; set; }
 
 
     }
