@@ -160,7 +160,8 @@ namespace placeToBe.Service
                 //clear addPlaceIdList
                 addPlaceIdList.Clear();
                 //Get from Graph APi
-                addPlaceIdList = HandlePlacesResponse(nextPage);
+                String nextResponse = GraphApiGet(nextPage, "nextPage");
+                addPlaceIdList = HandlePlacesResponse(nextResponse);
                 //Get NExt Page
                 sizeList = addPlaceIdList.Count;
                 nextPage = addPlaceIdList[sizeList - 1];
@@ -190,8 +191,7 @@ namespace placeToBe.Service
             {
                 //add the nextPage response at the end of the list, for the next request
                 String next = facebookPageResults.paging.next;
-                String nextResponse = GraphApiGet(next, "nextPage");
-                placeIdList.Add(nextResponse);
+                placeIdList.Add(next);
             }
             catch (Exception e)
             {
