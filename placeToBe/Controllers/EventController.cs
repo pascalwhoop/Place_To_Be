@@ -23,7 +23,6 @@ namespace placeToBe.Controllers
 
         [Route("api/event/filter/{place}/{time}")]
         public async Task<IList<Event>> getEventsByTimeAndPlace(string place, string time) {
-            
             return await search.HeatSearch(place, time);
         } 
 
