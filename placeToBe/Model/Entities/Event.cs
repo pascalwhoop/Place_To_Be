@@ -37,14 +37,14 @@ namespace placeToBe.Model.Entities
         [DataMember]
         public List<Rsvp> attending { get; set; }
         [DataMember]
-        public List<Rsvp> maybe { get; set; }
+        public List<Rsvp> maybe_count { get; set; }
         [DataMember]
         public int attendingMale { get; set; }
         [DataMember]
         public int attendingFemale { get; set; }
 
         [DataMember(Name = "attending_count")]
-        public int attendingCount { get; set; }
+        public int attending_count { get; set; }
         [DataMember]
         public CoverPhoto cover { get; set; }
         [DataMember]
