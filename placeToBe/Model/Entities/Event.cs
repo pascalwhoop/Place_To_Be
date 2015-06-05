@@ -9,14 +9,12 @@ namespace placeToBe.Model.Entities
 
 {
     [DataContract]
-    public class Event : EntityBase
+    public class Event : LightEvent
     {
         [DataMember]
         public string description { get; set; }
         [DataMember]
         public bool is_date_only { get; set; }
-        [DataMember]
-        public string name { get; set; }
         [DataMember]
         public Owner owner { get; set; }
         [DataMember]
@@ -42,9 +40,6 @@ namespace placeToBe.Model.Entities
         public int attendingMale { get; set; }
         [DataMember]
         public int attendingFemale { get; set; }
-
-        [DataMember(Name = "attending_count")]
-        public int attendingCount { get; set; }
         [DataMember]
         public CoverPhoto cover { get; set; }
         [DataMember]
@@ -53,8 +48,6 @@ namespace placeToBe.Model.Entities
         public Venue venue { get; set; }
         [DataMember(Name = "location")]
         public string locationName { get; set; }
-        [DataMember]
-        public Location locationCoordinates { get; set;}
         [DataMember]
         public Category[] categoryList { get; set;  }
 
