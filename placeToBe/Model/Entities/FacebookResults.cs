@@ -29,5 +29,24 @@ namespace placeToBe.Model.Entities
             [JsonProperty("paging")]
             public Paging paging { get; set; }
         }
+
+        public class FacebookPageResultsAttending
+        {
+            [JsonProperty("data")]
+            public ResultAttending[] data { get; set; }
+
+            [JsonProperty("paging")]
+            public Paging paging { get; set; }
+        }
+
+        public class ResultAttending
+        {
+            [JsonProperty("name")]
+            public String name { get; set; }
+            [JsonProperty("rsvp_status")]
+            public String rsvp_status { get; set; }
+            [JsonProperty("id")]
+            public String id { get; set; }
+        }
     
 }

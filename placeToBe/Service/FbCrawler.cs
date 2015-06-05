@@ -63,7 +63,11 @@ namespace placeToBe.Service
             }
             else if (condition == "searchEventData")
             {
-                url = "https://graph.facebook.com/v2.2/" + getData + "?fields=id,name,location,owner,attending_count,declined_count,maybe_count,description,start_time,end_time,venue&access_token=" + fbAppId + "|" + fbAppSecret;
+                url = "https://graph.facebook.com/v2.2/" + getData + "?fields=id,name,description,place,location,owner,attending_count,declined_count,maybe_count,start_time,end_time,venue&access_token=" + fbAppId + "|" + fbAppSecret;
+            }
+            else if (condition == "attendingList")
+            {
+                url = "https://graph.facebook.com/v2.2/" + getData + "/attending&limit=2000&access_token=" + fbAppId + "|" + fbAppSecret;
             }
 
             Uri uri = new Uri(url);
@@ -138,7 +142,8 @@ namespace placeToBe.Service
             {
                 String getData = coord.latitude + "|" + coord.longitude + "|" + distance + "|" + limit;
                 String place = GraphApiGet(getData, "searchPlace");
-                MergePlacesResponse(place, "nextPage");
+                Event eventNew = new Event();
+                MergePlacesResponse(place, "nextPage", eventNew);
             }
         }
 
@@ -146,8 +151,17 @@ namespace placeToBe.Service
         //find events on every page in db
         public void FindEventOnPage(String pageId)
         {
+            Event eventNew= new Event();
             String response = GraphApiGet(pageId, "searchEvent");
-            MergePlacesResponse(response, "searchEvent");
+            MergePlacesResponse(response, "searchEvent", eventNew);
+        }
+
+        //GEt attending List of an event
+        public void FindAttendingList(Event eventNew)
+        {
+
+            String response = GraphApiGet(eventNew.fbId, "attendingList");
+            MergePlacesResponse(response, "attendingList", eventNew);
         }
 
         /**
@@ -156,13 +170,13 @@ namespace placeToBe.Service
         * facebook uses paging so we got to go ahead and follow through the paging process until there is no more paging
         * @param response
         */
-        public void MergePlacesResponse(String response, String getData)
+        public void MergePlacesResponse(String response, String condition, Event eventNew)
         {
             List<String> placeIdList = new List<String>();
             List<String> addPlaceIdList = new List<String>();
 
             //GEt from GraphApi
-            addPlaceIdList = HandlePlacesResponse(response);
+            addPlaceIdList = HandlePlacesResponse(response, condition);
             //Get NExt Page
             int sizeList = addPlaceIdList.Count;
             String nextPage = addPlaceIdList[sizeList - 1];
@@ -180,7 +194,7 @@ namespace placeToBe.Service
                 addPlaceIdList.Clear();
                 //Get from Graph APi
                 String nextResponse = GraphApiGet(nextPage, "nextPage");
-                addPlaceIdList = HandlePlacesResponse(nextResponse);
+                addPlaceIdList = HandlePlacesResponse(nextResponse, condition);
                 //Get NExt Page
                 sizeList = addPlaceIdList.Count;
                 nextPage = addPlaceIdList[sizeList - 1];
@@ -188,13 +202,35 @@ namespace placeToBe.Service
             //Merge lists last time
             placeIdList.AddRange(addPlaceIdList);
             //Paging complete now the next step to get more information with these id's
-            HandlePlacesIdArrays(placeIdList.ToArray(), getData);
+            HandlePlacesIdArrays(placeIdList.ToArray(), condition, eventNew);
         }
-        public List<String> HandlePlacesResponse(String response)
+        public List<String> HandlePlacesResponse(String response, String getData)
         {
             //new List for PageId
             List<String> placeIdList = new List<String>();
+            if (getData == "FindAttendingList")
+            {
+                //Convert Json to c# Object facebookPageResults
+                FacebookPageResultsAttending facebookPageResults;
+                facebookPageResults = JsonConvert.DeserializeObject<FacebookPageResultsAttending>(response);
+                //get the data part of the FacebookPageresults which contain the id's
+                ResultAttending[] data = facebookPageResults.data;
+                //add the id's to list
+                foreach (ResultAttending facebookResults in data)
+                {
+                    placeIdList.Add(facebookResults.id+","+facebookResults.name+","+facebookResults.rsvp_status);
+                }
 
+
+                if (facebookPageResults.paging.next != null)
+                {
+                    //add the nextPage response at the end of the list, for the next request
+                    String next = facebookPageResults.paging.next;
+                    placeIdList.Add(next);
+                }
+            }
+            else
+            {
             //Convert Json to c# Object facebookPageResults
             FacebookPageResults facebookPageResults;
             facebookPageResults = JsonConvert.DeserializeObject<FacebookPageResults>(response);
@@ -212,6 +248,7 @@ namespace placeToBe.Service
                 //add the nextPage response at the end of the list, for the next request
                 String next = facebookPageResults.paging.next;
                 placeIdList.Add(next);
+            }
             }
 
             return placeIdList;
@@ -260,9 +297,9 @@ namespace placeToBe.Service
          * handles an array of placeIDs and gets the full information for each of them from the FB API
          * @param arr
          */
-        public async void HandlePlacesIdArrays(String[] placesId, String getData)
+        public async void HandlePlacesIdArrays(String[] placesId, String condition, Event eventNewZ)
         {
-            if (getData == "searchPlace")
+            if (condition == "searchPlace")
             {
                 Page page;
                 foreach (String id in placesId)
@@ -283,11 +320,11 @@ namespace placeToBe.Service
                         //Get page information
                         String pageData = GraphApiGet(id, "pageData");
                         //handle the page and push it to db
-                        HandlePlace(pageData, getData);
+                        HandlePlace(pageData, condition, "");
                     }
                 }
             }
-            else if (getData == "searchEvent")
+            else if (condition == "searchEvent")
             {
                 Event eventNew;
                 foreach (String id in placesId)
@@ -308,11 +345,33 @@ namespace placeToBe.Service
                         //Get Event information
                         String eventData = GraphApiGet(id, "searchEventData");
                         //handle the Event and push it to db
-                        HandlePlace(eventData, getData);
+                        HandlePlace(eventData, condition, id);
                     }
                 }
 
             }
+            else if (condition == "attendingList")
+            {
+                HandleAttendingList(placesId, eventNewZ);
+            }
+        }
+
+        //split data in right place
+        public void HandleAttendingList(String[] peopleId, Event eventNew)
+        {//facebookResults.id+","+facebookResults.name+","+facebookResults.rsvp_status);
+
+            List<Rsvp> list = new List<Rsvp>();
+            foreach (String rsvp in peopleId)
+            {
+                char splitChar = ',';
+                String[] rsvpSplit=rsvp.Split(splitChar);
+                Rsvp eventRsvp = new Rsvp();
+                eventRsvp.id = rsvpSplit[0];
+                eventRsvp.name = rsvpSplit[1];
+                eventRsvp.rsvp_status = rsvpSplit[2];
+                list.Add(eventRsvp);
+            }
+            PushEventToDb(eventNew, list);
         }
 
         /**
@@ -320,10 +379,10 @@ namespace placeToBe.Service
         * @param place
         * @param callback
         */
-        public void HandlePlace(String place, String getData)
+        public void HandlePlace(String place, String condition ,String id)
         {
             //Place
-            if (getData == "searchPlace")
+            if (condition == "searchPlace")
             {
                 JObject _place = JObject.Parse(place);
                 String isCommunityPage = (String)_place["is_community_page"];
@@ -344,11 +403,11 @@ namespace placeToBe.Service
                 }
             }
                 //Event
-            else if (getData == "searchEvent")
+            else if (condition == "searchEvent")
             {
                 Event eventNew = new Event();
                 eventNew = JsonConvert.DeserializeObject<Event>(place);
-                PushEventToDb(eventNew);
+                FindAttendingList(eventNew);
             }
         }
 
@@ -359,10 +418,12 @@ namespace placeToBe.Service
         }
 
         //Inster event to db
-        public async void PushEventToDb(Event eventNew)
+        public async void PushEventToDb(Event eventNew, List<Rsvp> list)
         {
+            eventNew.attending = list;
             await repoEvent.InsertAsync(eventNew);
         }
+        
         public double GetHopDistance(City city, String angle, int hops)
         {
             //First Coordinate: Southwest, Second: Northeast
