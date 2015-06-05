@@ -422,6 +422,7 @@ namespace placeToBe.Service
         public async void PushEventToDb(Event eventNew, List<Rsvp> list)
         {
             eventNew.attending = list;
+            eventNew=FillEmptyEventFields(eventNew);
             await repoEvent.InsertAsync(eventNew);
         }
 
