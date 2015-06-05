@@ -436,42 +436,36 @@ namespace placeToBe.Service
                 return Math.Abs((city.polygon[3, 1] - city.polygon[1, 1]) / hops);
             }
         }
-
-        public Event fillEmptyEventFields(Event e)
+        public Event FillEmptyEventFields(Event e)
         {
-            //Setting location of an Event in right dataformat for geospital Index
-
-            e.locationCoordinates.coordinates = new double[2];
-
-            if (e.venue.latitude != 0 && e.venue.longitude != 0)
+            try
             {
+                //Setting location of an Event in right dataformat for geospital Index
+                e.locationCoordinates.type = "point";
+                e.locationCoordinates.coordinates = new double[2];
 
-                e.locationCoordinates.coordinates[0] = e.venue.latitude;
-                e.locationCoordinates.coordinates[1] = e.venue.longitude;
+                if (e.venue.latitude != 0 && e.venue.longitude != 0)
+                {
+                    e.locationCoordinates.coordinates[0] = e.venue.latitude;
+                    e.locationCoordinates.coordinates[1] = e.venue.longitude;
+                }
+                else
+                {
+
+                    String getData = "";
+
+                    if (e.venue.name != null)
+                    {
+                        getData += e.venue.name; //Needs to be more defined (first exsample was: name = Alexanderplatz, Berlin)
+                    }
+                    JObject obj = JObject.Parse(GraphApiGet(getData, "GOOGLE"));
+                    e.locationCoordinates.coordinates[0] = Convert.ToDouble(obj["results"][0]["geometry"]["location"]["lat"]);
+                    e.locationCoordinates.coordinates[1] = Convert.ToDouble(obj["results"][0]["geometry"]["location"]["lng"]);
+                }
             }
-            else
+            catch (Exception ex)
             {
-
-                String getData = "";
-
-                if (e.venue.name != null)
-                {
-                    getData += "e.venue.name"; //Needs to be more defined (first exsample was: name = Alexanderplatz, Berlin)
-                }
-
-                getData = GraphApiGet(getData, "GOOGLE");
-                JObject googleLocation = JObject.Parse(getData);
-
-                try
-                {
-                    e.locationCoordinates.coordinates[0] = Convert.ToDouble(googleLocation.SelectToken("results[1].geometry.location.lat").ToString());
-                    e.locationCoordinates.coordinates[1] = Convert.ToDouble(googleLocation.SelectToken("results[1].geometry.location.lng").ToString());
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Google wasn't able to find coordinates of: {0}", getData);
-                    Console.WriteLine(ex.StackTrace);
-                }
+                throw (ex);
             }
             return e;
         }
