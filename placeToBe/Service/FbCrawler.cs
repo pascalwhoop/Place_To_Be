@@ -18,6 +18,7 @@ namespace placeToBe.Service
     public class FbCrawler
     {
         PageRepository repo = new PageRepository();
+        EventRepository repoEvent= new EventRepository();
         String fbAppSecret = "469300d9c3ed9fe6ff4144d025bc1148";
         String fbAppId = "857640940981214";
         String AppGoogleKey = "AIzaSyArx67_z9KxbrVMurzBhS2mzqDhrpz66s0";
@@ -48,12 +49,21 @@ namespace placeToBe.Service
             }
             else if (condition == "searchPlace")
             {
+                //split[0]= latitude, split[1]=longitude, split[2]=distance, split[3]=limit
                 String[] split = getData.Split(new char['|']);
                 url = "https://graph.facebook.com/v2.2/search?q=\"\"&type=place&center=" + split[0] + "," + split[1] + "&distance=" + split[2] + "&limit=" + split[3] + "&fields=id&access_token=" + fbAppId + "|" + fbAppSecret;
             }
             else if (condition == "nextPage")
             {
                 url = getData;
+            }
+            else if (condition == "searchEvent")
+            {
+                url = "https://graph.facebook.com/v2.2/" + getData + "/events&fields=id&access_token=" + fbAppId + "|" + fbAppSecret;
+            }
+            else if (condition == "searchEventData")
+            {
+                url = "https://graph.facebook.com/v2.2/" + getData + "?fields=id,name,location,owner,attending_count,declined_count,maybe_count,description,start_time,end_time,venue&access_token=" + fbAppId + "|" + fbAppSecret;
             }
 
             Uri uri = new Uri(url);
@@ -85,13 +95,6 @@ namespace placeToBe.Service
             }
         }
 
-        /**
-        * queriing FB API in a grid like fashion to find all pages within a city. this is very intense on the API which is why
-        * we shouldn't do this often TODO right now we query 50x50 grid (2500 * (query*paging/query)) queries. So if we have
-        * to do paging 3x per query its 7500 calls to the API.. yeah might be obvious what we intend
-        * @param city
-        */
-
 
         /*
          * Shuffles an array of type Coordinates
@@ -113,6 +116,12 @@ namespace placeToBe.Service
             return o;
         }
 
+        /**
+        * queriing FB API in a grid like fashion to find all pages within a city. this is very intense on the API which is why
+        * we shouldn't do this often TODO right now we query 50x50 grid (2500 * (query*paging/query)) queries. So if we have
+        * to do paging 3x per query its 7500 calls to the API.. yeah might be obvious what we intend
+        * @param city
+        */
         public void FindPagesForCities(City city)
         {
             String distance = "2000";
@@ -129,8 +138,16 @@ namespace placeToBe.Service
             {
                 String getData = coord.latitude + "|" + coord.longitude + "|" + distance + "|" + limit;
                 String place = GraphApiGet(getData, "searchPlace");
-                MergePlacesResponse(place);
+                MergePlacesResponse(place, "nextPage");
             }
+        }
+
+
+        //find events on every page in db
+        public void FindEventOnPage(String pageId)
+        {
+            String response = GraphApiGet(pageId, "searchEvent");
+            MergePlacesResponse(response, "searchEvent");
         }
 
         /**
@@ -139,14 +156,13 @@ namespace placeToBe.Service
         * facebook uses paging so we got to go ahead and follow through the paging process until there is no more paging
         * @param response
         */
-
-        public void MergePlacesResponse(String response)
+        public void MergePlacesResponse(String response, String getData)
         {
             List<String> placeIdList = new List<String>();
             List<String> addPlaceIdList = new List<String>();
-            
+
             //GEt from GraphApi
-            addPlaceIdList=HandlePlacesResponse(response);
+            addPlaceIdList = HandlePlacesResponse(response);
             //Get NExt Page
             int sizeList = addPlaceIdList.Count;
             String nextPage = addPlaceIdList[sizeList - 1];
@@ -172,7 +188,7 @@ namespace placeToBe.Service
             //Merge lists last time
             placeIdList.AddRange(addPlaceIdList);
             //Paging complete now the next step to get more information with these id's
-            HandlePlacesIdArrays(placeIdList.ToArray());
+            HandlePlacesIdArrays(placeIdList.ToArray(), getData);
         }
         public List<String> HandlePlacesResponse(String response)
         {
@@ -209,6 +225,11 @@ namespace placeToBe.Service
             return page;
         }
 
+        public async Task<Event> EventSearchDb(String fbId)
+        {
+            Event eventNew=await repoEvent.GetByFbIdAsync(fbId);
+            return eventNew;
+        }
         /**
         * returns a 50x50 array with coordinates of the form {lat: Number, lng: Number}
         * @param city
@@ -239,29 +260,58 @@ namespace placeToBe.Service
          * handles an array of placeIDs and gets the full information for each of them from the FB API
          * @param arr
          */
-        public async void HandlePlacesIdArrays(String[] placesId)
+        public async void HandlePlacesIdArrays(String[] placesId, String getData)
         {
-            Page page;
-            foreach (String id in placesId)
+            if (getData == "searchPlace")
             {
-                try
+                Page page;
+                foreach (String id in placesId)
                 {
-                    page = await PageSearchDb(id);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Exception: " + e);
-                    page = null;
+                    try
+                    {
+                        page = await PageSearchDb(id);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Exception: " + e);
+                        page = null;
 
+                    }
+
+                    if (page == null)
+                    {
+                        //Get page information
+                        String pageData = GraphApiGet(id, "pageData");
+                        //handle the page and push it to db
+                        HandlePlace(pageData, getData);
+                    }
+                }
+            }
+            else if (getData == "searchEvent")
+            {
+                Event eventNew;
+                foreach (String id in placesId)
+                {
+                    try
+                    {
+                        eventNew = await EventSearchDb(id);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Exception: " + e);
+                        eventNew = null;
+
+                    }
+
+                    if (eventNew == null)
+                    {
+                        //Get Event information
+                        String eventData = GraphApiGet(id, "searchEventData");
+                        //handle the Event and push it to db
+                        HandlePlace(eventData, getData);
+                    }
                 }
 
-                if (page == null)
-                {
-                    //Get page information
-                    String pageData = GraphApiGet(id, "pageData");
-                    //handle the page and push it to db
-                    HandlePlace(pageData);
-                }
             }
         }
 
@@ -270,32 +320,49 @@ namespace placeToBe.Service
         * @param place
         * @param callback
         */
-        public void HandlePlace(String place)
+        public void HandlePlace(String place, String getData)
         {
-            JObject _place = JObject.Parse(place);
-            String isCommunityPage = (String)_place["is_community_page"];
-            JToken token = _place["Location"];
-            if (isCommunityPage == "false")
+            //Place
+            if (getData == "searchPlace")
             {
-                //we only save non-community-pages since only they will actually create events
-                Page page = new Page();
-                //Convert json to Object
-                page = JsonConvert.DeserializeObject<Page>(place);
-                //a place that is not community owned is == to a page in the facebook world
-                //insert in db
-                PushToDb(page);
+                JObject _place = JObject.Parse(place);
+                String isCommunityPage = (String)_place["is_community_page"];
+                JToken token = _place["Location"];
+                if (isCommunityPage == "false")
+                {
+                    //we only save non-community-pages since only they will actually create events
+                    Page page = new Page();
+                    //Convert json to Object
+                    page = JsonConvert.DeserializeObject<Page>(place);
+                    //a place that is not community owned is == to a page in the facebook world
+                    //insert in db
+                    PushToDb(page);
+                }
+                else if (isCommunityPage == "true")
+                {
+                    //CommunityPage save?
+                }
             }
-            else if (isCommunityPage == "true")
+                //Event
+            else if (getData == "searchEvent")
             {
-                //CommunityPage save?
+                Event eventNew = new Event();
+                eventNew = JsonConvert.DeserializeObject<Event>(place);
+                PushEventToDb(eventNew);
             }
         }
 
+        //Insert page to Db
         public async void PushToDb(Page page)
         {
             await repo.InsertAsync(page);
         }
 
+        //Inster event to db
+        public async void PushEventToDb(Event eventNew)
+        {
+            await repoEvent.InsertAsync(eventNew);
+        }
         public double GetHopDistance(City city, String angle, int hops)
         {
             //First Coordinate: Southwest, Second: Northeast
