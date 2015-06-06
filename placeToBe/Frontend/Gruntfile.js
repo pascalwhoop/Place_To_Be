@@ -9,6 +9,7 @@
 
 module.exports = function (grunt) {
 
+
   // Load grunt tasks automatically
   require('load-grunt-tasks')(grunt);
 
@@ -386,8 +387,12 @@ module.exports = function (grunt) {
         configFile: 'test/karma.conf.js',
         singleRun: true
       }
-    }
+    },
+
   });
+
+
+
 
 
   grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
