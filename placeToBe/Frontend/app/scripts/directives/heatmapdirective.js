@@ -157,7 +157,6 @@ angular.module('frontendApp')
             endCoord.y * numTiles);
           var pixelsPerMeter = (Math.abs(initPoint.x - endPoint.x)) / 10000.0;
           var totalPixelSize = Math.floor(desiredRadiusPerPointInMeters * pixelsPerMeter);
-          console.log(totalPixelSize);
           return totalPixelSize;
 
         }
