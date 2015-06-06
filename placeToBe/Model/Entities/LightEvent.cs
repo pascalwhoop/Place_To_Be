@@ -13,6 +13,6 @@ namespace placeToBe.Model.Entities
         [DataMember(Name = "attending_count")]
         public int attendingCount { get; set; }
         [DataMember]
-        public Location locationCoordinates { get; set; }
+        public GeoLocation geoLocationCoordinates { get; set; }
     }
 }

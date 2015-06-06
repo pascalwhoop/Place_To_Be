@@ -43,18 +43,38 @@ namespace placeToBe.Model.Entities
         [DataMember]
         public CoverPhoto cover { get; set; }
         [DataMember]
-        public Page place { get; set; }
-        [DataMember]
-        public Venue venue { get; set; }
-        [DataMember(Name = "location")]
-        public string locationName { get; set; }
+        public Place place { get; set; }
         [DataMember]
         public Category[] categoryList { get; set;  }
 
     }
-
-    public class Location
+    //starting v2.3 this is the necessary (and we have to ask for it specifically) part of an Event that describes the location (and therefore latLng information)
+    [DataContract]
+    public class Place
     {
+        [DataMember]
+        public string name { get; set; }
+        [DataMember(Name = "location")]
+        public FbLocation location { get; set; }
+        [DataMember]
+        public string id { get; set; }
+    }
+
+    public class FbLocation {
+        public string city { get; set; }
+        public string country { get; set; }
+        public double latitude { get; set; }
+        public double longitude { get; set; }
+        public string street { get; set; }
+        public string zip { get; set; }
+    }
+
+    public class GeoLocation
+    {
+        public GeoLocation(double lat, double lng) {
+            this.coordinates = new double[2]{lat, lng};
+            type = "Point";
+        }
         public string type { get; set; }
         public double[] coordinates { get; set; }
     }
@@ -65,18 +85,6 @@ namespace placeToBe.Model.Entities
         public float offset_x { get; set; }
         public float offset_y { get; set; }
     }
-
-    public class Venue
-    {
-        public string name { get; set; }
-        public string city { get; set; }
-        public string country { get; set; }
-        public double latitude { get; set; }
-        public double longitude { get; set; }
-        public string street{ get; set; }
-        public string zip { get; set; }
-        public string id { get; set; }
-    } 
 
 
     public class Owner

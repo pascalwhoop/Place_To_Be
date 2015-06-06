@@ -125,9 +125,9 @@ namespace placeToBe.Services
             return gender;
         }
 
-        private void PushGenderToDb(Gender gender)
+        private async void PushGenderToDb(Gender gender)
         {
-            repo.InsertAsync(gender);
+            await repo.InsertAsync(gender);
         }
 
         #endregion

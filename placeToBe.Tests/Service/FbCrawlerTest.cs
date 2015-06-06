@@ -79,5 +79,26 @@ namespace placeToBe.Tests.Service
 
             crawler.HandlePlace(place, condition, id);
         }
+
+        [TestMethod]
+        public void FindEventsOnPageTest() {
+            FbCrawler crawler = new FbCrawler();
+            var placeID = "346376098748775";    //Reinecke Fuchs. Gibt aktuell noch Probleme (können irgendwie nicht auf dessen Events zugreifen
+            placeID = "252874629056";           //Bootshaus. Da kommen wir irgendwie drauf... Altersbegrenzung??
+            crawler.FindEventOnPage(placeID);
+        }
+
+        [TestMethod]
+        public void FillEmptyEventFieldsTest() {
+            FbCrawler crawler = new FbCrawler();
+            Place place = new Place();
+            Event fbEvent = new Event();
+
+            place.name = "Bonnstr./ Ecke Aachenerstr. Haltestelle Weiden- West, 50226 Frechen";
+            fbEvent.place = place;
+
+            crawler.FillEmptyEventFields(fbEvent);
+
+        }
     }
 }
