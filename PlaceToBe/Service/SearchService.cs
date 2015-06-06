@@ -12,14 +12,13 @@ namespace placeToBe.Services
     public class SearchService
     {
 
-
+        City city;
         EventRepository repo = new EventRepository();
-        public async Task<IList<Event>> HeatSearch(string place, string time) {
-
-
-      
-            //Methode muss bearbeitet werden, sodass bestimmter Scope empfangen wird
-            IList<Event> allEvents = await repo.GetAllAsync();
+        public async Task<List<LightEvent>> HeatSearch(string place, string time) {
+            city.name = place;
+            //City.name einbauen ??
+            //GetEvents from the city in polygon 
+            List<LightEvent> allEvents = await repo.GetCityMapEvents(city.polygon, time);
             return allEvents;
         }
 
