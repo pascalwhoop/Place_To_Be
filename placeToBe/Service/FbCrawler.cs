@@ -45,12 +45,12 @@ namespace placeToBe.Service
             }
             else if (condition == "pageData")
             {
-                url = "https://graph.facebook.com/v2.2/" + getData + "&access_token=" + fbAppId + "|" + fbAppSecret;
+                url = "https://graph.facebook.com/v2.2/" + getData + "?access_token=" + fbAppId + "|" + fbAppSecret;
             }
             else if (condition == "searchPlace")
             {
                 //split[0]= latitude, split[1]=longitude, split[2]=distance, split[3]=limit
-                String[] split = getData.Split(new char['|']);
+                String[] split = getData.Split(new string[]{"|"}, StringSplitOptions.None);
                 url = "https://graph.facebook.com/v2.2/search?q=\"\"&type=place&center=" + split[0] + "," + split[1] + "&distance=" + split[2] + "&limit=" + split[3] + "&fields=id&access_token=" + fbAppId + "|" + fbAppSecret;
             }
             else if (condition == "nextPage")
@@ -59,7 +59,7 @@ namespace placeToBe.Service
             }
             else if (condition == "searchEvent")
             {
-                url = "https://graph.facebook.com/v2.2/" + getData + "/events&fields=id&access_token=" + fbAppId + "|" + fbAppSecret;
+                url = "https://graph.facebook.com/v2.2/" + getData + "/events?fields=id&access_token=" + fbAppId + "|" + fbAppSecret;
             }
             else if (condition == "searchEventData")
             {
@@ -67,7 +67,7 @@ namespace placeToBe.Service
             }
             else if (condition == "attendingList")
             {
-                url = "https://graph.facebook.com/v2.2/" + getData + "/attending&limit=2000&access_token=" + fbAppId + "|" + fbAppSecret;
+                url = "https://graph.facebook.com/v2.2/" + getData + "/attending?limit=2000&access_token=" + fbAppId + "|" + fbAppSecret;
             }
 
             Uri uri = new Uri(url);
@@ -141,6 +141,7 @@ namespace placeToBe.Service
             foreach (Coordinates coord in coordArrayCityShuffled)
             {
                 String getData = coord.latitude + "|" + coord.longitude + "|" + distance + "|" + limit;
+                getData = getData.Replace(",", ".");
                 String place = GraphApiGet(getData, "searchPlace");
                 Event eventNew = new Event();
                 MergePlacesResponse(place, "nextPage", eventNew);
@@ -197,12 +198,17 @@ namespace placeToBe.Service
                 addPlaceIdList = HandlePlacesResponse(nextResponse, condition);
                 //Get NExt Page
                 sizeList = addPlaceIdList.Count;
-                nextPage = addPlaceIdList[sizeList - 1];
+                if (sizeList > 0) {
+                    nextPage = addPlaceIdList[sizeList - 1];
+                }
+                else {
+                    nextPage = "UNDEFINED";
+                }
             }
             //Merge lists last time
             placeIdList.AddRange(addPlaceIdList);
             //Paging complete now the next step to get more information with these id's
-            HandlePlacesIdArrays(placeIdList.ToArray(), condition, eventNew);
+            HandlePlacesIdArrays(placeIdList.ToArray(), "searchPlace", eventNew);
         }
         public List<String> HandlePlacesResponse(String response, String getData)
         {
@@ -386,19 +392,18 @@ namespace placeToBe.Service
             if (condition == "searchPlace")
             {
                 JObject _place = JObject.Parse(place);
-                String isCommunityPage = (String)_place["is_community_page"];
+                var isCommunityPage = (bool)_place["is_community_page"];
                 JToken token = _place["Location"];
-                if (isCommunityPage == "false")
+                if (isCommunityPage == false)
                 {
                     //we only save non-community-pages since only they will actually create events
-                    Page page = new Page();
                     //Convert json to Object
-                    page = JsonConvert.DeserializeObject<Page>(place);
+                    Page page = JsonConvert.DeserializeObject<Page>(place);
                     //a place that is not community owned is == to a page in the facebook world
                     //insert in db
                     PushToDb(page);
                 }
-                else if (isCommunityPage == "true")
+                else if (isCommunityPage == true)
                 {
                     //CommunityPage save?
                 }

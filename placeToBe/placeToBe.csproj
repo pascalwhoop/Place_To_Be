@@ -236,13 +236,17 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Frontend\dist\404.html" />
     <Content Include="Frontend\dist\favicon.ico" />
+    <Content Include="Frontend\dist\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Frontend\dist\fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="Frontend\dist\images\Heatmap.png" />
+    <Content Include="Frontend\dist\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Frontend\dist\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Frontend\dist\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Frontend\dist\images\yeoman.8cb970fb.png" />
     <Content Include="Frontend\dist\index.html" />
     <Content Include="Frontend\dist\robots.txt" />
-    <Content Include="Frontend\dist\scripts\scripts.ae64ec5e.js" />
-    <Content Include="Frontend\dist\scripts\vendor.b367d3cf.js" />
-    <Content Include="Frontend\dist\styles\main.16c86e60.css" />
+    <Content Include="Frontend\dist\scripts\scripts.d9f133fa.js" />
+    <Content Include="Frontend\dist\scripts\vendor.7ce7c1d0.js" />
+    <Content Include="Frontend\dist\styles\main.01bbfc12.css" />
     <Content Include="Frontend\dist\styles\vendor.93a2b65d.css" />
     <Content Include="Frontend\dist\views\about.html" />
     <Content Include="Frontend\dist\views\main.html" />
@@ -299,10 +303,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-    <Content Include="Frontend\dist\fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Frontend\dist\fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="Frontend\dist\fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="Frontend\dist\fonts\glyphicons-halflings-regular.woff2" />
     <None Include="Project_Readme.html" />
     <None Include="Properties\PublishProfiles\placetobe-koeln.pubxml" />
   </ItemGroup>

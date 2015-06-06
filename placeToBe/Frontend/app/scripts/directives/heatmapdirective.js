@@ -67,13 +67,13 @@ angular.module('frontendApp')
           heatmap.setMap(mapObj);
 
           google.maps.event.addListener(mapObj, 'zoom_changed', function () {
-            heatmap.setOptions({radius:getNewRadius()});
+            heatmap.setOptions({radius: getNewRadius()});
           });
         };
 
         var addPointsForEachGuest = function (event, heatmapData) {
           var maxEventRadius = 0.00001 * Math.pow(event.attending_count, 0.66666);
-          for (var i = 0; i < Math.ceil(event.attending_count/100); i++) {
+          for (var i = 0; i < Math.ceil(event.attending_count / 100); i++) {
             var heatPointDistance = maxEventRadius * Math.random();
             var angle = Math.random() * Math.PI * 2;
             var a = event.locationCoordinates.coordinates[0] + Math.cos(angle) * heatPointDistance;
@@ -156,8 +156,7 @@ angular.module('frontendApp')
             endCoord.x * numTiles,
             endCoord.y * numTiles);
           var pixelsPerMeter = (Math.abs(initPoint.x - endPoint.x)) / 10000.0;
-          var totalPixelSize = Math.floor(desiredRadiusPerPointInMeters * pixelsPerMeter);
-          return totalPixelSize;
+          return Math.floor(desiredRadiusPerPointInMeters * pixelsPerMeter);
 
         }
 
@@ -171,9 +170,8 @@ angular.module('frontendApp')
 
 
       //this is the HTML template for the directive
-      template:
-        '<h2>Eventmap for <input type="text" ng-model="city.name" ng-disabled="true"/>' +
-        '</h2><map center="city.center" style="height: 700px;"></map>',
+      template: '<h2>Eventmap for <input type="text" ng-model="city.name" ng-disabled="true"/>' +
+      '</h2><map center="city.center" style="height: 700px;"></map>',
       //we set it so only element tags are relevant
       restrict: 'E',
       //linking the attribute "city" value to the scope.city variable (maybe others too)
@@ -183,5 +181,4 @@ angular.module('frontendApp')
         eventSource: "="
       }
     };
-  })
-;
+  });
