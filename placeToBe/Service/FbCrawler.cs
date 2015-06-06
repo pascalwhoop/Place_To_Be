@@ -50,7 +50,9 @@ namespace placeToBe.Service
             else if (condition == "searchPlace")
             {
                 //split[0]= latitude, split[1]=longitude, split[2]=distance, split[3]=limit
-                String[] split = getData.Split(new char['|']);
+                String[] split = new String[4];
+                char splitChar = '|';
+                split = getData.Split(splitChar);
                 url = "https://graph.facebook.com/v2.2/search?q=\"\"&type=place&center=" + split[0] + "," + split[1] + "&distance=" + split[2] + "&limit=" + split[3] + "&fields=id&access_token=" + fbAppId + "|" + fbAppSecret;
             }
             else if (condition == "nextPage")
