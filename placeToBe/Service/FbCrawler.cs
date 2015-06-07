@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Web;
 using placeToBe.Model.Repositories;
 using Newtonsoft.Json;
@@ -447,7 +448,13 @@ namespace placeToBe.Service
         //Insert page to Db
         public async void PushToDb(Page page)
         {
-            await repo.InsertAsync(page);
+            try {
+                await repo.InsertAsync(page);
+            }
+            catch (MongoWaitQueueFullException ex) {
+                Thread.Sleep(15000);
+                PushToDb(page);
+            }
         }
 
         //Inster event to db
@@ -455,12 +462,17 @@ namespace placeToBe.Service
         {
             eventNew.attending = list;
             eventNew=FillEmptyEventFields(eventNew);
-            if (eventNew != null && eventNew.attendingCount > 3) { //if event exists and more than 3 people joined persist
+            if (eventNew != null && eventNew.attendingCount > 15) { //if event exists and more than 3 people joined persist
                 try {
                     repoEvent.InsertAsync(eventNew);
                 }
                 catch (MongoWriteException e) {
                     Console.Write(e.Message);
+                }
+                catch (MongoWaitQueueFullException ex)
+                {
+                    Thread.Sleep(15000);
+                    PushEventToDb(eventNew, list);
                 }
             }
         }
