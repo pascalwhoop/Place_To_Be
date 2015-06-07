@@ -41,18 +41,16 @@ namespace placeToBe.Model.Repositories
         public async Task<List<LightEvent>> getSoonEvents(string time) {
             var max = Double.Parse(time);
             var filter = Builders<Event>.Filter.Gte("startDateTime", new DateTime());
-            var sort = Builders<Event>.Sort.Descending("attending_count");
             List<LightEvent> list = new List<LightEvent>();
-            using (var cursor = await _collection.Find(filter).Sort(sort).ToCursorAsync()) {
-                    while (await cursor.MoveNextAsync()) {
-                        var batch = cursor.Current;
-                        foreach (Event e in batch) {
+            var dataList = await _collection.Find(filter).ToListAsync();
+                   
+                        foreach (Event e in dataList) {
                             list.Add(eventToLightEvent(e));
                         }
-                    }
+                    
                 return list;
             }
-        }
+        
 
         private LightEvent eventToLightEvent(Event e)
         {
