@@ -13,6 +13,7 @@ using placeToBe.Model.Repositories;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Microsoft.Ajax.Utilities;
+using MongoDB.Driver;
 
 namespace placeToBe.Service
 {
@@ -229,6 +230,7 @@ namespace placeToBe.Service
         {
             //new List for PageId
             List<String> placeIdList = new List<String>();
+            if(response == null)return placeIdList;
             if (getData == "attendingList")
             {
                 //Convert Json to c# Object facebookPageResults
@@ -453,8 +455,13 @@ namespace placeToBe.Service
         {
             eventNew.attending = list;
             eventNew=FillEmptyEventFields(eventNew);
-            if (eventNew != null) {
-                await repoEvent.InsertAsync(eventNew);                
+            if (eventNew != null && eventNew.attendingCount > 3) { //if event exists and more than 3 people joined persist
+                try {
+                    repoEvent.InsertAsync(eventNew);
+                }
+                catch (MongoWriteException e) {
+                    Console.Write(e.Message);
+                }
             }
         }
 

@@ -72,12 +72,13 @@ angular.module('frontendApp')
         };
 
         var addPointsForEachGuest = function (event, heatmapData) {
+          if(!event.geoLocationCoordinates || !event.geoLocationCoordinates.coordinates) return;
           var maxEventRadius = 0.00001 * Math.pow(event.attending_count, 0.66666);
           for (var i = 0; i < Math.ceil(event.attending_count / 100); i++) {
             var heatPointDistance = maxEventRadius * Math.random();
             var angle = Math.random() * Math.PI * 2;
-            var a = event.locationCoordinates.coordinates[0] + Math.cos(angle) * heatPointDistance;
-            var b = event.locationCoordinates.coordinates[1] + Math.sin(angle) * heatPointDistance;
+            var a = event.geoLocationCoordinates.coordinates[0] + Math.cos(angle) * heatPointDistance;
+            var b = event.geoLocationCoordinates.coordinates[1] + Math.sin(angle) * heatPointDistance;
             var latLng = new google.maps.LatLng(a, b);
 
 
