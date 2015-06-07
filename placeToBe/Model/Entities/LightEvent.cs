@@ -6,6 +6,7 @@ using System.Web;
 
 namespace placeToBe.Model.Entities
 {
+    [DataContract]
     public class LightEvent :EntityBase
     {
         [DataMember]

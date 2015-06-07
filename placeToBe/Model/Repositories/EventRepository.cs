@@ -15,7 +15,8 @@ namespace placeToBe.Model.Repositories
 
         //a constructor that makes sure we have a geospherical index over our event list. 
         public EventRepository() {
-            _collection.Indexes.CreateOneAsync(Builders<Event>.IndexKeys.Geo2DSphere(_ => _.geoLocationCoordinates));
+            _collection.Indexes.CreateOneAsync(Builders<Event>.IndexKeys.Geo2DSphere(_ => _.geoLocationCoordinates)); //an index on the location attribute
+            _collection.Indexes.CreateOneAsync(Builders<Event>.IndexKeys.Descending(_ => _.startDateTime)); //an index on the startTime attribute
         }
 
         public async Task<List<LightEvent>> GetCityMapEvents(double [,]polygon, string time)
@@ -31,15 +32,36 @@ namespace placeToBe.Model.Repositories
             //Convert Event to Lightevent
             foreach (Event _event in eventList)
             {
-                LightEvent light = new LightEvent();
-                light.Id = _event.Id;
-                light.name = _event.name;
-                light.geoLocationCoordinates = _event.geoLocationCoordinates;
-                light.attendingCount = _event.attendingCount;
-
-                lightList.Add(light);
+                lightList.Add(eventToLightEvent(_event));
             }
             return lightList;
+        }
+
+        //TODO delete, only for testing purposes
+        public async Task<List<LightEvent>> getSoonEvents(string time) {
+            var max = Double.Parse(time);
+            var filter = Builders<Event>.Filter.Gte("startDateTime", new DateTime());
+            var sort = Builders<Event>.Sort.Descending("attending_count");
+            List<LightEvent> list = new List<LightEvent>();
+            using (var cursor = await _collection.Find(filter).Sort(sort).ToCursorAsync()) {
+                    while (await cursor.MoveNextAsync()) {
+                        var batch = cursor.Current;
+                        foreach (Event e in batch) {
+                            list.Add(eventToLightEvent(e));
+                        }
+                    }
+                return list;
+            }
+        }
+
+        private LightEvent eventToLightEvent(Event e)
+        {
+                LightEvent light = new LightEvent();
+                light.Id = e.Id;
+                light.name = e.name;
+                light.geoLocationCoordinates = e.geoLocationCoordinates;
+                light.attendingCount = e.attendingCount;
+            return light;
         }
 
     }

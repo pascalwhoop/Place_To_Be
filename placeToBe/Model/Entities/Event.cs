@@ -9,7 +9,7 @@ namespace placeToBe.Model.Entities
 
 {
     [DataContract]
-    public class Event : LightEvent
+    public class Event : EntityBase
     {
         [DataMember]
         public string description { get; set; }
@@ -21,8 +21,10 @@ namespace placeToBe.Model.Entities
         public string privacy { get; set; }
         [DataMember]
         public string start_time { get; set; }
+        public DateTime startDateTime { get; set; }
         [DataMember]
         public string end_time { get; set; }
+        public DateTime endDateTime { get; set; }
         [DataMember]
         public string timezone { get; set; }
         [DataMember]
@@ -31,7 +33,6 @@ namespace placeToBe.Model.Entities
         public string fbId { get; set; }
         [DataMember]
         public int invitedCount { get; set; }
-
         [DataMember]
         public List<Rsvp> attending { get; set; }
         [DataMember]
@@ -46,6 +47,12 @@ namespace placeToBe.Model.Entities
         public Place place { get; set; }
         [DataMember]
         public Category[] categoryList { get; set;  }
+        [DataMember]
+        public string name { get; set; }
+        [DataMember(Name = "attending_count")]
+        public int attendingCount { get; set; }
+        [DataMember]
+        public GeoLocation geoLocationCoordinates { get; set; }
 
     }
     //starting v2.3 this is the necessary (and we have to ask for it specifically) part of an Event that describes the location (and therefore latLng information)

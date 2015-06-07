@@ -225,6 +225,7 @@
     <Compile Include="Service\FbCrawler.cs" />
     <Compile Include="Service\GenderizeService.cs" />
     <Compile Include="Service\SearchService.cs" />
+    <Compile Include="Service\UtilService.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>

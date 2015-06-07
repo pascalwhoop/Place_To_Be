@@ -104,7 +104,7 @@ namespace placeToBe.Service
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: " + ex.Message);
-                throw ex;
+                return null;
             }
         }
 
@@ -258,9 +258,11 @@ namespace placeToBe.Service
                 //get the data part of the FacebookPageresults which contain the id's
                 FacebookResults[] data = facebookPageResults.data;
                 //add the id's to list
-                foreach (FacebookResults facebookResults in data)
-                {
-                    placeIdList.Add(facebookResults.id);
+                if (data != null) {
+                    foreach (FacebookResults facebookResults in data)
+                    {
+                        placeIdList.Add(facebookResults.id);
+                    }
                 }
 
 
@@ -405,8 +407,8 @@ namespace placeToBe.Service
         * @param place
         * @param callback
         */
-        public void HandlePlace(String place, String condition, String id)
-        {
+        public void HandlePlace(String place, String condition, String id) {
+            if (place == null) return;
             //Place
             if (condition == "searchPlace")
             {
@@ -504,6 +506,19 @@ namespace placeToBe.Service
             catch (NullReferenceException ex)
             {
                 Console.Write(ex.ToString());
+            }
+
+            e = fillStartEndDateTime(e);
+            return e;
+        }
+
+        //we add converted fields to the object which we can later put an index on
+        public Event fillStartEndDateTime(Event e) {
+            if (e.start_time != null) {
+                e.startDateTime = UtilService.getDateTimeFromISOString(e.start_time);
+            }
+            if (e.end_time != null) {
+                e.endDateTime = UtilService.getDateTimeFromISOString(e.end_time);
             }
             return e;
         }

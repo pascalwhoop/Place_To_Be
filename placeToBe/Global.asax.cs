@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
@@ -20,6 +22,40 @@ namespace placeToBe
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
+            
+
+            runFacebookCrawler();
+        }
+
+        protected void runFacebookCrawler() {
+            BackgroundWorker bw = new BackgroundWorker();
+
+            // this allows our worker to report progress during work
+            bw.WorkerReportsProgress = true;
+
+            // what to do in the background thread
+            bw.DoWork += new DoWorkEventHandler(
+            delegate(object o, DoWorkEventArgs args)
+            {
+                BackgroundWorker b = o as BackgroundWorker;
+
+                // run our crawler
+                facebookCrawlerInit();
+
+            });
+
+            // what to do when worker completes its task (notify the user)
+            bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
+            delegate(object o, RunWorkerCompletedEventArgs args)
+            {
+                Thread.Sleep(1000*3600*24);
+                runFacebookCrawler();
+            });
+
+            bw.RunWorkerAsync();
+        }
+
+        protected void facebookCrawlerInit() {
             FbCrawler fbCrawler = new FbCrawler();
             City cologne = new City();
             cologne.name = "Cologne, Germany";
@@ -28,6 +64,7 @@ namespace placeToBe
                 {50.8295269, 6.7725819}, {51.08496299999999, 6.7725819}
             };
             fbCrawler.FindPagesForCities(cologne);
+
         }
     }
 }
