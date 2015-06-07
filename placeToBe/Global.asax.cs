@@ -24,7 +24,7 @@ namespace placeToBe
 
             
 
-            //runFacebookCrawler();
+            runFacebookCrawler();
         }
 
         protected void runFacebookCrawler() {
