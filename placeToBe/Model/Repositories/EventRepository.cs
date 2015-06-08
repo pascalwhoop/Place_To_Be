@@ -15,6 +15,9 @@ namespace placeToBe.Model.Repositories
 
         //a constructor that makes sure we have a geospherical index over our event list. 
         public EventRepository() {
+            //unique index on fb events
+            CreateIndexOptions options = new CreateIndexOptions {Unique = true};
+            _collection.Indexes.CreateOneAsync(Builders<Event>.IndexKeys.Text(_ => _.fbId), options);
             _collection.Indexes.CreateOneAsync(Builders<Event>.IndexKeys.Geo2DSphere(_ => _.geoLocationCoordinates)); //an index on the location attribute
             _collection.Indexes.CreateOneAsync(Builders<Event>.IndexKeys.Descending(_ => _.startDateTime)); //an index on the startTime attribute
         }

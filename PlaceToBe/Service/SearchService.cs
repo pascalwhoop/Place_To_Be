@@ -9,17 +9,14 @@ using System.Web.Mvc;
 
 namespace placeToBe.Services
 {
-    public class SearchService
-    {
+    public class SearchService {
 
+        private City city;
+        private EventRepository repo = new EventRepository();
+        public async Task<List<LightEvent>> HeatSearch(string place, string time){
+            //Methode muss bearbeitet werden, sodass bestimmte Events abgerufen werden empfangen wird
+            List<LightEvent> allEvents = await repo.getSoonEvents(time);
 
-        EventRepository repo = new EventRepository();
-        public async Task<IList<LightEvent>> HeatSearch(string place, string time) {
-
-
-      
-            //Methode muss bearbeitet werden, sodass bestimmter Scope empfangen wird
-            IList<LightEvent> allEvents = await repo.getSoonEvents(time);
             return allEvents;
         }
 

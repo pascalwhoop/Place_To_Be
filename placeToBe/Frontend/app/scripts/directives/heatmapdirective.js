@@ -244,7 +244,7 @@ angular.module('frontendApp')
       '<p>PERSONS_PER_POINT <input type="number" ng-model="PERSONS_PER_POINT"/></p>' +
       '<p>TILE_SIZE <input type="number" ng-model="TILE_SIZE"/></p>' +
       '<p>METER_RADIUS_PER_POINT <input type="number" ng-model="METER_RADIUS_PER_POINT"/></p>' +
-      '<button ng-click="refreshHeatmap()" ng-if="heatmapLayer">RefreshHeatmap</button>' +
+      '<button ng-click="refreshHeatmap()" ng-disabled="!heatmapLayer">RefreshHeatmap</button>' +
       '<map center="city.center" style="height: 700px;"></map>',
       //we set it so only element tags are relevant
       restrict: 'E',
