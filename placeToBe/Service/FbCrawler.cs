@@ -87,7 +87,7 @@ namespace placeToBe.Service
             request.Method = "GET";
             request.AllowAutoRedirect = true;
 
-            Console.Write("### GETTING: " + condition +" ::: " + url);
+            System.Diagnostics.Debug.Write("\n### GETTING: " + condition + "  " + getData);
 
             HttpWebResponse Response;
             try
@@ -451,7 +451,9 @@ namespace placeToBe.Service
         public async void PushToDb(Page page)
         {
             try {
+                System.Diagnostics.Debug.Write("\n**** PAGE: " + page.fbId);
                 await repo.InsertAsync(page);
+
             }
             catch (MongoWaitQueueFullException ex) {
                 Thread.Sleep(15000);
@@ -466,6 +468,7 @@ namespace placeToBe.Service
             eventNew=FillEmptyEventFields(eventNew);
             if (eventNew != null && eventNew.attendingCount > 15 && eventNew.startDateTime > new DateTime()) { //if event exists and more than 15 people joined and is in future persist
                 try {
+                    System.Diagnostics.Debug.Write("\n**** EVENT: " + eventNew.fbId );
                     repoEvent.InsertAsync(eventNew);
                 }
                 catch (MongoWriteException e) {
