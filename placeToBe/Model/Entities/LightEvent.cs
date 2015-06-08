@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Web;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace placeToBe.Model.Entities
 {
     [DataContract]
+    [BsonIgnoreExtraElements]
     public class LightEvent :EntityBase
     {
         [DataMember]

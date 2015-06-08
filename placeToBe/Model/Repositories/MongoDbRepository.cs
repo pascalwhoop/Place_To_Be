@@ -21,7 +21,7 @@ namespace placeToBe.Model.Repositories {
 
         public MongoDbRepository()
         {
-            GetDatabase();
+            ConnectDatabase();
             setCollection();
 
         }
@@ -81,7 +81,12 @@ namespace placeToBe.Model.Repositories {
         }
 
         #region Private Helper Methods
-        private void GetDatabase()
+
+        private void resetConnection() {
+            ConnectDatabase();
+            setCollection();
+        }
+        private void ConnectDatabase()
         {
             var client = new MongoClient(GetConnectionString());
             _database = client.GetDatabase(GetDatabaseName());

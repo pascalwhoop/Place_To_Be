@@ -14,14 +14,15 @@ using placeToBe.Model.Repositories;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Microsoft.Ajax.Utilities;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace placeToBe.Service
 {
     public class FbCrawler
     {
-        PageRepository repo = new PageRepository();
-        EventRepository repoEvent = new EventRepository();
+        PageRepository pageRepo = new PageRepository();
+        EventRepository eventRepo = new EventRepository();
         String fbAppSecret = "469300d9c3ed9fe6ff4144d025bc1148";
         String fbAppId = "857640940981214";
         String AppGoogleKey = "AIzaSyArx67_z9KxbrVMurzBhS2mzqDhrpz66s0";
@@ -286,13 +287,13 @@ namespace placeToBe.Service
 
         public async Task<Page> PageSearchDb(String fbId)
         {
-            Page page = await repo.GetByIdAsync(fbId);
+            Page page = await pageRepo.GetByFbIdAsync(fbId);
             return page;
         }
 
         public async Task<Event> EventSearchDb(String fbId)
         {
-            Event eventNew = await repoEvent.GetByFbIdAsync(fbId);
+            Event eventNew = await eventRepo.GetByFbIdAsync(fbId);
             return eventNew;
         }
         /**
@@ -301,7 +302,7 @@ namespace placeToBe.Service
         */
         public List<Coordinates> GetCoordinatesArray(City city)
         {
-            int hops = 50;
+            int hops = 100;
             List<Coordinates> cityCoordArray = new List<Coordinates>();
 
             double latHopDist = GetHopDistance(city, "latitude", hops);
@@ -383,7 +384,7 @@ namespace placeToBe.Service
                 }
 
             }
-            else if (condition == "attendingList")
+            else if (condition == "attendingList" && eventNewZ.attendingCount > 15)
             {
                 HandleAttendingList(placesId, eventNewZ);
             }
@@ -448,36 +449,53 @@ namespace placeToBe.Service
         }
 
         //Insert page to Db
-        public async void PushToDb(Page page)
+        public async void PushToDb(Page newPage)
         {
             try {
-                System.Diagnostics.Debug.Write("\n**** PAGE: " + page.fbId);
-                await repo.InsertAsync(page);
+                System.Diagnostics.Debug.Write("\n**** PAGE: " + newPage.fbId);
+                await pageRepo.InsertAsync(newPage);
 
             }
             catch (MongoWaitQueueFullException ex) {
                 Thread.Sleep(15000);
-                PushToDb(page);
+                PushToDb(newPage);
+            }
+            catch (MongoWriteException ex) {
+                //this just means the object is already in the DB most of the time.
+            }
+            catch (MongoConnectionException ex) {
+                pageRepo = new PageRepository();
+                PushToDb(newPage);
+            }
+            catch (Exception ex) {
+                System.Diagnostics.Debug.Write(ex.ToJson());
             }
         }
 
         //Inster event to db
-        public async void PushEventToDb(Event eventNew, List<Rsvp> list)
+        public async void PushEventToDb(Event newEvent, List<Rsvp> list)
         {
-            eventNew.attending = list;
-            eventNew=FillEmptyEventFields(eventNew);
-            if (eventNew != null && eventNew.attendingCount > 15 && eventNew.startDateTime > new DateTime()) { //if event exists and more than 15 people joined and is in future persist
+            newEvent.attending = list;
+            newEvent=FillEmptyEventFields(newEvent);
+            if (newEvent != null && newEvent.attendingCount > 15 && newEvent.startDateTime > new DateTime()) { //if event exists and more than 15 people joined and is in future persist
                 try {
-                    System.Diagnostics.Debug.Write("\n**** EVENT: " + eventNew.fbId );
-                    repoEvent.InsertAsync(eventNew);
+                    System.Diagnostics.Debug.Write("\n**** EVENT: " + newEvent.fbId);
+                    await eventRepo.InsertAsync(newEvent);
                 }
                 catch (MongoWriteException e) {
-                    Console.Write(e.Message);
+                    //this just means the object is already in the DB most of the time.
                 }
-                catch (MongoWaitQueueFullException ex)
-                {
+                catch (MongoWaitQueueFullException ex) {
                     Thread.Sleep(15000);
-                    PushEventToDb(eventNew, list);
+                    PushEventToDb(newEvent, list);
+                }
+                catch (MongoConnectionException ex) {
+                    eventRepo = new EventRepository();
+                    PushEventToDb(newEvent, list);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.Write(ex.ToJson());
                 }
             }
         }

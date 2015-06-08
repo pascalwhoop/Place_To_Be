@@ -22,11 +22,11 @@ namespace placeToBe.Model.Repositories
             _collection.Indexes.CreateOneAsync(Builders<Event>.IndexKeys.Descending(_ => _.startDateTime)); //an index on the startTime attribute
         }
 
-        public async Task<List<LightEvent>> GetCityMapEvents(double [,]polygon, string time)
+       /* public async Task<List<LightEvent>> GetCityMapEvents(double [,]polygon, string time)
         {
             
             //filter request by location and time
-            var filter = Builders<Event>.Filter.GeoWithinPolygon("geoLocationCoordinates", polygon) & Builders<Event>.Filter.And(Builders<Event>.Filter.Gte("start_time",time),
+            var filter = Builders<Event>.Filter.GeoWithinPolygon("geoLocationCoordinates", polygon) & Builders<Event>.Filter.And(Builders<Event>.Filter.Gte("startDateTime",new DateTime() ),
                 Builders<Event>.Filter.Lte("end_time", time));
             //search in db with filter
             IList<Event> eventList=await _collection.Find(filter).ToListAsync();
@@ -38,9 +38,28 @@ namespace placeToBe.Model.Repositories
                 lightList.Add(eventToLightEvent(_event));
             }
             return lightList;
+        }*/
+
+        //help: http://mongodb.github.io/mongo-csharp-driver/2.0/reference/driver/definitions/#projections
+        public async Task<List<LightEvent>> getEventsByTimeAndPolygon(double[,] polygon, DateTime startTime,
+            DateTime endTime) {
+
+            var builder = Builders<Event>.Filter;
+            var filter = builder.GeoWithinPolygon("geoLocationCoordinates", polygon) &
+                         builder.Gte("startDateTime", startTime.AddHours(-4)) & builder.Lt("startDateTime", endTime);
+            
+            Dictionary<String, Object> projectionContent = new Dictionary<string, object>() {
+                {"attendingCount", 1},
+                {"geoLocationCoordinates", 1},
+                {"name", 1}
+            };
+            ProjectionDefinition<Event,LightEvent > projDefinition = new BsonDocument(projectionContent);
+            return await _collection.Find(filter).Project(projDefinition).ToListAsync();
+            ;
+
         }
 
-        //TODO delete, only for testing purposes
+        /*//TODO delete, only for testing purposes
         public async Task<List<LightEvent>> getSoonEvents(string time) {
             var max = Double.Parse(time);
             var filter = Builders<Event>.Filter.Gte("startDateTime", new DateTime());
@@ -52,7 +71,7 @@ namespace placeToBe.Model.Repositories
                         }
                     
                 return list;
-            }
+            }*/
         
 
         private LightEvent eventToLightEvent(Event e)
