@@ -21,7 +21,7 @@ angular.module('frontendApp')
         scope.PERSONS_PER_POINT = 40;
         scope.TILE_SIZE = 256;
         scope.METER_RADIUS_PER_POINT= 20;
-        var MOCK_EVENTS = [    {
+        var EVENTS = [    {
           "name": "BEATS x BASS x COLOGNE Summer Opening mit VIRTUAL RIOT, KLANGFARBE ANTIFEIND u.a.",
           "attending_count": 771,
           "geoLocationCoordinates": {
@@ -102,13 +102,14 @@ angular.module('frontendApp')
             .success(function (data, status, headers, config) {
 
               //callback(data.slice(0,20));
+              EVENTS = data;
               callback(data);
             }); //for now the cologne/now is not important, we just want to show a map
         };
 
         scope.refreshHeatmap = function(){
             heatmapLayer.setMap(null);
-            setHeatmapDataArrayAsLayer(getHeatmapDataArrayForEvents(MOCK_EVENTS));
+            setHeatmapDataArrayAsLayer(getHeatmapDataArrayForEvents(EVENTS));
         };
 
         var handleEvents = function (events) {
@@ -243,7 +244,7 @@ angular.module('frontendApp')
       '<p>PERSONS_PER_POINT <input type="number" ng-model="PERSONS_PER_POINT"/></p>' +
       '<p>TILE_SIZE <input type="number" ng-model="TILE_SIZE"/></p>' +
       '<p>METER_RADIUS_PER_POINT <input type="number" ng-model="METER_RADIUS_PER_POINT"/></p>' +
-      '<button ng-click="refreshHeatmap()">RefreshHeatmap</button>' +
+      '<button ng-click="refreshHeatmap()" ng-if="heatmapLayer">RefreshHeatmap</button>' +
       '<map center="city.center" style="height: 700px;"></map>',
       //we set it so only element tags are relevant
       restrict: 'E',
