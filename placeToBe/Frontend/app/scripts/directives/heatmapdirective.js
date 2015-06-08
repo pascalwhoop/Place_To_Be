@@ -14,6 +14,10 @@ angular.module('frontendApp')
         var geocoder = new google.maps.Geocoder();
         var mapObj = null;
         var heatmapLayer = null;
+        scope.dataReceived= false;
+
+        scope.startDate = new Date();
+        scope.startHour = 18;
 
 
         /*VARIABLES THAT INFLUENCE THE RENDERING OF THE HEATMAP*/
@@ -21,58 +25,7 @@ angular.module('frontendApp')
         scope.PERSONS_PER_POINT = 40;
         scope.TILE_SIZE = 256;
         scope.METER_RADIUS_PER_POINT= 20;
-        var EVENTS = [    {
-          "name": "BEATS x BASS x COLOGNE Summer Opening mit VIRTUAL RIOT, KLANGFARBE ANTIFEIND u.a.",
-          "attending_count": 771,
-          "geoLocationCoordinates": {
-            "type": "Point",
-            "coordinates": [
-              50.954742334517,
-              6.9383665945917
-            ]
-          }
-        }, {
-          "name": "PIM & CEMS Human Kicker Cup + BBQ Party 2015",
-          "attending_count": 172,
-          "geoLocationCoordinates": {
-            "type": "Point",
-            "coordinates": [
-              50.927673503974,
-              6.9290317620486
-            ]
-          }
-        },   {
-          "name": "Freundschaftsspiel Deutschland : USA",
-          "attending_count": 15000,
-          "geoLocationCoordinates": {
-            "type": "Point",
-            "coordinates": [
-              50.934202141613,
-              6.8751399570981
-            ]
-          }
-        }, {
-          "name": "DER DIENSTAG // EINTRITT FREI & KEIN MVZ // (FSK 18)",
-          "attending_count": 284,
-          "geoLocationCoordinates": {
-            "type": "Point",
-            "coordinates": [
-              50.9416001407,
-              6.9402307300079
-            ]
-          }
-        },   {
-          "name": "4. Kettcar Grand Prix d'Odonien",
-          "attending_count": 413,
-          "geoLocationCoordinates": {
-            "type": "Point",
-            "coordinates": [
-              50.954742334517,
-              6.9383665945917
-            ]
-          }
-        }];
-
+        var eventArray = [];
 
 
         scope.$on('mapInitialized', function (event, map) {
@@ -86,7 +39,6 @@ angular.module('frontendApp')
             }
           });
 
-          fetchEvents(scope.city.name, scope.time, handleEvents);
 
         });
 
@@ -95,21 +47,28 @@ angular.module('frontendApp')
          * @param city
          * @param time
          */
-        var fetchEvents = function (city, time, callback) {
+        scope.fetchEvents = function (city, startDate, startHour) {
            //MOCK data
           //callback(MOCK_EVENTS);
-          $http.get(scope.eventSource + "/filter/" + city + "/" + time)
+
+
+          $http.get(buildUrl(city, startDate, startHour))
             .success(function (data, status, headers, config) {
 
               //callback(data.slice(0,20));
-              EVENTS = data;
-              callback(data);
+              eventArray = data;
+              scope.dataReceived = true;
+              handleEvents(data);
             }); //for now the cologne/now is not important, we just want to show a map
+        };
+
+        var buildUrl = function(city, startDate, hour){
+          return scope.eventSource + "/filter/" + city + "/" + startDate.getFullYear() + "/" + (startDate.getMonth()+1) + "/" + (startDate.getDate()+1) + "/" + hour
         };
 
         scope.refreshHeatmap = function(){
             heatmapLayer.setMap(null);
-            setHeatmapDataArrayAsLayer(getHeatmapDataArrayForEvents(EVENTS));
+            setHeatmapDataArrayAsLayer(getHeatmapDataArrayForEvents(eventArray));
         };
 
         var handleEvents = function (events) {
@@ -236,15 +195,27 @@ angular.module('frontendApp')
           });
        */
 
+        //"api/event/filter/{city}/{year}/{month}/{day}/{hour}
+
 
       //this is the HTML template for the directive
       template: '<h2>Eventmap for <input type="text" ng-model="city.name" ng-disabled="true"/>' +
       '</h2>' +
-      '<p>SIZE_PER_PERSON <input type="number" ng-model="SIZE_PER_PERSON"/></p>' +
-      '<p>PERSONS_PER_POINT <input type="number" ng-model="PERSONS_PER_POINT"/></p>' +
-      '<p>TILE_SIZE <input type="number" ng-model="TILE_SIZE"/></p>' +
-      '<p>METER_RADIUS_PER_POINT <input type="number" ng-model="METER_RADIUS_PER_POINT"/></p>' +
-      '<button ng-click="refreshHeatmap()" ng-disabled="!heatmapLayer">RefreshHeatmap</button>' +
+      '<div class="row">' +
+        '<div class="col-md-6" style="padding: 10px">'+
+          '<p>SIZE_PER_PERSON <input type="number" ng-model="SIZE_PER_PERSON"/></p>' +
+          '<p>PERSONS_PER_POINT <input type="number" ng-model="PERSONS_PER_POINT"/></p>' +
+          '<p>TILE_SIZE <input type="number" ng-model="TILE_SIZE"/></p>' +
+          '<p>METER_RADIUS_PER_POINT <input type="number" ng-model="METER_RADIUS_PER_POINT"/></p>' +
+          '<button ng-click="refreshHeatmap()" ng-disabled="!dataReceived" class="btn">RefreshHeatmap</button>' +
+        '</div>' +
+        '<div class="col-md-6" style="padding: 10px">' +
+          '<p>Datum<input type="date" ng-model="startDate"/></p>' +
+          '<p>Uhrzeit <select ng-options="n for n in [] | range:0:23" ng-model="startHour"></select></p>' +
+          '<button ng-click="fetchEvents(city.name, startDate, startHour)" class="btn">FetchEvents</button>' +
+      ''+
+        '</div>'+
+
       '<map center="city.center" style="height: 700px;"></map>',
       //we set it so only element tags are relevant
       restrict: 'E',
