@@ -87,6 +87,8 @@ namespace placeToBe.Service
             request.Method = "GET";
             request.AllowAutoRedirect = true;
 
+            Console.Write("### GETTING: " + condition +" ::: " + url);
+
             HttpWebResponse Response;
             try
             {
