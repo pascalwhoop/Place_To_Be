@@ -6,6 +6,7 @@ using System.Web;
 
 namespace placeToBe.Model.Entities
 {
+    [DataContract]
     public class LightEvent :EntityBase
     {
         [DataMember]
@@ -13,6 +14,6 @@ namespace placeToBe.Model.Entities
         [DataMember(Name = "attending_count")]
         public int attendingCount { get; set; }
         [DataMember]
-        public Location locationCoordinates { get; set; }
+        public GeoLocation geoLocationCoordinates { get; set; }
     }
 }

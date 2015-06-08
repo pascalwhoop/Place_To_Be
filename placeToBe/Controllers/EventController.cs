@@ -69,7 +69,7 @@ namespace placeToBe.Controllers
         // DELETE api/event/5
         public async void Delete(Guid id) {
             var Event = await repo.GetByIdAsync(id);
-            repo.DeleteAsync(Event);
+            await repo.DeleteAsync(Event);
         }
     }
 }

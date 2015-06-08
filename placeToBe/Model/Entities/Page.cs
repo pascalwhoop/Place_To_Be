@@ -12,31 +12,57 @@ namespace placeToBe.Model{
                        {
                            [DataMember(Name = "id")]
                            public string fbId { get; set; }
+                           [DataMember]
                            public string about { get; set; }
+                           [DataMember]
                            public string attire { get; set; }
+                           [DataMember]
                            public bool can_post { get; set; }
+                           [DataMember]
                            public string category { get; set; }
+                           [DataMember]
                            public List<CategoryList> category_list { get; set; }
+                           [DataMember]
                            public int checkins { get; set; }
+                           [DataMember]
                            public Cover cover { get; set; }
+                           [DataMember]
                            public string description { get; set; }
+                           [DataMember]
                            public bool has_added_app { get; set; }
+                           [DataMember]
                            public Hours hours { get; set; }
+                           [DataMember]
                            public bool is_community_page { get; set; }
+                           [DataMember]
                            public bool is_published { get; set; }
+                           [DataMember]
                            public int likes { get; set; }
+                           [DataMember]
                            public string link { get; set; }
+                           [DataMember]
                            public Location location { get; set; }
+                           [DataMember]
                            public string name { get; set; }
+                           [DataMember]
                            public Parking parking { get; set; }
+                           [DataMember]
                            public PaymentOptions payment_options { get; set; }
+                           [DataMember]
                            public string phone { get; set; }
+                           [DataMember]
                            public string public_transit { get; set; }
+                           [DataMember]
                            public RestaurantServices restaurant_services { get; set; }
+                           [DataMember]
                            public RestaurantSpecialties restaurant_specialties { get; set; }
+                           [DataMember]
                            public int talking_about_count { get; set; }
+                           [DataMember]
                            public string username { get; set; }
+                           [DataMember]
                            public string website { get; set; }
+                           [DataMember]
                            public int were_here_count { get; set; }
                        }
 

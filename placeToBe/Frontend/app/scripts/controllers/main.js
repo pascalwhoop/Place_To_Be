@@ -17,7 +17,7 @@ angular.module('frontendApp')
         name: "cologne",
         location: null
       },
-      time: "now"
+      time: 9000
     };
     $scope.eventSourceUrl = "https://placetobe-koeln.azurewebsites.net/api/event";
 

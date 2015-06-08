@@ -8,10 +8,13 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Web;
 using placeToBe.Model.Repositories;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using Microsoft.Ajax.Utilities;
+using MongoDB.Driver;
 
 namespace placeToBe.Service
 {
@@ -24,6 +27,10 @@ namespace placeToBe.Service
         String AppGoogleKey = "AIzaSyArx67_z9KxbrVMurzBhS2mzqDhrpz66s0";
         String accessToken { get; set; }
         String url;
+
+        public FbCrawler() {
+            accessToken = GraphApiGet("", "FBAppToken");
+        }
 
         ////Get the accesToken for the given AppSecret and AppId
         //public void AuthenticateWithFb(String fbAppId, String fbAppSecret)
@@ -45,14 +52,12 @@ namespace placeToBe.Service
             }
             else if (condition == "pageData")
             {
-                url = "https://graph.facebook.com/v2.2/" + getData + "&access_token=" + fbAppId + "|" + fbAppSecret;
+                url = "https://graph.facebook.com/v2.2/" + getData + "?access_token=" + fbAppId + "|" + fbAppSecret;
             }
             else if (condition == "searchPlace")
             {
                 //split[0]= latitude, split[1]=longitude, split[2]=distance, split[3]=limit
-                String[] split = new String[4];
-                char splitChar = '|';
-                split = getData.Split(splitChar);
+                String[] split = getData.Split(new string[]{"|"}, StringSplitOptions.None);
                 url = "https://graph.facebook.com/v2.2/search?q=\"\"&type=place&center=" + split[0] + "," + split[1] + "&distance=" + split[2] + "&limit=" + split[3] + "&fields=id&access_token=" + fbAppId + "|" + fbAppSecret;
             }
             else if (condition == "nextPage")
@@ -61,15 +66,19 @@ namespace placeToBe.Service
             }
             else if (condition == "searchEvent")
             {
-                url = "https://graph.facebook.com/v2.2/" + getData + "/events&fields=id&access_token=" + fbAppId + "|" + fbAppSecret;
+                url = "https://graph.facebook.com/v2.2/" + getData + "/events?limit=2000&fields=id&" + accessToken;
             }
             else if (condition == "searchEventData")
             {
-                url = "https://graph.facebook.com/v2.2/" + getData + "/?fields=id,name,description,location,owner,attending_count,declined_count,maybe_count,start_time,end_time,venue&access_token=" + fbAppId + "|" + fbAppSecret;
+                url = "https://graph.facebook.com/v2.2/" + getData + "/?fields=id,name,description,owner,attending_count,declined_count,maybe_count,start_time,end_time,place&" +accessToken;
             }
             else if (condition == "attendingList")
             {
-                url = "https://graph.facebook.com/v2.2/" + getData + "/attending&limit=2000&access_token=" + fbAppId + "|" + fbAppSecret;
+                url = "https://graph.facebook.com/v2.2/" + getData + "/attending?limit=2000&" + accessToken;
+            }
+            else if (condition == "FBAppToken") {
+                url = "https://graph.facebook.com/oauth/access_token?client_id=" + fbAppId + "&client_secret=" +
+                      fbAppSecret + "&grant_type=client_credentials";
             }
 
             Uri uri = new Uri(url);
@@ -77,6 +86,8 @@ namespace placeToBe.Service
             request = (HttpWebRequest)WebRequest.Create(uri);
             request.Method = "GET";
             request.AllowAutoRedirect = true;
+
+            Console.Write("### GETTING: " + condition +" ::: " + url);
 
             HttpWebResponse Response;
             try
@@ -97,7 +108,7 @@ namespace placeToBe.Service
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: " + ex.Message);
-                throw ex;
+                return null;
             }
         }
 
@@ -143,6 +154,7 @@ namespace placeToBe.Service
             foreach (Coordinates coord in coordArrayCityShuffled)
             {
                 String getData = coord.latitude + "|" + coord.longitude + "|" + distance + "|" + limit;
+                getData = getData.Replace(",", ".");
                 String place = GraphApiGet(getData, "searchPlace");
                 Event eventNew = new Event();
                 MergePlacesResponse(place, "nextPage", eventNew);
@@ -181,26 +193,37 @@ namespace placeToBe.Service
             addPlaceIdList = HandlePlacesResponse(response, condition);
             //Get NExt Page
             int sizeList = addPlaceIdList.Count;
-            String nextPage = addPlaceIdList[sizeList - 1];
+            if (sizeList > 0) {
+                String nextPage = addPlaceIdList[sizeList - 1];
 
 
 
-            //Search for more Pages until the end
-            while (nextPage.Substring(0, 5) == "https")
-            {
-                //Delete Page from id List
-                addPlaceIdList.RemoveAt(sizeList - 1);
-                //Merge lists
-                placeIdList.AddRange(addPlaceIdList);
-                //clear addPlaceIdList
-                addPlaceIdList.Clear();
-                //Get from Graph APi
-                String nextResponse = GraphApiGet(nextPage, "nextPage");
-                addPlaceIdList = HandlePlacesResponse(nextResponse, condition);
-                //Get NExt Page
-                sizeList = addPlaceIdList.Count;
-                nextPage = addPlaceIdList[sizeList - 1];
+                //Search for more Pages until the end
+                while (nextPage.Substring(0, 5) == "https")
+                {
+                    //Delete Page from id List
+                    addPlaceIdList.RemoveAt(sizeList - 1);
+                    //Merge lists
+                    placeIdList.AddRange(addPlaceIdList);
+                    //clear addPlaceIdList
+                    addPlaceIdList.Clear();
+                    //Get from Graph APi
+                    String nextResponse = GraphApiGet(nextPage, "nextPage");
+                    addPlaceIdList = HandlePlacesResponse(nextResponse, condition);
+                    //Get NExt Page
+                    sizeList = addPlaceIdList.Count;
+                    if (sizeList > 0)
+                    {
+                        nextPage = addPlaceIdList[sizeList - 1];
+                    }
+                    else
+                    {
+                        nextPage = "UNDEFINED";
+                        condition = "searchPlace";
+                    }
+                }
             }
+            
             //Merge lists last time
             placeIdList.AddRange(addPlaceIdList);
             //Paging complete now the next step to get more information with these id's
@@ -210,7 +233,8 @@ namespace placeToBe.Service
         {
             //new List for PageId
             List<String> placeIdList = new List<String>();
-            if (getData == "FindAttendingList")
+            if(response == null)return placeIdList;
+            if (getData == "attendingList")
             {
                 //Convert Json to c# Object facebookPageResults
                 FacebookPageResultsAttending facebookPageResults;
@@ -224,7 +248,7 @@ namespace placeToBe.Service
                 }
 
 
-                if (facebookPageResults.paging.next != null)
+                if (facebookPageResults.paging != null && facebookPageResults.paging.next != null)
                 {
                     //add the nextPage response at the end of the list, for the next request
                     String next = facebookPageResults.paging.next;
@@ -239,13 +263,15 @@ namespace placeToBe.Service
                 //get the data part of the FacebookPageresults which contain the id's
                 FacebookResults[] data = facebookPageResults.data;
                 //add the id's to list
-                foreach (FacebookResults facebookResults in data)
-                {
-                    placeIdList.Add(facebookResults.id);
+                if (data != null) {
+                    foreach (FacebookResults facebookResults in data)
+                    {
+                        placeIdList.Add(facebookResults.id);
+                    }
                 }
 
 
-                if (facebookPageResults.paging.next != null)
+                if (facebookPageResults.paging != null && facebookPageResults.paging.next != null)
                 {
                     //add the nextPage response at the end of the list, for the next request
                     String next = facebookPageResults.paging.next;
@@ -318,12 +344,16 @@ namespace placeToBe.Service
 
                     }
 
-                    if (page == null)
-                    {
+                    if (page == null) {
                         //Get page information
                         String pageData = GraphApiGet(id, "pageData");
                         //handle the page and push it to db
                         HandlePlace(pageData, condition, "");
+                    }
+                    else {
+                        String pageData = JsonConvert.SerializeObject(page);
+                        HandlePlace(pageData, condition, "");
+
                     }
                 }
             }
@@ -382,34 +412,37 @@ namespace placeToBe.Service
         * @param place
         * @param callback
         */
-        public void HandlePlace(String place, String condition, String id)
-        {
+        public void HandlePlace(String place, String condition, String id) {
+            if (place == null) return;
             //Place
             if (condition == "searchPlace")
             {
                 JObject _place = JObject.Parse(place);
-                String isCommunityPage = (String)_place["is_community_page"];
-                JToken token = _place["Location"];
-                if (isCommunityPage == "false")
-                {
-                    //we only save non-community-pages since only they will actually create events
-                    Page page = new Page();
-                    //Convert json to Object
-                    page = JsonConvert.DeserializeObject<Page>(place);
-                    //a place that is not community owned is == to a page in the facebook world
-                    //insert in db
-                    PushToDb(page);
+                try {
+                    var isCommunityPage = (bool) _place["is_community_page"];
+                    JToken token = _place["GeoLocation"];
+                    if (isCommunityPage == false) {
+                        //we only save non-community-pages since only they will actually create events
+                        //Convert json to Object
+                        Page page = JsonConvert.DeserializeObject<Page>(place);
+                        //a place that is not community owned is == to a page in the facebook world
+                        //insert in db
+                        PushToDb(page);
+                        FindEventOnPage(page.fbId);
+                    }
+                    else if (isCommunityPage == true) {
+                        //CommunityPage save?
+                    }
                 }
-                else if (isCommunityPage == "true")
-                {
-                    //CommunityPage save?
+                catch (ArgumentNullException ex) {
+                    Console.WriteLine("Exception: " + ex);
                 }
             }
             //Event
             else if (condition == "searchEvent")
             {
-                Event eventNew = new Event();
-                eventNew = JsonConvert.DeserializeObject<Event>(place);
+                
+                Event eventNew = JsonConvert.DeserializeObject<Event>(place);
                 FindAttendingList(eventNew);
             }
         }
@@ -417,7 +450,13 @@ namespace placeToBe.Service
         //Insert page to Db
         public async void PushToDb(Page page)
         {
-            await repo.InsertAsync(page);
+            try {
+                await repo.InsertAsync(page);
+            }
+            catch (MongoWaitQueueFullException ex) {
+                Thread.Sleep(15000);
+                PushToDb(page);
+            }
         }
 
         //Inster event to db
@@ -425,7 +464,19 @@ namespace placeToBe.Service
         {
             eventNew.attending = list;
             eventNew=FillEmptyEventFields(eventNew);
-            await repoEvent.InsertAsync(eventNew);
+            if (eventNew != null && eventNew.attendingCount > 15 && eventNew.startDateTime > new DateTime()) { //if event exists and more than 15 people joined and is in future persist
+                try {
+                    repoEvent.InsertAsync(eventNew);
+                }
+                catch (MongoWriteException e) {
+                    Console.Write(e.Message);
+                }
+                catch (MongoWaitQueueFullException ex)
+                {
+                    Thread.Sleep(15000);
+                    PushEventToDb(eventNew, list);
+                }
+            }
         }
 
         public double GetHopDistance(City city, String angle, int hops)
@@ -449,32 +500,46 @@ namespace placeToBe.Service
         {
             try
             {
-                //Setting location of an Event in right dataformat for geospital Index
-                e.locationCoordinates.type = "point";
-                e.locationCoordinates.coordinates = new double[2];
 
-                if (e.venue.latitude != 0 && e.venue.longitude != 0)
-                {
-                    e.locationCoordinates.coordinates[0] = e.venue.latitude;
-                    e.locationCoordinates.coordinates[1] = e.venue.longitude;
+
+                if (e.place != null && e.place.location != null && e.place.location.latitude != 0 && e.place.location.longitude != 0) {
+                    e.geoLocationCoordinates = new GeoLocation(e.place.location.latitude, e.place.location.longitude);
                 }
-                else
+                else if (e.place != null && e.place.name != null)
                 {
 
-                    String getData = "";
-
-                    if (e.venue.name != null)
-                    {
-                        getData += e.venue.name; //Needs to be more defined (first exsample was: name = Alexanderplatz, Berlin)
-                    }
+                    String getData = e.place.name;
+                            //Needs to be more defined (first exsample was: name = Alexanderplatz, Berlin)
+                    
                     JObject obj = JObject.Parse(GraphApiGet(getData, "GOOGLE"));
-                    e.locationCoordinates.coordinates[0] = Convert.ToDouble(obj["results"][0]["geometry"]["location"]["lat"]);
-                    e.locationCoordinates.coordinates[1] = Convert.ToDouble(obj["results"][0]["geometry"]["location"]["lng"]);
+                    Array arr = (Array) obj["Results"];
+                    if (obj["results"] != null && arr != null && arr.Length != 0) {
+                        double lat = Convert.ToDouble(obj["results"][0]["geometry"]["location"]["lat"]);
+                        double lng = Convert.ToDouble(obj["results"][0]["geometry"]["location"]["lng"]);
+                        e.geoLocationCoordinates = new GeoLocation(lat, lng);
+                    }
+                    
+                }else
+                {
+                    return null;
                 }
             }
-            catch (Exception ex)
+            catch (NullReferenceException ex)
             {
-                throw (ex);
+                Console.Write(ex.ToString());
+            }
+
+            e = fillStartEndDateTime(e);
+            return e;
+        }
+
+        //we add converted fields to the object which we can later put an index on
+        public Event fillStartEndDateTime(Event e) {
+            if (e.start_time != null) {
+                e.startDateTime = UtilService.getDateTimeFromISOString(e.start_time);
+            }
+            if (e.end_time != null) {
+                e.endDateTime = UtilService.getDateTimeFromISOString(e.end_time);
             }
             return e;
         }
