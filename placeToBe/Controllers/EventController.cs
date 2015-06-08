@@ -9,6 +9,8 @@ using placeToBe.Model.Entities;
 using placeToBe.Model.Repositories;
 using placeToBe.Services;
 using System.Collections;
+using System.Web.Http.Routing.Constraints;
+using placeToBe.Service;
 
 namespace placeToBe.Controllers
 {
@@ -21,9 +23,11 @@ namespace placeToBe.Controllers
          * Diese Methode soll ein JSON Array von Events zurückgeben, welche für die Heatmap genutzt werden. 
          */
 
-        [Route("api/event/filter/{place}/{time}")]
-        public async Task<List<LightEvent>> getEventsByTimeAndPlace(string place, string time) {
-            return await search.HeatSearch(place, time);
+        [Route("api/event/filter/{city}/{year}/{month}/{day}/{hour}")]
+        public async Task<List<LightEvent>> getEventsByTimeAndCity(string city, string year, string month, string day, string hour) {
+
+            DateTime time = new DateTime(int.Parse(year), int.Parse(month), int.Parse(day), int.Parse(hour), 0, 0);
+            return await search.HeatSearch(city, time, time.AddHours(8));
         } 
 
         // GET api/event/5
@@ -39,37 +43,6 @@ namespace placeToBe.Controllers
              * Event Event = await repo.GetByIdAsync(id);
             return Event;
              * */
-        }
-        /*
-        // GET api/event/gettext
-        // Gibt eine Liste von Text zurück.
-        public async Task<IList<Event>> GetText(){
-            IList<Event> searchText = await search.TextSearch(filter);
-            return searchText ;
-         }
-        
-         * */
-        // GET api/event/Getfriends
-        // Gibt eine Liste von Freunden zurück
-        // public aysnch Task<IList<Friend>> GetFriend();
-
-        // POST api/event
-
-        public async Task<Guid> Post([FromBody]Event Event)
-        {
-           return await repo.InsertAsync(Event);
-        }
-
-        // PUT api/event/5
-        public async Task<Guid> Put(Guid id, [FromBody]Event Event)
-        {
-            return await repo.UpdateAsync(Event);
-        }
-
-        // DELETE api/event/5
-        public async void Delete(Guid id) {
-            var Event = await repo.GetByIdAsync(id);
-            await repo.DeleteAsync(Event);
         }
     }
 }
