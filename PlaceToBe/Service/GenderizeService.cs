@@ -102,14 +102,16 @@ namespace placeToBe.Services
                 if (xRateReset == 0)
                 {
                     double difference = (DateTime.Now.AddDays(1) - DateTime.Now).TotalSeconds;
-                    int differenceInt = Convert.ToInt32(Math.Floor(difference));
+                    //round and seconds to milliseconds
+                    int differenceInt = (Convert.ToInt32(Math.Floor(difference)))*1000;
 
                     Thread.Sleep(differenceInt);
                 }
                 else
                 {
                     double difference = (DateTime.Now - this.lastRequest).TotalSeconds;
-                    int differenceInt = Convert.ToInt32(Math.Floor(difference));
+                    //round and seconds to milliseconds
+                    int differenceInt = (Convert.ToInt32(Math.Floor(difference)))*1000;
 
                     int sleepDifference = xRateReset - differenceInt;
                     Thread.Sleep(sleepDifference);
