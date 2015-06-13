@@ -42,7 +42,7 @@ namespace placeToBe.Services
             {
                 genderStat[0] = eventNew.attendingMale;
                 genderStat[1] = eventNew.attendingFemale;
-                genderStat[2] = eventNew.attendingUndifined;
+                genderStat[2] = eventNew.attendingUndefined;
             }
 
             return genderStat;
@@ -97,26 +97,7 @@ namespace placeToBe.Services
             request.AllowAutoRedirect = true;
 
             UTF8Encoding enc = new UTF8Encoding();
-            if ( xRateLimitRemaining == 0)
-            {
-                if (xRateReset == 0)
-                {
-                    double difference = (DateTime.Now.AddDays(1) - DateTime.Now).TotalSeconds;
-                    //round and seconds to milliseconds
-                    int differenceInt = (Convert.ToInt32(Math.Floor(difference)))*1000;
-
-                    Thread.Sleep(differenceInt);
-                }
-                else
-                {
-                    double difference = (DateTime.Now - this.lastRequest).TotalSeconds;
-                    //round and seconds to milliseconds
-                    int differenceInt = (Convert.ToInt32(Math.Floor(difference)))*1000;
-
-                    int sleepDifference = xRateReset - differenceInt;
-                    Thread.Sleep(sleepDifference);
-                }
-            }
+            
 
             HttpWebResponse Response;
             try
@@ -143,6 +124,36 @@ namespace placeToBe.Services
                     }
                 }
             }
+            catch (System.Net.WebException webEx)
+            {
+                if (xRateLimitRemaining == 0)
+                {
+                    if (xRateReset == 0)
+                    {
+                        double difference = (DateTime.Now.AddDays(1) - DateTime.Now).TotalSeconds;
+                        //round and seconds to milliseconds
+                        int differenceInt = (Convert.ToInt32(Math.Floor(difference))) * 1000;
+
+                        Thread.Sleep(differenceInt);
+                    }
+                    else
+                    {
+                        double difference = (DateTime.Now - this.lastRequest).TotalSeconds;
+                        //round and seconds to milliseconds
+                        int differenceInt = (Convert.ToInt32(Math.Floor(difference))) * 1000;
+
+                        int sleepDifference = xRateReset - differenceInt;
+                        Thread.Sleep(sleepDifference);
+                    }
+                    return GetGenderFromApi(name);
+                }
+                else
+                {
+                    Debug.WriteLine("Error: " + webEx.Message);
+                    throw webEx;
+
+                }
+            }
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: " + ex.Message);
@@ -161,7 +172,7 @@ namespace placeToBe.Services
         {
             int male = 0;
             int female = 0;
-            int undifined = 0;
+            int undefined = 0;
 
             Gender gender;
 
@@ -183,16 +194,16 @@ namespace placeToBe.Services
                 }
                 else
                 {
-                    undifined++;
+                    undefined++;
                 }
             }
 
             eventNew.attendingMale = male;
             eventNew.attendingFemale = female;
-            eventNew.attendingUndifined = undifined;
+            eventNew.attendingUndefined = undefined;
             UpdateGenderStat(eventNew);
 
-            int[] maleFemaleUndifined = { male, female, undifined };
+            int[] maleFemaleUndifined = { male, female, undefined };
 
             return maleFemaleUndifined;
 
