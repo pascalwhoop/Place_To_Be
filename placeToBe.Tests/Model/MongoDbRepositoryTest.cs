@@ -87,7 +87,7 @@ namespace placeToBe.Tests.Model
 
 
             //Act
-            model.GetByIdAsync(name);
+            model.GetByNameAsync(name);
 
             //Arrange
         }

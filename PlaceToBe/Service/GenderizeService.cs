@@ -15,9 +15,28 @@ namespace placeToBe.Services
     public class GenderizeService
     {
 
-        MongoDbRepository<Gender> repo = new MongoDbRepository<Gender>();
-        MongoDbRepository<Event> repoEvent = new MongoDbRepository<Event>();
+        GenderRepository repoGender = new GenderRepository();
+        EventRepository repoEvent = new EventRepository();
         public String URL { get; set; }
+
+
+        public async Task<int[]> GetGenderStat(String fbId)
+        {
+            int[] genderStat= new int[3];
+            Event eventNew = await SearchDbForEvent(fbId);
+            if (eventNew.attendingMale == null && eventNew.attendingFemale == null)
+            {
+                genderStat=await CreateGenderStat(eventNew);
+            }
+            else
+            {
+                genderStat[0]=eventNew.attendingMale;
+                genderStat[1] = eventNew.attendingFemale;
+                genderStat[2] = eventNew.attendingUndifined;
+            }
+
+            return genderStat;
+        }
 
         /// <summary>
         /// Search for a gender by name and returns it.
@@ -26,15 +45,33 @@ namespace placeToBe.Services
         /// <returns>gender of the name</returns>
         public async Task<Gender> GetGender(String name)
         {
-            Gender gender =  await repo.GetByIdAsync(name);//so moeglich oder getall und dann suche innerhalb der methode?
+            Gender gender;
+            try
+            {
+                gender = await SearchDbForGender(name);
+            }
+            catch (Exception e)
+            {
+                gender = null;
+            }
+
+            if (gender == null)
+            {
+                gender = GetGenderFromApi(name);
+
+                PushGenderToDb(gender);
+            }
+
             return gender;
+
+
         }
 
         /// <summary>
         /// GetGender uses the genderize.io API to get the gender of a prename
         /// </summary>
         /// <param name="name">using a name of a person to get the gender</param>
-        public void SetGender(String name)
+        public Gender GetGenderFromApi(String name)
         {
             String result;
             Gender gender;
@@ -66,9 +103,7 @@ namespace placeToBe.Services
                             //convert String to c# Object
                             gender = GenderToObject(result);
 
-                            //push the Object to DB
-                            PushGenderToDb(gender);
-
+                            return gender;
                         }
                     }
                 }
@@ -84,37 +119,46 @@ namespace placeToBe.Services
         /// Get the amount of males and females for an event
         /// </summary>
         /// <param name="eventGenStat"></param>
-        /// <returns>returns an object with param male and female,
-        /// which contain the amount of each</returns>
-        public async Task<GenderStat> GetGenderStat(Event eventGenStat)//event oder doch direkt ueber id?
+        /// <returns>returns array with array[0]=male, array[1]=female, array[2]=undifined</returns>
+        public async Task<int[]> CreateGenderStat(Event eventNew)
         {
-            int male=0;
-            int female=0;
+            int male = 0;
+            int female = 0;
+            int undifined = 0;
 
-            //GET Event by searching for the EventId/ fbId
-            String id= eventGenStat.fbId;
-            Event Event = await repoEvent.GetByIdAsync(id);
+            Gender gender;
+
 
             //GET list of people attending the event
-            List<Rsvp> list = Event.attending;
+            List<Rsvp> list = eventNew.attending;
             Rsvp[] array = list.ToArray();
 
             for (int i = 0; i < array.Length; i++)
             {
-               Gender gender= await GetGender(array[i].name);
-               if (gender.gender == "male")
-               {
-                   male++;
-               }
-               else
-               {
-                   female++;
-               }
+                gender = await GetGender(array[i].name);
+                if (gender.gender == "male")
+                {
+                    male++;
+                }
+                else if (gender.gender == "female")
+                {
+                    female++;
+                }
+                else
+                {
+                    undifined++;
+                }
             }
 
-            GenderStat genderStat = new GenderStat(male, female);
-            return genderStat;
-            
+            eventNew.attendingMale = male;
+            eventNew.attendingFemale = female;
+            eventNew.attendingUndifined = undifined;
+            UpdateGenderStat(eventNew);
+
+            int[] maleFemaleUndifined = { male, female, undifined };
+
+            return maleFemaleUndifined;
+
         }
 
         #region HelperMethods
@@ -125,9 +169,25 @@ namespace placeToBe.Services
             return gender;
         }
 
+        private async void UpdateGenderStat(Event eventNew)
+        {
+            repoEvent.UpdateAsync(eventNew);
+        }
+
         private async void PushGenderToDb(Gender gender)
         {
-            await repo.InsertAsync(gender);
+            await repoGender.InsertAsync(gender);
+        }
+
+        private async Task<Event> SearchDbForEvent(String fbId)
+        {
+            return await repoEvent.GetByFbIdAsync(fbId);
+        }
+
+        public async Task<Gender> SearchDbForGender(String name)
+        {
+
+            return await repoGender.GetByNameAsync(name);
         }
 
         #endregion

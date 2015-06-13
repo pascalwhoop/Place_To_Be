@@ -466,7 +466,7 @@ namespace placeToBe.Service
             eventNew=FillEmptyEventFields(eventNew);
             if (eventNew != null && eventNew.attendingCount > 15 && eventNew.startDateTime > new DateTime()) { //if event exists and more than 15 people joined and is in future persist
                 try {
-                    repoEvent.InsertAsync(eventNew);
+                    await repoEvent.InsertAsync(eventNew);
                 }
                 catch (MongoWriteException e) {
                     Console.Write(e.Message);
