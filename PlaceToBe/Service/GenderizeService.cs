@@ -20,10 +20,9 @@ namespace placeToBe.Services
         GenderRepository repoGender = new GenderRepository();
         EventRepository repoEvent = new EventRepository();
         public String URL { get; set; }
-        public int xRateLimit { get; set; }
-        public int xRateLimitRemaining { get; set; }
-        public int xRateReset { get; set; }
-        public DateTime lastRequest { get; set; }
+        public int xRateLimitRemaining;
+        public int xRateReset;
+        public DateTime lastRequest;
 
 
         /// <summary>
@@ -109,8 +108,7 @@ namespace placeToBe.Services
                     {
                         using (StreamReader readStream = new StreamReader(responseStream, Encoding.UTF8))
                         {
-                            this.xRateLimit = Int32.Parse(Response.Headers["X-Rate-Limit-Limit"]);
-                            this.xRateLimitRemaining = Int32.Parse(Response.Headers["X-Rate-Limit-Limit-Remaining"]);
+                            this.xRateLimitRemaining = Int32.Parse(Response.Headers["X-Rate-Limit-Remaining"]);
                             this.xRateReset = Int32.Parse(Response.Headers["X-Rate-Reset"]);
                             this.lastRequest = DateTime.Now;
 
@@ -127,12 +125,22 @@ namespace placeToBe.Services
             }
             catch (System.Net.WebException webEx)
             {
-                double difference = (DateTime.Now - this.lastRequest).TotalSeconds;
-                int differenceInt = Convert.ToInt32(Math.Floor(difference));
-                if (xRateLimitRemaining == 0)
+
+                if (xRateLimitRemaining !=0)
                 {
+                    double difference = (DateTime.Now - this.lastRequest).TotalSeconds;
+                    int differenceInt = Convert.ToInt32(Math.Floor(difference));
+
                     int sleepDifference = xRateReset - differenceInt;
                     Thread.Sleep(sleepDifference);
+                    return GetGenderFromApi(name);
+                }
+                else if (xRateLimitRemaining == 0)
+                {
+                    double difference = (DateTime.Now.AddDays(1) - DateTime.Now).TotalSeconds;
+                    int differenceInt = Convert.ToInt32(Math.Floor(difference));
+
+                    Thread.Sleep(differenceInt);
                     return GetGenderFromApi(name);
                 }
                 else
