@@ -286,7 +286,7 @@ namespace placeToBe.Service
 
         public async Task<Page> PageSearchDb(String fbId)
         {
-            Page page = await repo.GetByIdAsync(fbId);
+            Page page = await repo.GetByFbIdAsync(fbId);
             return page;
         }
 

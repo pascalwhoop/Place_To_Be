@@ -1,4 +1,5 @@
-﻿using placeToBe.Model;
+﻿using MongoDB.Driver;
+using placeToBe.Model;
 using placeToBe.Model.Entities;
 using placeToBe.Model.Repositories;
 using System;
@@ -8,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace placeToBe.Services
@@ -18,19 +20,28 @@ namespace placeToBe.Services
         GenderRepository repoGender = new GenderRepository();
         EventRepository repoEvent = new EventRepository();
         public String URL { get; set; }
+        public int xRateLimit { get; set; }
+        public int xRateLimitRemaining { get; set; }
+        public int xRateReset { get; set; }
+        public DateTime lastRequest { get; set; }
 
 
+        /// <summary>
+        /// return the gender statistik of a specific event
+        /// </summary>
+        /// <param name="fbId">id of an event</param>
+        /// <returns>return an int[] array with value of array[0]=male, array[1]=female, array[2]=undifined</returns>
         public async Task<int[]> GetGenderStat(String fbId)
         {
-            int[] genderStat= new int[3];
+            int[] genderStat = new int[3];
             Event eventNew = await SearchDbForEvent(fbId);
             if (eventNew.attendingMale == null && eventNew.attendingFemale == null)
             {
-                genderStat=await CreateGenderStat(eventNew);
+                genderStat = await CreateGenderStat(eventNew);
             }
             else
             {
-                genderStat[0]=eventNew.attendingMale;
+                genderStat[0] = eventNew.attendingMale;
                 genderStat[1] = eventNew.attendingFemale;
                 genderStat[2] = eventNew.attendingUndifined;
             }
@@ -93,10 +104,16 @@ namespace placeToBe.Services
             {
                 using (Response = (HttpWebResponse)request.GetResponse())
                 {
+
                     using (Stream responseStream = Response.GetResponseStream())
                     {
                         using (StreamReader readStream = new StreamReader(responseStream, Encoding.UTF8))
                         {
+                            this.xRateLimit = Int32.Parse(Response.Headers["X-Rate-Limit-Limit"]);
+                            this.xRateLimitRemaining = Int32.Parse(Response.Headers["X-Rate-Limit-Limit-Remaining"]);
+                            this.xRateReset = Int32.Parse(Response.Headers["X-Rate-Reset"]);
+                            this.lastRequest = DateTime.Now;
+
                             //String of the json from genderize.io
                             result = readStream.ReadToEnd();
 
@@ -108,10 +125,27 @@ namespace placeToBe.Services
                     }
                 }
             }
+            catch (System.Net.WebException webEx)
+            {
+                double difference = (DateTime.Now - this.lastRequest).TotalSeconds;
+                int differenceInt = Convert.ToInt32(Math.Floor(difference));
+                if (xRateLimitRemaining == 0)
+                {
+                    int sleepDifference = xRateReset - differenceInt;
+                    Thread.Sleep(sleepDifference);
+                    return GetGenderFromApi(name);
+                }
+                else
+                {
+                    Debug.WriteLine("Error: " + webEx.Message);
+                    throw webEx;
+                }
+            }
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: " + ex.Message);
                 throw ex;
+
             }
         }
 
@@ -171,12 +205,36 @@ namespace placeToBe.Services
 
         private async void UpdateGenderStat(Event eventNew)
         {
-            repoEvent.UpdateAsync(eventNew);
+            try
+            {
+                await repoEvent.UpdateAsync(eventNew);
+            }
+            catch (MongoWriteException e)
+            {
+                Console.Write(e.Message);
+            }
+            catch (MongoWaitQueueFullException ex)
+            {
+                Thread.Sleep(15000);
+                UpdateGenderStat(eventNew);
+            }
         }
 
         private async void PushGenderToDb(Gender gender)
         {
-            await repoGender.InsertAsync(gender);
+            try
+            {
+                await repoGender.InsertAsync(gender);
+            }
+            catch (MongoWriteException e)
+            {
+                Console.Write(e.Message);
+            }
+            catch (MongoWaitQueueFullException ex)
+            {
+                Thread.Sleep(15000);
+                PushGenderToDb(gender);
+            }
         }
 
         private async Task<Event> SearchDbForEvent(String fbId)
