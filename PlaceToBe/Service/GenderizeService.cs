@@ -97,6 +97,24 @@ namespace placeToBe.Services
             request.AllowAutoRedirect = true;
 
             UTF8Encoding enc = new UTF8Encoding();
+            if ( xRateLimitRemaining == 0)
+            {
+                if (xRateReset == 0)
+                {
+                    double difference = (DateTime.Now.AddDays(1) - DateTime.Now).TotalSeconds;
+                    int differenceInt = Convert.ToInt32(Math.Floor(difference));
+
+                    Thread.Sleep(differenceInt);
+                }
+                else
+                {
+                    double difference = (DateTime.Now - this.lastRequest).TotalSeconds;
+                    int differenceInt = Convert.ToInt32(Math.Floor(difference));
+
+                    int sleepDifference = xRateReset - differenceInt;
+                    Thread.Sleep(sleepDifference);
+                }
+            }
 
             HttpWebResponse Response;
             try
@@ -123,38 +141,13 @@ namespace placeToBe.Services
                     }
                 }
             }
-            catch (System.Net.WebException webEx)
-            {
-
-                if (xRateLimitRemaining !=0)
-                {
-                    double difference = (DateTime.Now - this.lastRequest).TotalSeconds;
-                    int differenceInt = Convert.ToInt32(Math.Floor(difference));
-
-                    int sleepDifference = xRateReset - differenceInt;
-                    Thread.Sleep(sleepDifference);
-                    return GetGenderFromApi(name);
-                }
-                else if (xRateLimitRemaining == 0)
-                {
-                    double difference = (DateTime.Now.AddDays(1) - DateTime.Now).TotalSeconds;
-                    int differenceInt = Convert.ToInt32(Math.Floor(difference));
-
-                    Thread.Sleep(differenceInt);
-                    return GetGenderFromApi(name);
-                }
-                else
-                {
-                    Debug.WriteLine("Error: " + webEx.Message);
-                    throw webEx;
-                }
-            }
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: " + ex.Message);
                 throw ex;
 
             }
+
         }
 
         /// <summary>
