@@ -285,6 +285,7 @@ namespace placeToBe.Service
 
         public async Task<Page> PageSearchDb(String fbId)
         {
+
             Page page = await pageRepo.GetByFbIdAsync(fbId);
             return page;
         }
@@ -477,8 +478,12 @@ namespace placeToBe.Service
             newEvent=FillEmptyEventFields(newEvent);
             if (newEvent != null && newEvent.attendingCount > 15 && newEvent.startDateTime > new DateTime()) { //if event exists and more than 15 people joined and is in future persist
                 try {
+<<<<<<< HEAD
                     System.Diagnostics.Debug.Write("\n**** EVENT: " + newEvent.fbId);
                     await eventRepo.InsertAsync(newEvent);
+=======
+                    await repoEvent.InsertAsync(eventNew);
+>>>>>>> 3147e3962afd003a749e7afd4e31fd190b635800
                 }
                 catch (MongoWriteException e) {
                     //this just means the object is already in the DB most of the time.

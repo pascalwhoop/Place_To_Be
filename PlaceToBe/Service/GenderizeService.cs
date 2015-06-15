@@ -1,4 +1,5 @@
-﻿using placeToBe.Model;
+﻿using MongoDB.Driver;
+using placeToBe.Model;
 using placeToBe.Model.Entities;
 using placeToBe.Model.Repositories;
 using System;
@@ -8,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace placeToBe.Services
@@ -15,9 +17,36 @@ namespace placeToBe.Services
     public class GenderizeService
     {
 
-        MongoDbRepository<Gender> repo = new MongoDbRepository<Gender>();
-        MongoDbRepository<Event> repoEvent = new MongoDbRepository<Event>();
+        GenderRepository repoGender = new GenderRepository();
+        EventRepository repoEvent = new EventRepository();
         public String URL { get; set; }
+        public int xRateLimitRemaining;
+        public int xRateReset;
+        public DateTime lastRequest;
+
+
+        /// <summary>
+        /// return the gender statistik of a specific event
+        /// </summary>
+        /// <param name="fbId">id of an event</param>
+        /// <returns>return an int[] array with value of array[0]=male, array[1]=female, array[2]=undifined</returns>
+        public async Task<int[]> GetGenderStat(String fbId)
+        {
+            int[] genderStat = new int[3];
+            Event eventNew = await SearchDbForEvent(fbId);
+            if (eventNew.attendingMale == null && eventNew.attendingFemale == null)
+            {
+                genderStat = await CreateGenderStat(eventNew);
+            }
+            else
+            {
+                genderStat[0] = eventNew.attendingMale;
+                genderStat[1] = eventNew.attendingFemale;
+                genderStat[2] = eventNew.attendingUndefined;
+            }
+
+            return genderStat;
+        }
 
         /// <summary>
         /// Search for a gender by name and returns it.
@@ -26,15 +55,33 @@ namespace placeToBe.Services
         /// <returns>gender of the name</returns>
         public async Task<Gender> GetGender(String name)
         {
-            Gender gender =  await repo.GetByIdAsync(name);//so moeglich oder getall und dann suche innerhalb der methode?
+            Gender gender;
+            try
+            {
+                gender = await SearchDbForGender(name);
+            }
+            catch (Exception e)
+            {
+                gender = null;
+            }
+
+            if (gender == null)
+            {
+                gender = GetGenderFromApi(name);
+
+                PushGenderToDb(gender);
+            }
+
             return gender;
+
+
         }
 
         /// <summary>
         /// GetGender uses the genderize.io API to get the gender of a prename
         /// </summary>
         /// <param name="name">using a name of a person to get the gender</param>
-        public void SetGender(String name)
+        public Gender GetGenderFromApi(String name)
         {
             String result;
             Gender gender;
@@ -50,71 +97,116 @@ namespace placeToBe.Services
             request.AllowAutoRedirect = true;
 
             UTF8Encoding enc = new UTF8Encoding();
+            
 
             HttpWebResponse Response;
             try
             {
                 using (Response = (HttpWebResponse)request.GetResponse())
                 {
+
                     using (Stream responseStream = Response.GetResponseStream())
                     {
                         using (StreamReader readStream = new StreamReader(responseStream, Encoding.UTF8))
                         {
+                            this.xRateLimitRemaining = Int32.Parse(Response.Headers["X-Rate-Limit-Remaining"]);
+                            this.xRateReset = Int32.Parse(Response.Headers["X-Rate-Reset"]);
+                            this.lastRequest = DateTime.Now;
+
                             //String of the json from genderize.io
                             result = readStream.ReadToEnd();
 
                             //convert String to c# Object
                             gender = GenderToObject(result);
 
-                            //push the Object to DB
-                            PushGenderToDb(gender);
-
+                            return gender;
                         }
                     }
+                }
+            }
+            catch (System.Net.WebException webEx)
+            {
+                if (xRateLimitRemaining == 0)
+                {
+                    if (xRateReset == 0)
+                    {
+                        double difference = (DateTime.Now.AddDays(1) - DateTime.Now).TotalSeconds;
+                        //round and seconds to milliseconds
+                        int differenceInt = (Convert.ToInt32(Math.Floor(difference))) * 1000;
+
+                        Thread.Sleep(differenceInt);
+                    }
+                    else
+                    {
+                        double difference = (DateTime.Now - this.lastRequest).TotalSeconds;
+                        //round and seconds to milliseconds
+                        int differenceInt = (Convert.ToInt32(Math.Floor(difference))) * 1000;
+
+                        int sleepDifference = xRateReset - differenceInt;
+                        Thread.Sleep(sleepDifference);
+                    }
+                    return GetGenderFromApi(name);
+                }
+                else
+                {
+                    Debug.WriteLine("Error: " + webEx.Message);
+                    throw webEx;
+
                 }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: " + ex.Message);
                 throw ex;
+
             }
+
         }
 
         /// <summary>
         /// Get the amount of males and females for an event
         /// </summary>
         /// <param name="eventGenStat"></param>
-        /// <returns>returns an object with param male and female,
-        /// which contain the amount of each</returns>
-        public async Task<GenderStat> GetGenderStat(Event eventGenStat)//event oder doch direkt ueber id?
+        /// <returns>returns array with array[0]=male, array[1]=female, array[2]=undifined</returns>
+        public async Task<int[]> CreateGenderStat(Event eventNew)
         {
-            int male=0;
-            int female=0;
+            int male = 0;
+            int female = 0;
+            int undefined = 0;
 
-            //GET Event by searching for the EventId/ fbId
-            String id= eventGenStat.fbId;
-            Event Event = await repoEvent.GetByIdAsync(id);
+            Gender gender;
+
 
             //GET list of people attending the event
-            List<Rsvp> list = Event.attending;
+            List<Rsvp> list = eventNew.attending;
             Rsvp[] array = list.ToArray();
 
             for (int i = 0; i < array.Length; i++)
             {
-               Gender gender= await GetGender(array[i].name);
-               if (gender.gender == "male")
-               {
-                   male++;
-               }
-               else
-               {
-                   female++;
-               }
+                gender = await GetGender(array[i].name);
+                if (gender.gender == "male")
+                {
+                    male++;
+                }
+                else if (gender.gender == "female")
+                {
+                    female++;
+                }
+                else
+                {
+                    undefined++;
+                }
             }
 
-            GenderStat genderStat = new GenderStat(male, female);
-            return genderStat;
-            
+            eventNew.attendingMale = male;
+            eventNew.attendingFemale = female;
+            eventNew.attendingUndefined = undefined;
+            UpdateGenderStat(eventNew);
+
+            int[] maleFemaleUndifined = { male, female, undefined };
+
+            return maleFemaleUndifined;
+
         }
 
         #region HelperMethods
@@ -125,9 +217,49 @@ namespace placeToBe.Services
             return gender;
         }
 
+        private async void UpdateGenderStat(Event eventNew)
+        {
+            try
+            {
+                await repoEvent.UpdateAsync(eventNew);
+            }
+            catch (MongoWriteException e)
+            {
+                Console.Write(e.Message);
+            }
+            catch (MongoWaitQueueFullException ex)
+            {
+                Thread.Sleep(15000);
+                UpdateGenderStat(eventNew);
+            }
+        }
+
         private async void PushGenderToDb(Gender gender)
         {
-            await repo.InsertAsync(gender);
+            try
+            {
+                await repoGender.InsertAsync(gender);
+            }
+            catch (MongoWriteException e)
+            {
+                Console.Write(e.Message);
+            }
+            catch (MongoWaitQueueFullException ex)
+            {
+                Thread.Sleep(15000);
+                PushGenderToDb(gender);
+            }
+        }
+
+        private async Task<Event> SearchDbForEvent(String fbId)
+        {
+            return await repoEvent.GetByFbIdAsync(fbId);
+        }
+
+        public async Task<Gender> SearchDbForGender(String name)
+        {
+
+            return await repoGender.GetByNameAsync(name);
         }
 
         #endregion

@@ -96,7 +96,7 @@ namespace placeToBe.Tests.Service
             string name = "Laura";
 
             //Act
-            service.SetGender(name);
+            service.GetGenderFromApi(name);
 
             //Assert
 
@@ -114,7 +114,7 @@ namespace placeToBe.Tests.Service
 
 
             //Act
-            service.GetGenderStat(test);
+            service.CreateGenderStat(test);
 
         }
     }

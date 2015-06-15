@@ -44,6 +44,8 @@ namespace placeToBe.Model.Entities
         [DataMember]
         public int attendingFemale { get; set; }
         [DataMember]
+        public int attendingUndefined { get; set; }
+        [DataMember]
         public CoverPhoto cover { get; set; }
         [DataMember]
         public Place place { get; set; }

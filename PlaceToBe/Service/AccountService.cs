@@ -6,14 +6,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 
 namespace placeToBe.Services
 {
     public class AccountService
     {
-        MongoDbRepository<User> repo = new MongoDbRepository<User>();
+        UserRepository userRepo = new UserRepository();
         int saltSize = 20;
 
         /// <summary>
@@ -28,12 +30,26 @@ namespace placeToBe.Services
             byte[] passwordSalt= GenerateSaltedHash(plainText, salt);
 
             User user = new User(email, passwordSalt, salt);
-            await repo.InsertAsync(user);
+            await userRepo.InsertAsync(user);
         }
 
-        public void Login()
+        public async Task<bool> Login(String email, String password)
         {
+            byte[] plainText = Encoding.UTF8.GetBytes(password);
+            User user =await GetSalt(email);
+            byte[] salt = user.salt;
+            byte[] passwordSalt = GenerateSaltedHash(plainText, salt);
 
+            if (passwordSalt == user.passwordSalt)
+            {
+                return true;
+                //FormsAuthentication.SetAuthCookie(email, createPersistentCookie);
+                //FormsAuthentication.RedirectFromLoginPage(email, createPersistentCookie);
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public void Logoff()
@@ -62,6 +78,17 @@ namespace placeToBe.Services
         }
 
         #region Helper Methods
+        /// <summary>
+        /// Get salt from db
+        /// </summary>
+        /// <param name="email">email of the user</param>
+        /// <returns>return the user saved in the db</returns>
+        public async Task<User> GetSalt(String email)
+        {
+            return await userRepo.GetByEmailAsync(email);
+        }
+
+
         /// <summary>
         /// Generate Salt
         /// </summary>
