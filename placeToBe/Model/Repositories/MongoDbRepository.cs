@@ -16,8 +16,9 @@ namespace placeToBe.Model.Repositories {
         IRepository<TEntity> where 
             TEntity : EntityBase
     {
-        protected IMongoDatabase _database;
+        protected static IMongoDatabase _database;
         protected IMongoCollection<TEntity> _collection;
+        protected static MongoClient _client;
 
         public MongoDbRepository()
         {
@@ -88,8 +89,8 @@ namespace placeToBe.Model.Repositories {
         }
         private void ConnectDatabase()
         {
-            var client = new MongoClient(GetConnectionString());
-            _database = client.GetDatabase(GetDatabaseName());
+            _client = new MongoClient(GetConnectionString());
+            _database = _client.GetDatabase(GetDatabaseName());
         }
 
         private string GetConnectionString()

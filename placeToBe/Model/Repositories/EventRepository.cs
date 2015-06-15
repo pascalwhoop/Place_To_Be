@@ -51,7 +51,8 @@ namespace placeToBe.Model.Repositories
             Dictionary<String, Object> projectionContent = new Dictionary<string, object>() {
                 {"attendingCount", 1},
                 {"geoLocationCoordinates", 1},
-                {"name", 1}
+                {"name", 1},
+                {"fbId", 1}
             };
             ProjectionDefinition<Event,LightEvent > projDefinition = new BsonDocument(projectionContent);
             return await _collection.Find(filter).Project(projDefinition).ToListAsync();

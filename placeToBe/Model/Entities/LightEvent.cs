@@ -17,5 +17,8 @@ namespace placeToBe.Model.Entities
         public int attendingCount { get; set; }
         [DataMember]
         public GeoLocation geoLocationCoordinates { get; set; }
+
+        [DataMember(Name = "id")]
+        public string fbId { get; set; }
     }
 }

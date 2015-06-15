@@ -42,9 +42,8 @@ namespace placeToBe.Service
         //}
 
         //GET Request to the Facebook GraphApi
-        public String GraphApiGet(String getData, String condition)
-        {
-            String result;
+        public String GraphApiGet(String getData, String condition) {
+            String result = null;
             HttpWebRequest request;
 
             if (condition == "GOOGLE")
@@ -53,13 +52,13 @@ namespace placeToBe.Service
             }
             else if (condition == "pageData")
             {
-                url = "https://graph.facebook.com/v2.2/" + getData + "?access_token=" + fbAppId + "|" + fbAppSecret;
+                url = "https://graph.facebook.com/v2.3/" + getData + "?access_token=" + fbAppId + "|" + fbAppSecret;
             }
             else if (condition == "searchPlace")
             {
                 //split[0]= latitude, split[1]=longitude, split[2]=distance, split[3]=limit
                 String[] split = getData.Split(new string[]{"|"}, StringSplitOptions.None);
-                url = "https://graph.facebook.com/v2.2/search?q=\"\"&type=place&center=" + split[0] + "," + split[1] + "&distance=" + split[2] + "&limit=" + split[3] + "&fields=id&access_token=" + fbAppId + "|" + fbAppSecret;
+                url = "https://graph.facebook.com/v2.3/search?q=\"\"&type=place&center=" + split[0] + "," + split[1] + "&distance=" + split[2] + "&limit=" + split[3] + "&fields=id&access_token=" + fbAppId + "|" + fbAppSecret;
             }
             else if (condition == "nextPage")
             {
@@ -67,15 +66,15 @@ namespace placeToBe.Service
             }
             else if (condition == "searchEvent")
             {
-                url = "https://graph.facebook.com/v2.2/" + getData + "/events?limit=2000&fields=id&" + accessToken;
+                url = "https://graph.facebook.com/v2.3/" + getData + "/events?limit=2000&fields=id&" + accessToken;
             }
             else if (condition == "searchEventData")
             {
-                url = "https://graph.facebook.com/v2.2/" + getData + "/?fields=id,name,description,owner,attending_count,declined_count,maybe_count,start_time,end_time,place&" +accessToken;
+                url = "https://graph.facebook.com/v2.3/" + getData + "/?fields=id,name,description,owner,attending_count,declined_count,maybe_count,start_time,end_time,place,cover&" + accessToken;
             }
             else if (condition == "attendingList")
             {
-                url = "https://graph.facebook.com/v2.2/" + getData + "/attending?limit=2000&" + accessToken;
+                url = "https://graph.facebook.com/v2.3/" + getData + "/attending?limit=2000&" + accessToken;
             }
             else if (condition == "FBAppToken") {
                 url = "https://graph.facebook.com/oauth/access_token?client_id=" + fbAppId + "&client_secret=" +
@@ -91,26 +90,25 @@ namespace placeToBe.Service
             System.Diagnostics.Debug.Write("\n### GETTING: " + condition + "  " + getData);
 
             HttpWebResponse Response;
-            try
-            {
-                using (Response = (HttpWebResponse)request.GetResponse())
-                {
-                    using (Stream responseStream = Response.GetResponseStream())
-                    {
-                        using (StreamReader readStream = new StreamReader(responseStream, Encoding.UTF8))
-                        {
+            try {
+                using (Response = (HttpWebResponse) request.GetResponse()) {
+                    using (Stream responseStream = Response.GetResponseStream()) {
+                        using (StreamReader readStream = new StreamReader(responseStream, Encoding.UTF8)) {
                             //String of the json 
-                            return result = readStream.ReadToEnd();
+                            result = readStream.ReadToEnd();
 
                         }
                     }
                 }
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 Debug.WriteLine("Error: " + ex.Message);
-                return null;
+                result = null;
             }
+            finally {
+                request.Abort();
+            }
+            return result;
         }
 
 
@@ -156,9 +154,9 @@ namespace placeToBe.Service
             {
                 String getData = coord.latitude + "|" + coord.longitude + "|" + distance + "|" + limit;
                 getData = getData.Replace(",", ".");
-                String place = GraphApiGet(getData, "searchPlace");
+                String placesListJson = GraphApiGet(getData, "searchPlace");
                 Event eventNew = new Event();
-                MergePlacesResponse(place, "nextPage", eventNew);
+                MergePlacesResponse(placesListJson, "nextPage", eventNew);
             }
         }
 

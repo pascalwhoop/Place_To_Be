@@ -11,6 +11,9 @@ namespace placeToBe.Model.Entities
     [DataContract]
     public class Event : EntityBase
     {
+
+        [DataMember(Name = "id")]
+        public string fbId { get; set; }
         [DataMember]
         public string description { get; set; }
         [DataMember]
@@ -29,8 +32,7 @@ namespace placeToBe.Model.Entities
         public string timezone { get; set; }
         [DataMember]
         public string updated_time { get; set; }      
-        [DataMember(Name = "id")]
-        public string fbId { get; set; }
+
         [DataMember]
         public int invitedCount { get; set; }
         [DataMember]
@@ -76,13 +78,16 @@ namespace placeToBe.Model.Entities
         public string zip { get; set; }
     }
 
+    [DataContract]
     public class GeoLocation
     {
+        
         public GeoLocation(double lat, double lng) {
             this.coordinates = new double[2]{lat, lng};
             type = "Point";
         }
         public string type { get; set; }
+        [DataMember]
         public double[] coordinates { get; set; }
     }
     public class CoverPhoto
