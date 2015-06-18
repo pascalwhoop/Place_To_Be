@@ -34,7 +34,7 @@ namespace placeToBe.Services
         {
             int[] genderStat = new int[3];
             Event eventNew = await SearchDbForEvent(fbId);
-            if (eventNew.attendingMale == null && eventNew.attendingFemale == null)
+            if (eventNew.attendingMale == 0 && eventNew.attendingFemale == 0 && eventNew.attendingUndefined == 0)
             {
                 genderStat = await CreateGenderStat(eventNew);
             }
@@ -73,8 +73,6 @@ namespace placeToBe.Services
             }
 
             return gender;
-
-
         }
 
         /// <summary>
