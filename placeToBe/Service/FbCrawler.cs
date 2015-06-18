@@ -16,6 +16,9 @@ using System.Threading.Tasks;
 using Microsoft.Ajax.Utilities;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.ComponentModel;
 
 namespace placeToBe.Service
 {
@@ -28,9 +31,18 @@ namespace placeToBe.Service
         String AppGoogleKey = "AIzaSyArx67_z9KxbrVMurzBhS2mzqDhrpz66s0";
         String accessToken { get; set; }
         String url;
+        QueueManager functionsQueue;
+        int maxWorkerThreads = 10;
+        int maxAsyncThreads = 5;
 
-        public FbCrawler() {
+        public FbCrawler()
+        {
             accessToken = GraphApiGet("", "FBAppToken");
+
+
+            //Limit Threads
+            ThreadPool.SetMaxThreads(maxWorkerThreads, maxAsyncThreads);
+            functionsQueue = new QueueManager();
         }
 
         ////Get the accesToken for the given AppSecret and AppId
@@ -42,7 +54,8 @@ namespace placeToBe.Service
         //}
 
         //GET Request to the Facebook GraphApi
-        public String GraphApiGet(String getData, String condition) {
+        public String GraphApiGet(String getData, String condition)
+        {
             String result = null;
             HttpWebRequest request;
 
@@ -57,7 +70,7 @@ namespace placeToBe.Service
             else if (condition == "searchPlace")
             {
                 //split[0]= latitude, split[1]=longitude, split[2]=distance, split[3]=limit
-                String[] split = getData.Split(new string[]{"|"}, StringSplitOptions.None);
+                String[] split = getData.Split(new string[] { "|" }, StringSplitOptions.None);
                 url = "https://graph.facebook.com/v2.3/search?q=\"\"&type=place&center=" + split[0] + "," + split[1] + "&distance=" + split[2] + "&limit=" + split[3] + "&fields=id&access_token=" + fbAppId + "|" + fbAppSecret;
             }
             else if (condition == "nextPage")
@@ -76,7 +89,8 @@ namespace placeToBe.Service
             {
                 url = "https://graph.facebook.com/v2.3/" + getData + "/attending?limit=2000&" + accessToken;
             }
-            else if (condition == "FBAppToken") {
+            else if (condition == "FBAppToken")
+            {
                 url = "https://graph.facebook.com/oauth/access_token?client_id=" + fbAppId + "&client_secret=" +
                       fbAppSecret + "&grant_type=client_credentials";
             }
@@ -87,29 +101,42 @@ namespace placeToBe.Service
             request.Method = "GET";
             request.AllowAutoRedirect = true;
 
-            System.Diagnostics.Debug.Write("\n### GETTING: " + condition + "  " + getData);
+            Debug.WriteLine("\n### GETTING: " + condition + "  " + getData);
 
+            //var waitHandle = new ManualResetEvent(false);
+            
+            //ThreadPool.QueueUserWorkItem(new WaitCallback((_)=>{
             HttpWebResponse Response;
-            try {
-                using (Response = (HttpWebResponse) request.GetResponse()) {
-                    using (Stream responseStream = Response.GetResponseStream()) {
-                        using (StreamReader readStream = new StreamReader(responseStream, Encoding.UTF8)) {
+            try
+            {
+                using (Response = (HttpWebResponse)request.GetResponse())
+                {
+                    using (Stream responseStream = Response.GetResponseStream())
+                    {
+                        using (StreamReader readStream = new StreamReader(responseStream, Encoding.UTF8))
+                        {
                             //String of the json 
                             result = readStream.ReadToEnd();
-
+                            //waitHandle.Set();
                         }
                     }
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 Debug.WriteLine("Error: " + ex.Message);
                 result = null;
             }
-            finally {
+            finally
+            {
                 request.Abort();
             }
+
+            //}));
+            //waitHandle.WaitOne();
             return result;
         }
+
 
 
         /*
@@ -165,6 +192,8 @@ namespace placeToBe.Service
         public void FindEventOnPage(String pageId)
         {
             Event eventNew = new Event();
+
+
             String response = GraphApiGet(pageId, "searchEvent");
             MergePlacesResponse(response, "searchEvent", eventNew);
         }
@@ -192,7 +221,8 @@ namespace placeToBe.Service
             addPlaceIdList = HandlePlacesResponse(response, condition);
             //Get NExt Page
             int sizeList = addPlaceIdList.Count;
-            if (sizeList > 0) {
+            if (sizeList > 0)
+            {
                 String nextPage = addPlaceIdList[sizeList - 1];
 
 
@@ -226,13 +256,17 @@ namespace placeToBe.Service
             //Merge lists last time
             placeIdList.AddRange(addPlaceIdList);
             //Paging complete now the next step to get more information with these id's
+            //ThreadPool.QueueUserWorkItem(new WaitCallback(
+            //    (_) =>
+            //    {
             HandlePlacesIdArrays(placeIdList.ToArray(), condition, eventNew);
+            //}));
         }
         public List<String> HandlePlacesResponse(String response, String getData)
         {
             //new List for PageId
             List<String> placeIdList = new List<String>();
-            if(response == null)return placeIdList;
+            if (response == null) return placeIdList;
             if (getData == "attendingList")
             {
                 //Convert Json to c# Object facebookPageResults
@@ -262,7 +296,8 @@ namespace placeToBe.Service
                 //get the data part of the FacebookPageresults which contain the id's
                 FacebookResults[] data = facebookPageResults.data;
                 //add the id's to list
-                if (data != null) {
+                if (data != null)
+                {
                     foreach (FacebookResults facebookResults in data)
                     {
                         placeIdList.Add(facebookResults.id);
@@ -285,15 +320,39 @@ namespace placeToBe.Service
 
         public async Task<Page> PageSearchDb(String fbId)
         {
+            //Task<Page> page = null;
+            //var waitHandler = new ManualResetEvent(false);
+            //ThreadPool.QueueUserWorkItem(new WaitCallback((_) =>
+            //{
+                Page pagePage = await pageRepo.GetByFbIdAsync(fbId);
+            //    waitHandler.Set();
+            //}));
+            //waitHandler.WaitOne();
+            //Page pagePage = await page;
+            //if (pagePage == null || page==null)
+            //{
+            //    System.Diagnostics.Debug.WriteLine("nicht geklappt");
 
-            Page page = await pageRepo.GetByFbIdAsync(fbId);
-            return page;
+            //}
+            return pagePage;
         }
 
         public async Task<Event> EventSearchDb(String fbId)
         {
-            Event eventNew = await eventRepo.GetByFbIdAsync(fbId);
-            return eventNew;
+            //Task<Event> ev = null;
+            //var waitHandler = new ManualResetEvent(false);
+            //ThreadPool.QueueUserWorkItem(new WaitCallback((_) =>
+            //{
+                Event ev = await eventRepo.GetByFbIdAsync(fbId);
+                //waitHandler.Set();
+            //}));
+            //waitHandler.WaitOne();
+            //Event eventNew = await ev;
+            //if (ev == null)
+            //{
+            //    System.Diagnostics.Debug.WriteLine("nicht geklappt");
+            //}
+            return ev;
         }
         /**
         * returns a 50x50 array with coordinates of the form {lat: Number, lng: Number}
@@ -307,8 +366,8 @@ namespace placeToBe.Service
             double latHopDist = GetHopDistance(city, "latitude", hops);
             double lngHopDist = GetHopDistance(city, "longitude", hops);
 
-            double southWestLat = city.polygon[3,0];//SouthwestLatitude
-            double southWestLng= city.polygon[3,1];//SouthwestLongitude
+            double southWestLat = city.polygon[3, 0];//SouthwestLatitude
+            double southWestLng = city.polygon[3, 1];//SouthwestLongitude
 
             for (int i = 0; i < hops; i++)
             {
@@ -344,13 +403,15 @@ namespace placeToBe.Service
 
                     }
 
-                    if (page == null) {
+                    if (page == null)
+                    {
                         //Get page information
                         String pageData = GraphApiGet(id, "pageData");
                         //handle the page and push it to db
                         HandlePlace(pageData, condition, "");
                     }
-                    else {
+                    else
+                    {
                         String pageData = JsonConvert.SerializeObject(page);
                         HandlePlace(pageData, condition, "");
 
@@ -364,6 +425,7 @@ namespace placeToBe.Service
                 {
                     try
                     {
+
                         eventNew = await EventSearchDb(id);
                     }
                     catch (Exception e)
@@ -404,7 +466,8 @@ namespace placeToBe.Service
                 eventRsvp.rsvp_status = rsvpSplit[2];
                 list.Add(eventRsvp);
             }
-            PushEventToDb(eventNew, list);
+            functionsQueue.AddToDbQueue(() => PushEventToDb(eventNew, list));
+            //PushEventToDb(eventNew, list);
         }
 
         /**
@@ -412,29 +475,35 @@ namespace placeToBe.Service
         * @param place
         * @param callback
         */
-        public void HandlePlace(String place, String condition, String id) {
+        public void HandlePlace(String place, String condition, String id)
+        {
             if (place == null) return;
             //Place
             if (condition == "searchPlace")
             {
                 JObject _place = JObject.Parse(place);
-                try {
-                    var isCommunityPage = (bool) _place["is_community_page"];
+                try
+                {
+                    var isCommunityPage = (bool)_place["is_community_page"];
                     JToken token = _place["GeoLocation"];
-                    if (isCommunityPage == false) {
+                    if (isCommunityPage == false)
+                    {
                         //we only save non-community-pages since only they will actually create events
                         //Convert json to Object
                         Page page = JsonConvert.DeserializeObject<Page>(place);
                         //a place that is not community owned is == to a page in the facebook world
                         //insert in db
-                        PushToDb(page);
+                        //PushToDb(page);
+                        functionsQueue.AddToDbQueue(() => PushToDb(page));
                         FindEventOnPage(page.fbId);
                     }
-                    else if (isCommunityPage == true) {
+                    else if (isCommunityPage == true)
+                    {
                         //CommunityPage save?
                     }
                 }
-                catch (ArgumentNullException ex) {
+                catch (ArgumentNullException ex)
+                {
                     Console.WriteLine("Exception: " + ex);
                 }
             }
@@ -450,24 +519,41 @@ namespace placeToBe.Service
         //Insert page to Db
         public async void PushToDb(Page newPage)
         {
-            try {
-                System.Diagnostics.Debug.Write("\n**** PAGE: " + newPage.fbId);
-                await pageRepo.InsertAsync(newPage);
+            try
+            {
+                Task<System.Guid> pageTask = null;
+                var waitHandler = new ManualResetEvent(false);
+                ThreadPool.QueueUserWorkItem(new WaitCallback((_) =>
+                {
+
+                    Debug.WriteLine("\n**** PAGE: " + newPage.fbId);
+                    pageTask = pageRepo.InsertAsync(newPage);
+                    waitHandler.Set();
+                }));
+                waitHandler.WaitOne();
+                await pageTask;
 
             }
-            catch (MongoWaitQueueFullException ex) {
-                Thread.Sleep(15000);
-                PushToDb(newPage);
+            catch (MongoWaitQueueFullException ex)
+            {
+                //Thread.Sleep(15000);
+                functionsQueue.AddToDbQueue(() => PushToDb(newPage));
+
+                //PushToDb(newPage);
             }
-            catch (MongoWriteException ex) {
+            catch (MongoWriteException ex)
+            {
                 //this just means the object is already in the DB most of the time.
             }
-            catch (MongoConnectionException ex) {
+            catch (MongoConnectionException ex)
+            {
                 pageRepo = new PageRepository();
-                PushToDb(newPage);
+                functionsQueue.AddToDbQueue(() => PushToDb(newPage));
+                //PushToDb(newPage);
             }
-            catch (Exception ex) {
-                System.Diagnostics.Debug.Write(ex.ToJson());
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToJson());
             }
         }
 
@@ -475,27 +561,45 @@ namespace placeToBe.Service
         public async void PushEventToDb(Event newEvent, List<Rsvp> list)
         {
             newEvent.attending = list;
-            newEvent=FillEmptyEventFields(newEvent);
-            if (newEvent != null && newEvent.attendingCount > 15 && newEvent.startDateTime > new DateTime()) { //if event exists and more than 15 people joined and is in future persist
-                try {
-                    System.Diagnostics.Debug.Write("\n**** EVENT: " + newEvent.fbId);
-                    await eventRepo.InsertAsync(newEvent);
+            newEvent = FillEmptyEventFields(newEvent);
+            if (newEvent != null && newEvent.attendingCount > 15 && newEvent.startDateTime > new DateTime())
+            { //if event exists and more than 15 people joined and is in future persist
+                try
+                {
+                    var waitHandler = new ManualResetEvent(false);
+                    Task<System.Guid> pushResult = null;
+                    //<<<<<<< HEAD                    
 
+                    ThreadPool.QueueUserWorkItem(new WaitCallback((_) =>
+                    {
+                        pushResult = eventRepo.InsertAsync(newEvent);
+                        waitHandler.Set();
+                        Debug.WriteLine("\n**** EVENT: " + newEvent.fbId);
+                    }));
+                    //=======
+                    waitHandler.WaitOne();
+                    await pushResult;
+                    //>>>>>>> 3147e3962afd003a749e7afd4e31fd190b635800
                 }
-                catch (MongoWriteException e) {
+                catch (MongoWriteException e)
+                {
                     //this just means the object is already in the DB most of the time.
                 }
-                catch (MongoWaitQueueFullException ex) {
-                    Thread.Sleep(15000);
-                    PushEventToDb(newEvent, list);
+                catch (MongoWaitQueueFullException ex)
+                {
+                    //Thread.Sleep(15000);
+                    functionsQueue.AddToDbQueue(() => PushEventToDb(newEvent, list));
+                    //PushEventToDb(newEvent, list);
                 }
-                catch (MongoConnectionException ex) {
+                catch (MongoConnectionException ex)
+                {
                     eventRepo = new EventRepository();
-                    PushEventToDb(newEvent, list);
+                    functionsQueue.AddToDbQueue(() => PushEventToDb(newEvent, list));
+                    //PushEventToDb(newEvent, list);
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.Write(ex.ToJson());
+                    Debug.WriteLine(ex.ToJson());
                 }
             }
         }
@@ -533,14 +637,15 @@ namespace placeToBe.Service
                 */      
                 else if (e.place != null && e.place.name != null)
                 {
-                    String getData = e.place.name;                    
+                    String getData = e.place.name;
                     JObject obj = JObject.Parse(GraphApiGet(getData, "GOOGLE"));
-                    Array arr = (Array) obj["Results"];
-                    if (obj["results"] != null && arr != null && arr.Length != 0) {
+                    Array arr = (Array)obj["Results"];
+                    if (obj["results"] != null && arr != null && arr.Length != 0)
+                    {
                         double lat = Convert.ToDouble(obj["results"][0]["geometry"]["location"]["lat"]);
                         double lng = Convert.ToDouble(obj["results"][0]["geometry"]["location"]["lng"]);
                         e.geoLocationCoordinates = new GeoLocation(lat, lng);
-                    }   
+                    }
                 // If there is no possibility to get the latitude and longitude of an event it won't be safed in the MongoDB
                 }else 
                 {
@@ -560,10 +665,66 @@ namespace placeToBe.Service
             if (e.start_time != null) {
                 e.startDateTime = UtilService.getDateTimeFromISOString(e.start_time);
             }
-            if (e.end_time != null) {
+            if (e.end_time != null)
+            {
                 e.endDateTime = UtilService.getDateTimeFromISOString(e.end_time);
             }
             return e;
         }
+
+    }
+
+
+    #region QueueManager
+
+    public class QueueManager
+    {
+        BlockingCollection<Action> dbOperationsQueue;
+        Thread workerDb;
+
+        public QueueManager()
+        {
+            StartDbOperations();
+
+        }
+
+        //public void handlePlacesIdQueue()
+        //{
+
+        //}
+        public void StartDbOperations()
+        {
+            dbOperationsQueue = new BlockingCollection<Action>();
+            workerDb = new Thread(DoWorkDbQueue);
+            workerDb.IsBackground = true;
+            workerDb.Start();
+        }
+
+        private void DoWorkDbQueue()
+        {
+            bool actionAvailable;
+            do
+            {
+
+
+                Action action;
+                actionAvailable = dbOperationsQueue.TryTake(out action, Timeout.Infinite);
+                if (actionAvailable)
+                {
+                    ThreadPool.QueueUserWorkItem(new WaitCallback((_) =>
+                    {
+                        action.Invoke();
+                    }));
+                }
+            } while (true);
+        }
+
+        public void AddToDbQueue(Action action)
+        {
+            dbOperationsQueue.TryAdd(action);
+        }
+
+
+    #endregion
     }
 }
