@@ -23,7 +23,7 @@ namespace placeToBe.Services
         /// </summary>
         /// <param name="email"></param>
         /// <param name="password"></param>
-        public async void Register(String email, String password)
+        public async void Register(string email, string password)
         {
             byte[] plainText = Encoding.UTF8.GetBytes(password);
             byte[] salt = GenerateSalt(saltSize);
@@ -33,7 +33,7 @@ namespace placeToBe.Services
             await userRepo.InsertAsync(user);
         }
 
-        public async Task<bool> Login(String email, String password)
+        public async Task<bool> Login(string email, string password)
         {
             byte[] plainText = Encoding.UTF8.GetBytes(password);
             User user =await GetSalt(email);
@@ -42,9 +42,10 @@ namespace placeToBe.Services
 
             if (passwordSalt == user.passwordSalt)
             {
+                FormsAuthentication.SetAuthCookie(email, false);
+                FormsAuthentication.RedirectFromLoginPage(email, false);
                 return true;
-                //FormsAuthentication.SetAuthCookie(email, createPersistentCookie);
-                //FormsAuthentication.RedirectFromLoginPage(email, createPersistentCookie);
+                
             }
             else
             {
@@ -52,11 +53,14 @@ namespace placeToBe.Services
             }
         }
 
-        public void Logoff()
+        //Log out the user and redirect to login-page.
+        public void Logout()
         {
-
+            FormsAuthentication.SignOut();
+            FormsAuthentication.RedirectToLoginPage();
         }
 
+        //Facebook-Login
         public void ExternalLogin()
         {
 
