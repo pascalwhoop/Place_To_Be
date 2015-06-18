@@ -36,7 +36,7 @@ namespace placeToBe.Services
         public async Task<bool> Login(string email, string password)
         {
             byte[] plainText = Encoding.UTF8.GetBytes(password);
-            User user =await GetSalt(email);
+            User user =await GetUser(email);
             byte[] salt = user.salt;
             byte[] passwordSalt = GenerateSaltedHash(plainText, salt);
 
@@ -87,7 +87,7 @@ namespace placeToBe.Services
         /// </summary>
         /// <param name="email">email of the user</param>
         /// <returns>return the user saved in the db</returns>
-        public async Task<User> GetSalt(String email)
+        public async Task<User> GetUser(String email)
         {
             return await userRepo.GetByEmailAsync(email);
         }
