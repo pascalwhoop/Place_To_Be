@@ -515,35 +515,37 @@ namespace placeToBe.Service
             }
         }
         /// <summary>
-        /// Adds location data (latitude, longitude) to an Event
+        /// Adds GeoLocation data (latitude, longitude) to an Event. If successful the method goes on with adding the events 
+        /// start and end time.
         /// </summary>
-        /// <param name="entity">Event modified with location data</param>
-        /// <returns>modified Event if sucsessful, otherwise just the original Event</returns>
+        /// <param name="e">Event modified with location data</param>
+        /// <returns>modified Event if sucsessful, otherwise null</returns>
         public Event FillEmptyEventFields(Event e)
-
         {
             try
             {
-
-
+                // Case: Facebook event belongs to a Facebook page which got a location (latitude/longitude) -> location of Event where we will put an index on.
                 if (e.place != null && e.place.location != null && e.place.location.latitude != 0 && e.place.location.longitude != 0) {
                     e.geoLocationCoordinates = new GeoLocation(e.place.location.latitude, e.place.location.longitude);
                 }
+                /* Case: Facebook event belongs to a Facebook page where a location is not defiened 
+                         but there is a field "name" which describes its location. By interacting with
+                         the Google API through a http request (GraphApiGet()) which contains the locations 
+                         describtion for example "Alexanderplatz, Berlin" the respond will be a JSON String.
+                         From that String we extract the latitude and longitude.
+                */      
                 else if (e.place != null && e.place.name != null)
                 {
-
-                    String getData = e.place.name;
-                            //Needs to be more defined (first exsample was: name = Alexanderplatz, Berlin)
-                    
+                    String getData = e.place.name;                    
                     JObject obj = JObject.Parse(GraphApiGet(getData, "GOOGLE"));
                     Array arr = (Array) obj["Results"];
                     if (obj["results"] != null && arr != null && arr.Length != 0) {
                         double lat = Convert.ToDouble(obj["results"][0]["geometry"]["location"]["lat"]);
                         double lng = Convert.ToDouble(obj["results"][0]["geometry"]["location"]["lng"]);
                         e.geoLocationCoordinates = new GeoLocation(lat, lng);
-                    }
-                    
-                }else
+                    }   
+                // If there is no possibility to get the latitude and longitude of an event it won't be safed in the MongoDB
+                }else 
                 {
                     return null;
                 }
@@ -552,12 +554,11 @@ namespace placeToBe.Service
             {
                 Console.Write(ex.ToString());
             }
-
+            // Go on with filling the events start and end time fields. 
             e = fillStartEndDateTime(e);
             return e;
         }
-
-        //we add converted fields to the object which we can later put an index on
+        //Add converted fields to the event which we can later put an index on
         public Event fillStartEndDateTime(Event e) {
             if (e.start_time != null) {
                 e.startDateTime = UtilService.getDateTimeFromISOString(e.start_time);
