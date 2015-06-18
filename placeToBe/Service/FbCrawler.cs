@@ -481,8 +481,6 @@ namespace placeToBe.Service
                     System.Diagnostics.Debug.Write("\n**** EVENT: " + newEvent.fbId);
                     await eventRepo.InsertAsync(newEvent);
 
-           //         await repoEvent.InsertAsync(eventNew);
-
                 }
                 catch (MongoWriteException e) {
                     //this just means the object is already in the DB most of the time.
