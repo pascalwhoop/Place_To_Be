@@ -337,7 +337,7 @@ namespace placeToBe.Service
             return pagePage;
         }
 
-        public async Task<Event> EventSearchDb(String fbId)
+        public async Task<Event> EventSearchByFbId(String fbId)
         {
             //Task<Event> ev = null;
             //var waitHandler = new ManualResetEvent(false);
@@ -390,11 +390,11 @@ namespace placeToBe.Service
             if (condition == "searchPlace")
             {
                 Page page;
-                foreach (String id in placesId)
+                foreach (String fbId in placesId)
                 {
                     try
                     {
-                        page = await PageSearchDb(id);
+                        page = await PageSearchDb(fbId);
                     }
                     catch (Exception e)
                     {
@@ -406,7 +406,7 @@ namespace placeToBe.Service
                     if (page == null)
                     {
                         //Get page information
-                        String pageData = GraphApiGet(id, "pageData");
+                        String pageData = GraphApiGet(fbId, "pageData");
                         //handle the page and push it to db
                         HandlePlace(pageData, condition, "");
                     }
@@ -421,12 +421,12 @@ namespace placeToBe.Service
             else if (condition == "searchEvent")
             {
                 Event eventNew;
-                foreach (String id in placesId)
+                foreach (String fbId in placesId)
                 {
                     try
                     {
 
-                        eventNew = await EventSearchDb(id);
+                        eventNew = await EventSearchByFbId(fbId);
                     }
                     catch (Exception e)
                     {
@@ -438,9 +438,9 @@ namespace placeToBe.Service
                     if (eventNew == null)
                     {
                         //Get Event information
-                        String eventData = GraphApiGet(id, "searchEventData");
+                        String eventData = GraphApiGet(fbId, "searchEventData");
                         //handle the Event and push it to db
-                        HandlePlace(eventData, condition, id);
+                        HandlePlace(eventData, condition, fbId);
                     }
                 }
 
@@ -543,7 +543,9 @@ namespace placeToBe.Service
             }
             catch (MongoWriteException ex)
             {
-                //this just means the object is already in the DB most of the time.
+                if (ex.WriteError.Code == 11000) {
+                    //this just means the object is already in the DB most of the time.                    
+                }
             }
             catch (MongoConnectionException ex)
             {
@@ -583,7 +585,10 @@ namespace placeToBe.Service
                 }
                 catch (MongoWriteException e)
                 {
-                    //this just means the object is already in the DB most of the time.
+                    if (e.WriteError.Code == 11000)
+                    {
+                        //this just means the object is already in the DB most of the time.                    
+                    }
                 }
                 catch (MongoWaitQueueFullException ex)
                 {

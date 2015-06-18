@@ -90,6 +90,8 @@ namespace placeToBe.Model.Repositories {
         private void ConnectDatabase()
         {
             _client = new MongoClient(GetConnectionString());
+            var clientSettings = new MongoClientSettings();
+            clientSettings.WaitQueueSize = int.Parse(ConfigurationManager.AppSettings.Get("waitQueueSizeLimit"));
             _database = _client.GetDatabase(GetDatabaseName());
         }
 
