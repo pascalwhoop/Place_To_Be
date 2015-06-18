@@ -7,6 +7,7 @@ using System.Web.Http;
 using placeToBe.Model.Entities;
 using placeToBe.Model.Repositories;
 using System.Threading.Tasks;
+using placeToBe.Services;
 
 namespace placeToBe.Controllers
 {
@@ -14,6 +15,7 @@ namespace placeToBe.Controllers
     {
 
         MongoDbRepository<User> repo = new MongoDbRepository<User>();
+        AccountService user = new AccountService();
 
         // GET api/User 
         public async Task<IList<User>> Get()
@@ -29,10 +31,18 @@ namespace placeToBe.Controllers
             return User;
         }
 
-        // POST api/User
-        public void Post([FromBody]string value)
+        /* POST api/User
+        
+         */
+        public async Task<bool> LoginPost(string email, string password)
         {
-            //  repo.InsertAsync(User);
+             return await user.Login(email, password);
+        }
+
+       //Register user - start service and put in db
+        public void RegisterPost(string email, string password)
+        {
+          user.Register(email, password);
         }
 
         // PUT api/User/5
@@ -42,6 +52,7 @@ namespace placeToBe.Controllers
         }
 
         // DELETE api/User/5
+        //ToDo
         public async void Delete(Guid id)
         {
             var User = await repo.GetByIdAsync(id);
