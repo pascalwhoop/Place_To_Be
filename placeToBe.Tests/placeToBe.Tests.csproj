@@ -135,6 +135,7 @@
     <Compile Include="Controllers\ValuesControllerTest.cs" />
     <Compile Include="Service\GenderizeServiceTest.cs" />
     <Compile Include="Service\FbCrawlerTest.cs" />
+    <Compile Include="Service\AccountServiceTest.cs" />
     <Compile Include="Service\UtilServiceTest.cs" />
   </ItemGroup>
   <ItemGroup>
