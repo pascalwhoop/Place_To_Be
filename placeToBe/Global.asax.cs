@@ -63,14 +63,14 @@ namespace placeToBe
             berlin.name = "Berlin, Germany";
             berlin.polygon = new double[5,2]{
                 {52.6754542,13.0891553}, {52.6754542,13.7611176}, {52.339629599,13.7611176}, {52.339629599, 13.0891553}, {52.6754542,13.0891553}
-            }
+            };
             fbCrawler.FindPagesForCities(berlin);
 
             City munich = new City();
             munich.name = "Munich, Germany";
             munich.polygon = new double[5,2]{
                 {48.2482197,11.360796}, {48.2482197,11.7228755}, {48.0616018,11.7228755}, {48.0616018, 11.360796}, {48.2482197,11.360796}
-            }
+            };
             fbCrawler.FindPagesForCities(berlin);
 
             FbCrawler fbCrawler = new FbCrawler();
