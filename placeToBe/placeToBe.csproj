@@ -258,6 +258,8 @@
     <Content Include="Frontend\app\src\services\gaussianservice.js" />
     <Content Include="Frontend\app\src\filters\range.js" />
     <Content Include="Frontend\app\src\heatmap\heatmapController.js" />
+    <Content Include="Frontend\app\src\login\loginController.js" />
+    <Content Include="Frontend\app\src\heatmap\heatmapView.js" />
     <Content Include="Frontend\app\src\heatmap\heatmapDirective.js" />
     <Content Include="Frontend\app\src\heatmap\heatmapDirective.js" />
     <Content Include="Global.asax" />
