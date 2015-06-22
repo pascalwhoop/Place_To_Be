@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.Entity.Infrastructure;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -34,8 +35,9 @@ namespace placeToBe.Model.Repositories {
         public async Task<Guid> InsertAsync(TEntity entity)
         {
             entity.Id = Guid.NewGuid();
-            await _collection.InsertOneAsync(entity);
-            return entity.Id;
+            _collection.InsertOneAsync(entity);
+            
+            
 
         }
 
@@ -89,26 +91,10 @@ namespace placeToBe.Model.Repositories {
         }
         private void ConnectDatabase()
         {
-            _client = new MongoClient(GetConnectionString());
-            var clientSettings = new MongoClientSettings();
-            clientSettings.WaitQueueSize = int.Parse(ConfigurationManager.AppSettings.Get("waitQueueSizeLimit"));
-            _database = _client.GetDatabase(GetDatabaseName());
+            _client = new MongoClient(ConfigurationManager.AppSettings.Get("MongoDBConnectionString"));
+            _database = _client.GetDatabase(ConfigurationManager.AppSettings.Get("MongoDBDatabaseName"));
         }
 
-        private string GetConnectionString()
-        {
-            return ConfigurationManager
-                .AppSettings
-                .Get("MongoDBConnectionString")
-                .Replace("{DB_NAME}", GetDatabaseName());
-        }
-
-        private string GetDatabaseName()
-        {
-            return ConfigurationManager
-                .AppSettings
-                .Get("MongoDBDatabaseName");
-        }
 
 
         private void setCollection()

@@ -78,13 +78,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
     </Reference>
-    <Reference Include="MongoDB.Bson">
+    <Reference Include="MongoDB.Bson, Version=2.0.1.27, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MongoDB.Bson.2.0.1\lib\net45\MongoDB.Bson.dll</HintPath>
-      <Private>True</Private>
     </Reference>
-    <Reference Include="MongoDB.Driver">
+    <Reference Include="MongoDB.Driver, Version=2.0.1.27, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MongoDB.Driver.2.0.1\lib\net45\MongoDB.Driver.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="MongoDB.Driver.Core, Version=2.0.1.27, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -245,8 +245,18 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <!-- manually changed this -->
-    <Content Include="Frontend\app\index.html" />
     <Content Include="Frontend\app\assets\app.css" />
+    <Content Include="Frontend\app\assets\svg\avatar-1.svg" />
+    <Content Include="Frontend\app\assets\svg\avatar-4.svg" />
+    <Content Include="Frontend\app\assets\svg\avatars.svg" />
+    <Content Include="Frontend\app\assets\svg\google_plus.svg" />
+    <Content Include="Frontend\app\assets\svg\hangouts.svg" />
+    <Content Include="Frontend\app\assets\svg\mail.svg" />
+    <Content Include="Frontend\app\assets\svg\menu.svg" />
+    <Content Include="Frontend\app\assets\svg\phone.svg" />
+    <Content Include="Frontend\app\assets\svg\share.svg" />
+    <Content Include="Frontend\app\assets\svg\twitter.svg" />
+    <Content Include="Frontend\app\index.html" />
     <Content Include="Frontend\app\bower_components\angular\angular.js" />
     <Content Include="Frontend\app\bower_components\angular-animate\angular-animate.js" />
     <Content Include="Frontend\app\bower_components\angular-aria\angular-aria.js" />
@@ -255,13 +265,15 @@
     <Content Include="Frontend\app\bower_components\angular-material\angular-material.css" />
     <Content Include="Frontend\app\bower_components\ngmap\build\scripts\ng-map.js" />
     <Content Include="Frontend\app\src\app.js" />
-    <Content Include="Frontend\app\src\services\gaussianservice.js" />
     <Content Include="Frontend\app\src\filters\range.js" />
     <Content Include="Frontend\app\src\heatmap\heatmapController.js" />
-    <Content Include="Frontend\app\src\login\loginController.js" />
+    <Content Include="Frontend\app\src\heatmap\heatmapDirective.html" />
+    <Content Include="Frontend\app\src\heatmap\heatmapDirective.js" />
+    <Content Include="Frontend\app\src\heatmap\heatmapDirective.js" />
     <Content Include="Frontend\app\src\heatmap\heatmapView.html" />
-    <Content Include="Frontend\app\src\heatmap\heatmapDirective.js" />
-    <Content Include="Frontend\app\src\heatmap\heatmapDirective.js" />
+    <Content Include="Frontend\app\src\login\loginController.js" />
+    <Content Include="Frontend\app\src\login\loginView.html" />
+    <Content Include="Frontend\app\src\services\gaussianservice.js" />
     <Content Include="Global.asax" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

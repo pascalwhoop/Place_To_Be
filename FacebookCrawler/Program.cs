@@ -1,35 +1,36 @@
-﻿using placeToBe.Model.Entities;
-using placeToBe.Service;
-using System;
+﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Emit;
+using System.Text;
 using System.Threading;
-using System.Web;
-using System.Web.Http;
-using System.Web.Mvc;
-using System.Web.Optimization;
-using System.Web.Routing;
+using System.Threading.Tasks;
+using MongoDB.Driver;
 using placeToBe.Model.Entities;
+using placeToBe.Model.Repositories;
 using placeToBe.Service;
 
-namespace placeToBe
+namespace FacebookCrawler
 {
-    public class WebApiApplication : System.Web.HttpApplication
+    class Program
     {
-        protected void Application_Start()
+        static void Main(string[] args)
         {
-            
-            GlobalConfiguration.Configure(WebApiConfig.Register);
-            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-            RouteConfig.RegisterRoutes(RouteTable.Routes);
 
-            
+            Program p = new Program();
+            while (true) {
+                p.facebookCrawlerInit();
+                Thread.Sleep(1000*60*60*4); //wait 4 hours
+            }
 
-           runFacebookCrawler();
         }
 
-        protected void runFacebookCrawler() {
+       
+        protected void runFacebookCrawler()
+        {
             BackgroundWorker bw = new BackgroundWorker();
 
             // this allows our worker to report progress during work
@@ -50,19 +51,20 @@ namespace placeToBe
             bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
             delegate(object o, RunWorkerCompletedEventArgs args)
             {
-                Thread.Sleep(1000*3600*24);
+                Thread.Sleep(1000 * 3600 * 24);
                 runFacebookCrawler();
             });
 
             bw.RunWorkerAsync();
         }
 
-        protected void facebookCrawlerInit() {
+        protected void facebookCrawlerInit()
+        {
             FbCrawler fbCrawler = new FbCrawler();
-            
+
             City berlin = new City();
             berlin.name = "Berlin, Germany";
-            berlin.polygon = new double[5,2]{
+            berlin.polygon = new double[5, 2]{
                 {52.6754542,13.0891553}, {52.6754542,13.7611176}, {52.339629599,13.7611176}, {52.339629599, 13.0891553}, {52.6754542,13.0891553}
             };
             fbCrawler.FindPagesForCities(berlin);
