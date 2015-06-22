@@ -58,6 +58,7 @@ namespace placeToBe
         }
 
         protected void facebookCrawlerInit() {
+            FbCrawler fbCrawler = new FbCrawler();
             
             City berlin = new City();
             berlin.name = "Berlin, Germany";
@@ -73,7 +74,6 @@ namespace placeToBe
             };
             fbCrawler.FindPagesForCities(berlin);
 
-            FbCrawler fbCrawler = new FbCrawler();
             City cologne = new City();
             cologne.name = "Cologne, Germany";
             cologne.polygon = new double[5, 2] {
