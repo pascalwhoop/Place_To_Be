@@ -1,0 +1,21 @@
+<map center="city.center" style="height: 700px;" id="heatmapContainer"   street-view-control="false"></map>
+
+<div id="placetobe-map-settings">
+  <input type="text" ng-model="city.name" ng-disabled="true" placeholder="City"/>
+  <p>Datum<input type="date" ng-model="startDate"/></p>
+  <p>Uhrzeit <select ng-options="n for n in [] | range:0F:23" ng-model="startHour"></select></p>
+  <button ng-click="fetchEvents(city.name, startDate, startHour)" class="btn">FetchEvents</button>
+</div>
+
+<div id="placetobe-dev-settings" ng-if="false">
+  <div class="col-md-6" style="padding: 10px">
+    <p>SIZE_PER_PERSON <input type="number" ng-model="SIZE_PER_PERSON"/></p>
+
+    <p>PERSONS_PER_POINT <input type="number" ng-model="PERSONS_PER_POINT"/></p>
+
+    <p>TILE_SIZE <input type="number" ng-model="TILE_SIZE"/></p>
+
+    <p>METER_RADIUS_PER_POINT <input type="number" ng-model="METER_RADIUS_PER_POINT"/></p>
+    <button ng-click="refreshHeatmap()" ng-disabled="!dataReceived" class="btn">RefreshHeatmap</button>
+  </div>
+</div>
