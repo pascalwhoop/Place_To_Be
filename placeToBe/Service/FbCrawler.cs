@@ -37,7 +37,7 @@ namespace placeToBe.Service
 
         public FbCrawler()
         {
-            accessToken = GraphApiGet("", "FBAppToken");
+            accessToken = RequestWebApi("", "FBAppToken");
 
 
             //Limit Threads
@@ -48,46 +48,54 @@ namespace placeToBe.Service
         ////Get the accesToken for the given AppSecret and AppId
         //public void AuthenticateWithFb(String fbAppId, String fbAppSecret)
         //{
-        //    String _response=GraphApiGet("oauth/access_token?client_id="+fbAppId+"&client_secret="+fbAppSecret+"&grant_type=client_credentials");
+        //    String _response=RequestWebApi("oauth/access_token?client_id="+fbAppId+"&client_secret="+fbAppSecret+"&grant_type=client_credentials");
         //    //String [] split = _response.Split(new char[]{'|'});
         //    accessToken = _response;
         //}
 
-        //GET Request to the Facebook GraphApi
-        public String GraphApiGet(String getData, String condition)
+        /// <summary>
+        /// Recieving relevant data by interacting with the Google API (for example the coordinates of a location via its description)
+        /// or the Facebook API (for all kinds of relevant data from Facebook) through building specified http requests. 
+        /// Each Request contains the authentication data of place to be for the particular API embedded in an url String 
+        /// which represents the right request syntax. 
+        /// </summary>
+        /// <param name="requestData">String containing request</param>
+        /// <param name="condition">choosing the right url syntax for the particular request</param>
+        /// <returns>JSON response in String format</returns>
+        public String RequestWebApi(String requestData, String condition)
         {
             String result = null;
             HttpWebRequest request;
 
             if (condition == "GOOGLE")
             {
-                url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + getData + "&key=" + AppGoogleKey;
+                url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + requestData + "&key=" + AppGoogleKey;
             }
             else if (condition == "pageData")
             {
-                url = "https://graph.facebook.com/v2.3/" + getData + "?access_token=" + fbAppId + "|" + fbAppSecret;
+                url = "https://graph.facebook.com/v2.3/" + requestData + "?access_token=" + fbAppId + "|" + fbAppSecret;
             }
             else if (condition == "searchPlace")
             {
                 //split[0]= latitude, split[1]=longitude, split[2]=distance, split[3]=limit
-                String[] split = getData.Split(new string[] { "|" }, StringSplitOptions.None);
+                String[] split = requestData.Split(new string[] { "|" }, StringSplitOptions.None);
                 url = "https://graph.facebook.com/v2.3/search?q=\"\"&type=place&center=" + split[0] + "," + split[1] + "&distance=" + split[2] + "&limit=" + split[3] + "&fields=id&access_token=" + fbAppId + "|" + fbAppSecret;
             }
             else if (condition == "nextPage")
             {
-                url = getData;
+                url = requestData;
             }
             else if (condition == "searchEvent")
             {
-                url = "https://graph.facebook.com/v2.3/" + getData + "/events?limit=2000&fields=id&" + accessToken;
+                url = "https://graph.facebook.com/v2.3/" + requestData + "/events?limit=2000&fields=id&" + accessToken;
             }
             else if (condition == "searchEventData")
             {
-                url = "https://graph.facebook.com/v2.3/" + getData + "/?fields=id,name,description,owner,attending_count,declined_count,maybe_count,start_time,end_time,place,cover&" + accessToken;
+                url = "https://graph.facebook.com/v2.3/" + requestData + "/?fields=id,name,description,owner,attending_count,declined_count,maybe_count,start_time,end_time,place,cover&" + accessToken;
             }
             else if (condition == "attendingList")
             {
-                url = "https://graph.facebook.com/v2.3/" + getData + "/attending?limit=2000&" + accessToken;
+                url = "https://graph.facebook.com/v2.3/" + requestData + "/attending?limit=2000&" + accessToken;
             }
             else if (condition == "FBAppToken")
             {
@@ -101,7 +109,7 @@ namespace placeToBe.Service
             request.Method = "GET";
             request.AllowAutoRedirect = true;
 
-            Debug.WriteLine("\n### GETTING: " + condition + "  " + getData);
+            Debug.WriteLine("\n### GETTING: " + condition + "  " + requestData);
 
             //var waitHandle = new ManualResetEvent(false);
             
@@ -181,7 +189,7 @@ namespace placeToBe.Service
             {
                 String getData = coord.latitude + "|" + coord.longitude + "|" + distance + "|" + limit;
                 getData = getData.Replace(",", ".");
-                String placesListJson = GraphApiGet(getData, "searchPlace");
+                String placesListJson = RequestWebApi(getData, "searchPlace");
                 Event eventNew = new Event();
                 MergePlacesResponse(placesListJson, "nextPage", eventNew);
             }
@@ -194,7 +202,7 @@ namespace placeToBe.Service
             Event eventNew = new Event();
 
 
-            String response = GraphApiGet(pageId, "searchEvent");
+            String response = RequestWebApi(pageId, "searchEvent");
             MergePlacesResponse(response, "searchEvent", eventNew);
         }
 
@@ -202,7 +210,7 @@ namespace placeToBe.Service
         public void FindAttendingList(Event eventNew)
         {
 
-            String response = GraphApiGet(eventNew.fbId, "attendingList");
+            String response = RequestWebApi(eventNew.fbId, "attendingList");
             MergePlacesResponse(response, "attendingList", eventNew);
         }
 
@@ -237,7 +245,7 @@ namespace placeToBe.Service
                     //clear addPlaceIdList
                     addPlaceIdList.Clear();
                     //Get from Graph APi
-                    String nextResponse = GraphApiGet(nextPage, "nextPage");
+                    String nextResponse = RequestWebApi(nextPage, "nextPage");
                     addPlaceIdList = HandlePlacesResponse(nextResponse, condition);
                     //Get NExt Page
                     sizeList = addPlaceIdList.Count;
@@ -406,7 +414,7 @@ namespace placeToBe.Service
                     if (page == null)
                     {
                         //Get page information
-                        String pageData = GraphApiGet(fbId, "pageData");
+                        String pageData = RequestWebApi(fbId, "pageData");
                         //handle the page and push it to db
                         HandlePlace(pageData, condition, "");
                     }
@@ -438,7 +446,7 @@ namespace placeToBe.Service
                     if (eventNew == null)
                     {
                         //Get Event information
-                        String eventData = GraphApiGet(fbId, "searchEventData");
+                        String eventData = RequestWebApi(fbId, "searchEventData");
                         //handle the Event and push it to db
                         HandlePlace(eventData, condition, fbId);
                     }
@@ -569,8 +577,7 @@ namespace placeToBe.Service
                 try
                 {
                     var waitHandler = new ManualResetEvent(false);
-                    Task<System.Guid> pushResult = null;
-                    //<<<<<<< HEAD                    
+                    Task<System.Guid> pushResult = null;                 
 
                     ThreadPool.QueueUserWorkItem(new WaitCallback((_) =>
                     {
@@ -578,10 +585,10 @@ namespace placeToBe.Service
                         waitHandler.Set();
                         Debug.WriteLine("\n**** EVENT: " + newEvent.fbId);
                     }));
-                    //=======
+                 
                     waitHandler.WaitOne();
                     await pushResult;
-                    //>>>>>>> 3147e3962afd003a749e7afd4e31fd190b635800
+                    
                 }
                 catch (MongoWriteException e)
                 {
@@ -624,7 +631,7 @@ namespace placeToBe.Service
         /// Adds GeoLocation data (latitude, longitude) to an Event. If successful the method goes on with adding the events 
         /// start and end time.
         /// </summary>
-        /// <param name="e">Event modified with location data</param>
+        /// <param name="e">Event to add location data</param>
         /// <returns>modified Event if sucsessful, otherwise null</returns>
         public Event FillEmptyEventFields(Event e)
         {
@@ -636,14 +643,14 @@ namespace placeToBe.Service
                 }
                 /* Case: Facebook event belongs to a Facebook page where a location is not defiened 
                          but there is a field "name" which describes its location. By interacting with
-                         the Google API through a http request (GraphApiGet()) which contains the locations 
+                         the Google API through a http request (RequestWebApi()) which contains the locations 
                          describtion for example "Alexanderplatz, Berlin" the respond will be a JSON String.
                          From that String we extract the latitude and longitude.
                 */      
                 else if (e.place != null && e.place.name != null)
                 {
                     String getData = e.place.name;
-                    JObject obj = JObject.Parse(GraphApiGet(getData, "GOOGLE"));
+                    JObject obj = JObject.Parse(RequestWebApi(getData, "GOOGLE"));
                     Array arr = (Array)obj["Results"];
                     if (obj["results"] != null && arr != null && arr.Length != 0)
                     {
@@ -661,11 +668,15 @@ namespace placeToBe.Service
             {
                 Console.Write(ex.ToString());
             }
-            // Go on with filling the events start and end time fields. 
+            // Go on by filling the events start and end time fields. 
             e = fillStartEndDateTime(e);
             return e;
         }
-        //Add converted fields to the event which we can later put an index on
+        /// <summary>
+        /// Adds converted fields (start and endtime) to the event which we can later put an index on and therefore be able to filter by time
+        /// </summary>
+        /// <param name="e">Event to add start and endtime</param>
+        /// <returns>modified Event if sucsessful, otherwise inserted event</returns>
         public Event fillStartEndDateTime(Event e) {
             if (e.start_time != null) {
                 e.startDateTime = UtilService.getDateTimeFromISOString(e.start_time);
