@@ -8,6 +8,7 @@ using placeToBe.Model.Entities;
 using placeToBe.Model.Repositories;
 using System.Threading.Tasks;
 using placeToBe.Services;
+using System.Security.Cryptography;
 
 namespace placeToBe.Controllers
 {
@@ -25,7 +26,7 @@ namespace placeToBe.Controllers
         }
 
         // GET api/User/5
-        public async Task<User> Get(Guid id)
+        public async Task<User> Get([FromUri]Guid id)
         {
             User User = await repo.GetByIdAsync(id);
             return User;
@@ -34,21 +35,21 @@ namespace placeToBe.Controllers
         /* POST api/User
         
          */
-        public async Task<bool> LoginPost(string email, string password)
+        public async Task<User> Put([FromUri]string loginmail, [FromUri]string loginpw, [FromUri] string ueberladung)
         {
-             return await user.Login(email, password);
+            return await user.Login(loginmail, loginpw);
         }
 
-       //Register user - start service and put in db
-        public void RegisterPost(string email, string password)
+        //Register a User with email and passwort
+        public async Task<Guid> Put([FromUri]string email, [FromUri] string passwort)
         {
-          user.Register(email, password);
+            return await user.Register(email, passwort);
         }
 
-        // PUT api/User/5
-        public void Put(int id, [FromBody]string value)
+        public async Task<User> Put([FromUri]string email)
         {
-            // Put...
+            UserRepository user = new UserRepository();
+            return await user.GetByEmailAsync(email);
         }
 
         // DELETE api/User/5
