@@ -209,7 +209,7 @@ namespace placeToBe.Service {
             List<FacebookPagingResult> results =
                 completePaging(JsonConvert.DeserializeObject<FacebookPageResults>(response));
             foreach (FacebookPagingResult e in results) {
-                if (e.attending_count > 15) {
+                if (e.attending_count > 5) {
                     try {
                         await fetchAndStoreEvent(e);
                     }
