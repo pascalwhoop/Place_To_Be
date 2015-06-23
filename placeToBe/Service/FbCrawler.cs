@@ -128,6 +128,7 @@ namespace placeToBe.Service {
 
         }
 
+
         /*
          * Shuffles an array of type Coordinates
          * */
@@ -229,6 +230,7 @@ namespace placeToBe.Service {
             return makeAttendingList(r);
         }
 
+
         /**
         * this function handles the response from the facebook API query of form
         * /search?q=<query>&type=place&center=<lat,lng>&distance<distance>. We want to make sure we get all the places and
@@ -279,6 +281,7 @@ namespace placeToBe.Service {
         public async Task<Event> eventSearchByFbId(String fbId) {
             return await eventRepo.GetByFbIdAsync(fbId);
         }
+
 
         /**
         * returns a 50x50 array with coordinates of the form {lat: Number, lng: Number}
@@ -470,9 +473,10 @@ namespace placeToBe.Service {
                     e.geoLocationCoordinates = new GeoLocation(e.place.location.latitude, e.place.location.longitude);
                 /* Case: Facebook event belongs to a Facebook page where a location is not defiened 
                          but there is a field "name" which describes its location. By interacting with
-                         the Google API through a http request (GraphApiGet()) which contains the locations 
+                         the Google API through a http request (RequestWebApi()) which contains the locations 
                          describtion for example "Alexanderplatz, Berlin" the respond will be a JSON String.
                          From that String we extract the latitude and longitude.
+
                 */
                 else if (e.place != null && e.place.name != null) {
                     String getData = e.place.name;
