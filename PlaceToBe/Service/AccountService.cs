@@ -37,17 +37,18 @@ namespace placeToBe.Services
             return await userRepo.InsertAsync(user);
         }
 
-        public async Task<User> Login(string email, string password)
+        public async Task<FormsAuthenticationTicket> Login(string email, string password)
         {
             byte[] plainText = Encoding.UTF8.GetBytes(password);
             User user = await GetEmail(email);
-            byte[] salt = GenerateSalt(saltSize);
+            byte[] salt = user.salt;
             byte[] passwordSalt = GenerateSaltedHash(plainText, salt);
-
-            if (passwordSalt == user.passwordSalt)
+           
+            bool compare = CompareByteArrays(passwordSalt,user.passwordSalt);
+            if (compare==true) 
             {
                 FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(email, false, 5);
-                return await userRepo.GetByEmailAsync(email);
+                return ticket;
             }
             else
             {
