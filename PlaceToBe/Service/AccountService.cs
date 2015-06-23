@@ -85,27 +85,45 @@ namespace placeToBe.Services
             smtp.Send(oMail);
         }
 
-        private void SendActivationEmail(string email, string password)
+        public void SendActivationEmail(string senden)
         {
+            /* Mail id password from where mail will be sent; At the moment from gmail 
+            / with "placetobecologne@gmail.com" asusername and "placetobe123" as password.
+             */
             string activationCode = Guid.NewGuid().ToString();
-            using (MailMessage mm = new MailMessage("sender@gmail.com", email))
-            {
-                mm.Subject = "Account Activation";
-                string body = "Confirm the mail:";
-                body += "<br /><br />Please click the following link to activate your account";
-                body += "<br /><a href = ' ActivationCode=" + activationCode + "'>Click here to activate your account.</a>";
-                body += "<br /><br />Thanks";
-                mm.Body = body;
-                mm.IsBodyHtml = true;
-                SmtpClient smtp = new SmtpClient();
-                smtp.Host = "smtp.gmail.com";
-                smtp.EnableSsl = true;
-                NetworkCredential NetworkCred = new NetworkCredential("sender@gmail.com", password);
-                smtp.UseDefaultCredentials = true;
-                smtp.Credentials = NetworkCred;
-                smtp.Port = 587;
-                smtp.Send(mm);
-            }
+            string fromAddress = "placetobecologne@gmail.com";
+            string mailPassword = "placetobe123";
+            
+
+            string messageBody = "Confirm the mail:";
+            messageBody += "<br /><br />Please click the following link to activate your account";
+            messageBody += "<br /><a href = ' ActivationCode= " + activationCode + "'>Click here to activate your account.</a>";
+            messageBody += "<br /><br />Thanks";
+
+            //Create smtp connection.
+            SmtpClient client = new SmtpClient();
+            client.Port = 587; //outgoing port for the mail-server.
+            client.Host = "smtp.gmail.com";
+            client.EnableSsl = true;
+            client.Timeout = 10000;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.UseDefaultCredentials = false;
+            client.Credentials = new System.Net.NetworkCredential(fromAddress, mailPassword);
+
+
+            // Fill the mail form.
+            var send_mail = new MailMessage();
+
+            send_mail.IsBodyHtml = true;
+            //address from where mail will be sent.
+            send_mail.From = new MailAddress("placetobecologne@gmail.com");
+            //address to which mail will be sent.           
+            send_mail.To.Add(new MailAddress("MergimAlija@gmx.de"));
+            //subject of the mail.
+            send_mail.Subject = "Registration: PlaceToBe";
+
+            send_mail.Body = messageBody;
+            client.Send(send_mail);
         }
 
         public void ForgetPassword(string email)
