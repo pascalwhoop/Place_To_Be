@@ -41,17 +41,21 @@ namespace placeToBe.Controllers
             return await user.Login(loginmail, loginpw);
         }
 
+        public void Put([FromUri]string senden){
+            user.SendActivationEmail(senden);
+        }
+
         //Register a User with email and passwort
         public async Task<Guid> Put([FromUri]string email, [FromUri] string passwort)
         {
             return await user.Register(email, passwort);
         }
 
-        public async Task<User> Put([FromUri]string email)
-        {
-            UserRepository user = new UserRepository();
-            return await user.GetByEmailAsync(email);
-        }
+        //public async Task<User> Put([FromUri]string email)
+        //{
+        //    UserRepository user = new UserRepository();
+        //    return await user.GetByEmailAsync(email);
+        //}
 
         // DELETE api/User/5
         //ToDo
