@@ -4,6 +4,8 @@ using placeToBe.Model.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,45 +13,45 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 
+
 namespace placeToBe.Services
 {
     public class AccountService
     {
         UserRepository userRepo = new UserRepository();
         int saltSize = 20;
-
         /// <summary>
         /// Registers a new User.
         /// </summary>
         /// <param name="email"></param>
         /// <param name="password"></param>
-        public async void Register(string email, string password)
+        public async Task<Guid> Register(string email, string password)
         {
             byte[] plainText = Encoding.UTF8.GetBytes(password);
             byte[] salt = GenerateSalt(saltSize);
-            byte[] passwordSalt= GenerateSaltedHash(plainText, salt);
+            byte[] passwordSalt = GenerateSaltedHash(plainText, salt);
 
             User user = new User(email, passwordSalt, salt);
-            await userRepo.InsertAsync(user);
+            user.userId = new Guid();
+            //SendActivationEmail(email, password);
+            return await userRepo.InsertAsync(user);
         }
 
-        public async Task<bool> Login(string email, string password)
+        public async Task<User> Login(string email, string password)
         {
             byte[] plainText = Encoding.UTF8.GetBytes(password);
-            User user =await GetUser(email);
-            byte[] salt = user.salt;
+            User user = await GetEmail(email);
+            byte[] salt = GenerateSalt(saltSize);
             byte[] passwordSalt = GenerateSaltedHash(plainText, salt);
 
             if (passwordSalt == user.passwordSalt)
             {
-                FormsAuthentication.SetAuthCookie(email, false);
-                FormsAuthentication.RedirectFromLoginPage(email, false);
-                return true;
-                
+                FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(email, false, 5);
+                return await userRepo.GetByEmailAsync(email);
             }
             else
             {
-                return false;
+                return null;
             }
         }
 
@@ -66,14 +68,48 @@ namespace placeToBe.Services
 
         }
 
-        public void ConfirmEmail()
+        public void ConfirmEmail(string email)
         {
-
+            MailMessage oMail = new System.Net.Mail.MailMessage();
+            SmtpClient smtp = new System.Net.Mail.SmtpClient();
+            oMail.From = new System.Net.Mail.MailAddress("placetobe@gmail.com");
+            //oMail.To.Add(TextBox1.Text.Trim());
+            oMail.Subject = "EMail Confirmation";
+            oMail.Body = "Body*";
+            oMail.IsBodyHtml = true;
+            smtp.Host = "smtp.sendgrid.net";
+            System.Net.NetworkCredential cred = new System.Net.NetworkCredential("myusername", "mypassword");
+            smtp.UseDefaultCredentials = false;
+            smtp.Credentials = cred;
+            smtp.Send(oMail);
         }
 
-        public void ForgetPassword()
+        private void SendActivationEmail(string email, string password)
         {
+            string activationCode = Guid.NewGuid().ToString();
+            using (MailMessage mm = new MailMessage("sender@gmail.com", email))
+            {
+                mm.Subject = "Account Activation";
+                string body = "Confirm the mail:";
+                body += "<br /><br />Please click the following link to activate your account";
+                body += "<br /><a href = ' ActivationCode=" + activationCode + "'>Click here to activate your account.</a>";
+                body += "<br /><br />Thanks";
+                mm.Body = body;
+                mm.IsBodyHtml = true;
+                SmtpClient smtp = new SmtpClient();
+                smtp.Host = "smtp.gmail.com";
+                smtp.EnableSsl = true;
+                NetworkCredential NetworkCred = new NetworkCredential("sender@gmail.com", password);
+                smtp.UseDefaultCredentials = true;
+                smtp.Credentials = NetworkCred;
+                smtp.Port = 587;
+                smtp.Send(mm);
+            }
+        }
 
+        public void ForgetPassword(string email)
+        {
+            var test = userRepo.GetByEmailAsync(email);
         }
 
         public void ResetPassword()
@@ -87,7 +123,7 @@ namespace placeToBe.Services
         /// </summary>
         /// <param name="email">email of the user</param>
         /// <returns>return the user saved in the db</returns>
-        public async Task<User> GetUser(String email)
+        public async Task<User> GetEmail(String email)
         {
             return await userRepo.GetByEmailAsync(email);
         }
@@ -149,5 +185,5 @@ namespace placeToBe.Services
         }
         #endregion
     }
-        
+
 }
