@@ -59,7 +59,7 @@ namespace placeToBe.Service
         /// Each Request contains the authentication data of place to be for the particular API embedded in an url String 
         /// which represents the right request syntax. 
         /// </summary>
-        /// <param name="requestData">String containing request</param>
+        /// <param name="requestData">String containing request data</param>
         /// <param name="condition">choosing the right url syntax for the particular request</param>
         /// <returns>JSON response in String format</returns>
         public String RequestWebApi(String requestData, String condition)
@@ -67,21 +67,28 @@ namespace placeToBe.Service
             String result = null;
             HttpWebRequest request;
 
+            //Google latitude/longitude request of a location. requestData contains describtion of location.
             if (condition == "GOOGLE")
             {
                 url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + requestData + "&key=" + AppGoogleKey;
             }
+            //Request for details of a Facebook page by using its Facebook id (requestData).
             else if (condition == "pageData")
             {
                 url = "https://graph.facebook.com/v2.3/" + requestData + "?access_token=" + fbAppId + "|" + fbAppSecret;
             }
-            else if (condition == "searchPlace")
+            //Using Facebook searching for pages within a circle around a specified latitude/longitude. 
+            //"distance" represents the radius of the circle. Limit means how many Places the returned string contains -> splitting results.
+            // (See also below comments on condition "nextPages")
+
+            else if (condition == "searchPages")
             {
                 //split[0]= latitude, split[1]=longitude, split[2]=distance, split[3]=limit
                 String[] split = requestData.Split(new string[] { "|" }, StringSplitOptions.None);
                 url = "https://graph.facebook.com/v2.3/search?q=\"\"&type=place&center=" + split[0] + "," + split[1] + "&distance=" + split[2] + "&limit=" + split[3] + "&fields=id&access_token=" + fbAppId + "|" + fbAppSecret;
             }
-            else if (condition == "nextPage")
+            // Get the next substring of searchPages request results containing the next (for example limit=2000) Pages.
+            else if (condition == "nextPages")
             {
                 url = requestData;
             }
@@ -189,9 +196,9 @@ namespace placeToBe.Service
             {
                 String getData = coord.latitude + "|" + coord.longitude + "|" + distance + "|" + limit;
                 getData = getData.Replace(",", ".");
-                String placesListJson = RequestWebApi(getData, "searchPlace");
+                String placesListJson = RequestWebApi(getData, "searchPages");
                 Event eventNew = new Event();
-                MergePlacesResponse(placesListJson, "nextPage", eventNew);
+                MergePlacesResponse(placesListJson, "nextPages", eventNew);
             }
         }
 
@@ -231,12 +238,12 @@ namespace placeToBe.Service
             int sizeList = addPlaceIdList.Count;
             if (sizeList > 0)
             {
-                String nextPage = addPlaceIdList[sizeList - 1];
+                String nextPages = addPlaceIdList[sizeList - 1];
 
 
 
                 //Search for more Pages until the end
-                while (nextPage.Substring(0, 5) == "https")
+                while (nextPages.Substring(0, 5) == "https")
                 {
                     //Delete Page from id List
                     addPlaceIdList.RemoveAt(sizeList - 1);
@@ -245,18 +252,18 @@ namespace placeToBe.Service
                     //clear addPlaceIdList
                     addPlaceIdList.Clear();
                     //Get from Graph APi
-                    String nextResponse = RequestWebApi(nextPage, "nextPage");
+                    String nextResponse = RequestWebApi(nextPages, "nextPages");
                     addPlaceIdList = HandlePlacesResponse(nextResponse, condition);
                     //Get NExt Page
                     sizeList = addPlaceIdList.Count;
                     if (sizeList > 0)
                     {
-                        nextPage = addPlaceIdList[sizeList - 1];
+                        nextPages = addPlaceIdList[sizeList - 1];
                     }
                     else
                     {
-                        nextPage = "UNDEFINED";
-                        condition = "searchPlace";
+                        nextPages = "UNDEFINED";
+                        condition = "searchPages";
                     }
                 }
             }
@@ -291,7 +298,7 @@ namespace placeToBe.Service
 
                 if (facebookPageResults.paging != null && facebookPageResults.paging.next != null)
                 {
-                    //add the nextPage response at the end of the list, for the next request
+                    //add the nextPages response at the end of the list, for the next request
                     String next = facebookPageResults.paging.next;
                     placeIdList.Add(next);
                 }
@@ -315,7 +322,7 @@ namespace placeToBe.Service
 
                 if (facebookPageResults.paging != null && facebookPageResults.paging.next != null)
                 {
-                    //add the nextPage response at the end of the list, for the next request
+                    //add the nextPages response at the end of the list, for the next request
                     String next = facebookPageResults.paging.next;
                     placeIdList.Add(next);
                 }
@@ -395,7 +402,7 @@ namespace placeToBe.Service
          */
         public async void HandlePlacesIdArrays(String[] placesId, String condition, Event eventNewZ)
         {
-            if (condition == "searchPlace")
+            if (condition == "searchPages")
             {
                 Page page;
                 foreach (String fbId in placesId)
@@ -487,7 +494,7 @@ namespace placeToBe.Service
         {
             if (place == null) return;
             //Place
-            if (condition == "searchPlace")
+            if (condition == "searchPages")
             {
                 JObject _place = JObject.Parse(place);
                 try
