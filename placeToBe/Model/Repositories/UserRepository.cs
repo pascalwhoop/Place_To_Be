@@ -19,7 +19,7 @@ namespace placeToBe.Model.Repositories
 
             public async Task<User> GetByEmailAsync(String email)
             {
-                var filter = Builders<User>.Filter.Eq("némail", email);
+                var filter = Builders<User>.Filter.Eq("email", email);
                 return await _collection.Find(filter).FirstOrDefaultAsync();
             }
     }
