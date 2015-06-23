@@ -9,6 +9,7 @@ using placeToBe.Model.Repositories;
 using System.Threading.Tasks;
 using placeToBe.Services;
 using System.Security.Cryptography;
+using System.Web.Security;
 
 namespace placeToBe.Controllers
 {
@@ -35,7 +36,7 @@ namespace placeToBe.Controllers
         /* POST api/User
         
          */
-        public async Task<User> Put([FromUri]string loginmail, [FromUri]string loginpw, [FromUri] string ueberladung)
+        public async Task<FormsAuthenticationTicket> Put([FromUri]string loginmail, [FromUri]string loginpw, [FromUri] string ueberladung)
         {
             return await user.Login(loginmail, loginpw);
         }
