@@ -2,7 +2,6 @@
 using System.Reflection.Emit;
 using System.Runtime.Serialization.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MongoDB.Bson.IO;
 using placeToBe;
 using placeToBe.Model;
 using placeToBe.Service;
@@ -37,7 +36,7 @@ namespace placeToBe.Tests.Service
 
             
             //Act
-            Coordinates[] result = crawler.Shuffle(testor);
+            Coordinates[] result = crawler.shuffle(testor);
 
             //Assert
             if (result == expected1)
@@ -77,7 +76,7 @@ namespace placeToBe.Tests.Service
 
             
 
-            crawler.HandlePlace(place, condition, id);
+            crawler.handlePlace(place, condition, id);
         }
 
         [TestMethod]
@@ -85,7 +84,7 @@ namespace placeToBe.Tests.Service
             FbCrawler crawler = new FbCrawler();
             var placeID = "346376098748775";    //Reinecke Fuchs. Gibt aktuell noch Probleme (können irgendwie nicht auf dessen Events zugreifen
             placeID = "252874629056";           //Bootshaus. Da kommen wir irgendwie drauf... Altersbegrenzung??
-            crawler.FindEventOnPage(placeID);
+            crawler.fetchEventsOnPage(placeID);
         }
 
         [TestMethod]

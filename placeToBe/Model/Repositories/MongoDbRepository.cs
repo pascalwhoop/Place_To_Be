@@ -35,10 +35,9 @@ namespace placeToBe.Model.Repositories {
         public async Task<Guid> InsertAsync(TEntity entity)
         {
             entity.Id = Guid.NewGuid();
-            _collection.InsertOneAsync(entity);
-            
-            
-
+            Task task = _collection.InsertOneAsync(entity);
+            task.Wait();
+            return entity.Id;
         }
 
         public async Task<Guid> UpdateAsync(TEntity entity)

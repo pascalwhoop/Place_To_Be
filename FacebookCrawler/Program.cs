@@ -67,7 +67,7 @@ namespace FacebookCrawler
             berlin.polygon = new double[5, 2]{
                 {52.6754542,13.0891553}, {52.6754542,13.7611176}, {52.339629599,13.7611176}, {52.339629599, 13.0891553}, {52.6754542,13.0891553}
             };
-            fbCrawler.FindPagesForCities(berlin);
+            fbCrawler.findPagesForCities(berlin);
 
             /*City munich = new City();
             munich.name = "Munich, Germany";
