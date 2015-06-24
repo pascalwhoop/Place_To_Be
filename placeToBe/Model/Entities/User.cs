@@ -13,7 +13,7 @@ namespace placeToBe.Model.Entities
             this.passwordSalt = passwordSalt;
             this.salt = salt;
         }
-        public string userId { get; set; }
+        public Guid userId { get; set; }
         public string email { get; set; }
         public byte[] passwordSalt { get; set; }
         public byte[] salt { get; set; }
