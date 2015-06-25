@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using placeToBe.Model.Entities;
 using placeToBe.Model.Repositories;
 using placeToBe.Services;
-using System.Collections;
-using System.Web.Http.Routing.Constraints;
-using placeToBe.Service;
 
 namespace placeToBe.Controllers
 {
@@ -24,10 +18,10 @@ namespace placeToBe.Controllers
          */
 
         [Route("api/event/filter/{city}/{year}/{month}/{day}/{hour}")]
-        public async Task<List<LightEvent>> getEventsByTimeAndCity(string city, string year, string month, string day, string hour) {
+        public async Task<List<LightEvent>> getEventsByTimeAndCity(Guid cityGuid, string year, string month, string day, string hour) {
 
             DateTime time = new DateTime(int.Parse(year), int.Parse(month), int.Parse(day), int.Parse(hour), 0, 0);
-            return await search.HeatSearch(city, time, time.AddHours(8));
+            return await search.HeatSearch(cityGuid, time, time.AddHours(8));
         } 
 
         // GET api/event/5
