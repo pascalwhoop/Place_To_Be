@@ -32,17 +32,23 @@ namespace placeToBe.Model.Repositories {
             return _collection;
         } 
 
-        public async Task<Guid> InsertAsync(TEntity entity)
+        public virtual async Task<Guid> InsertAsync(TEntity entity)
         {
+            //if already exists, we update instead.
+            if (entity.Id != Guid.Empty) {
+                return await UpdateAsync(entity);
+            }
             entity.Id = Guid.NewGuid();
+            entity.lastUpdatedTimestamp = DateTime.Now;
             Task task = _collection.InsertOneAsync(entity);
             task.Wait();
             return entity.Id;
         }
 
-        public async Task<Guid> UpdateAsync(TEntity entity)
-        {
-                await _collection.InsertOneAsync(entity);
+        public async Task<Guid> UpdateAsync(TEntity entity) {
+            entity.lastUpdatedTimestamp = DateTime.Now;
+            var filter = Builders<TEntity>.Filter.Eq("_id", entity.Id);
+            await _collection.ReplaceOneAsync(filter, entity);
             return entity.Id;
         }
 

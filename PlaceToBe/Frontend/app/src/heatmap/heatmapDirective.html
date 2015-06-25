@@ -3,7 +3,7 @@
 <div id="placetobe-map-settings">
   <input type="text" ng-model="city.name" ng-disabled="true" placeholder="City"/>
   <p>Datum<input type="date" ng-model="startDate"/></p>
-  <p>Uhrzeit <select ng-options="n for n in [] | range:0F:23" ng-model="startHour"></select></p>
+  <p>Uhrzeit <select ng-options="n for n in [] | range:0:23" ng-model="startHour"></select></p>
   <button ng-click="fetchEvents(city.name, startDate, startHour)" class="btn">FetchEvents</button>
 </div>
 

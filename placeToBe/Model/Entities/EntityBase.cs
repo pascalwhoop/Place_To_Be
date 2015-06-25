@@ -14,4 +14,6 @@ using System.Threading.Tasks;
 public abstract class EntityBase
 {
     public Guid Id { get; set; }
+    public DateTime lastUpdatedTimestamp { get; set; }
+
 }

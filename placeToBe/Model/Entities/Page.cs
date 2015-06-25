@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Web;
 using MongoDB.Bson.Serialization.Attributes;
+using placeToBe.Model.Entities;
 
 namespace placeToBe.Model{
 
@@ -41,7 +42,7 @@ namespace placeToBe.Model{
                            [DataMember]
                            public string link { get; set; }
                            [DataMember]
-                           public Location location { get; set; }
+                           public FbLocation location { get; set; }
                            [DataMember]
                            public string name { get; set; }
                            [DataMember]
@@ -99,15 +100,7 @@ namespace placeToBe.Model{
                            public string fri_2_close { get; set; }
                        }
 
-                       public class Location
-                       {
-                           public string city { get; set; }
-                           public string country { get; set; }
-                           public double latitude { get; set; }
-                           public double longitude { get; set; }
-                           public string street { get; set; }
-                           public string zip { get; set; }
-                       }
+                       
 
                        public class Parking
                        {
