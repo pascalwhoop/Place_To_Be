@@ -88,33 +88,36 @@ namespace placeToBe.Services
             messageBody += "<br /><br />Thank you for the Registration";
 
             //Create smtp connection.
-            SmtpClient client = new SmtpClient();
-            client.Port = 587; //outgoing port for the mail-server.
-            client.Host = "smtp.gmail.com";
-            client.EnableSsl = true;
-            client.Timeout = 10000;
-            client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.UseDefaultCredentials = false;
-            client.Credentials = new System.Net.NetworkCredential(fromAddress, mailPassword);
+            SmtpClient client = new SmtpClient
+            {
+                Port = 587,
+                Host = "smtp.gmail.com",
+                EnableSsl = true,
+                Timeout = 10000,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new System.Net.NetworkCredential(fromAddress, mailPassword)
+            };
+            //outgoing port for the mail-server.
 
             // Fill the mail form.
-            var send_mail = new MailMessage();
+            var sendMail = new MailMessage();
 
-            send_mail.IsBodyHtml = true;
+            sendMail.IsBodyHtml = true;
             //address from where mail will be sent.
-            send_mail.From = new MailAddress("placetobecologne@gmail.com");
+            sendMail.From = new MailAddress("placetobecologne@gmail.com");
             //address to which mail will be sent.           
-            send_mail.To.Add(new MailAddress("madys1955@rhyta.com"));
+            sendMail.To.Add(new MailAddress("madys1955@rhyta.com"));
             //subject of the mail.
-            send_mail.Subject = "Confirmation: PlaceToBe";
-            send_mail.Body = messageBody;
+            sendMail.Subject = "Confirmation: PlaceToBe";
+            sendMail.Body = messageBody;
 
             User user = await userRepo.GetByActivationCode(activationcode);
             user.status = true;
             await userRepo.UpdateAsync(user);
             
             //Send the mail 
-            client.Send(send_mail);
+            client.Send(sendMail);
             
         }
 
