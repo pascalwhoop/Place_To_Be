@@ -66,7 +66,7 @@ namespace placeToBe.Model.Repositories {
 
         }
 
-        public async Task<IList<TEntity>> GetAllAsync() {
+        public virtual async Task<IList<TEntity>> GetAllAsync() {
             return await _collection.Find(new BsonDocument()).ToListAsync();
         }
 
