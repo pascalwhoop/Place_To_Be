@@ -50,7 +50,7 @@ namespace placeToBe.Controllers
 
         public async Task Put([FromUri] string activationcode)
         {
-            user.ConfirmEmail(activationcode);
+            await user.ConfirmEmail(activationcode);
         }
 
         public async void Delete(Guid id)
