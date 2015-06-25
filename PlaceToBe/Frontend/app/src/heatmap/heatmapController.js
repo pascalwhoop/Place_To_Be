@@ -19,7 +19,8 @@ angular.module('placeToBe')
       },
       time: 9000
     };
-    $scope.eventSourceUrl = "https://placetobe-koeln.azurewebsites.net/api/event";
+    //$scope.eventSourceUrl = "https://placetobe-koeln.azurewebsites.net/api/event";
+    $scope.eventSourceUrl = "http://192.168.125.136:18172/api/event"
 
 
   });
