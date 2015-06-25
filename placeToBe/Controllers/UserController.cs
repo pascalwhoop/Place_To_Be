@@ -48,7 +48,7 @@ namespace placeToBe.Controllers
             await user.SendActivationEmail(email, passwort);
         }
 
-        public async Task Put([FromUri] string activationcode)
+        public async Task Get([FromUri] string activationcode)
         {
             await user.ConfirmEmail(activationcode);
         }
