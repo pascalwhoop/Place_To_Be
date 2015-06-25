@@ -7,16 +7,23 @@ namespace placeToBe.Model.Entities
 {
     public class User : EntityBase
     {
+        public User(string email)
+        {
+            this.email = email;
+        }
         public User(String email, byte[] passwordSalt, byte[] salt)
         {
             this.email = email;
             this.passwordSalt = passwordSalt;
             this.salt = salt;
         }
-        public string userId { get; set; }
         public string email { get; set; }
         public byte[] passwordSalt { get; set; }
         public byte[] salt { get; set; }
+        
+        // if status == true then the user is activated/confirmed, else not activated/confirmed
+        public bool status { get; set; }
+        public string activationcode { get; set; }
         public string company { get; set; }
         public string city { get; set; }
 

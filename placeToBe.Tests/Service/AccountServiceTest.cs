@@ -19,7 +19,7 @@ namespace placeToBe.Tests.Service
 
             //Act
 
-            account.Register(email,password);
+           // account.Register(email,password); TODO Merve Error
 
             //Assert
             //Frage, ob hier eine Asser Anweisung zugehoert

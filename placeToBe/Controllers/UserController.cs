@@ -8,6 +8,8 @@ using placeToBe.Model.Entities;
 using placeToBe.Model.Repositories;
 using System.Threading.Tasks;
 using placeToBe.Services;
+using System.Security.Cryptography;
+using System.Web.Security;
 
 namespace placeToBe.Controllers
 {
@@ -25,38 +27,38 @@ namespace placeToBe.Controllers
         }
 
         // GET api/User/5
-        public async Task<User> Get(Guid id)
+        public async Task<User> Get([FromUri]Guid id)
         {
             User User = await repo.GetByIdAsync(id);
             return User;
         }
 
-        /* POST api/User
-        
-         */
-        public async Task<bool> LoginPost(string email, string password)
+        // PUT Login - Get AuthenticationTicket for 5 minutes
+       
+        public async Task<FormsAuthenticationTicket> Put([FromUri]string loginmail, [FromUri]string loginpw, [FromUri] string ueberladung)
         {
-             return await user.Login(email, password);
+            return await user.Login(loginmail, loginpw);
         }
 
-       //Register user - start service and put in db
-        public void RegisterPost(string email, string password)
+
+        //Send activationsemail and register a user with email and passwort
+
+        public async Task Put([FromUri]string email, [FromUri] string passwort)
         {
-          user.Register(email, password);
+            await user.SendActivationEmail(email, passwort);
         }
 
-        // PUT api/User/5
-        public void Put(int id, [FromBody]string value)
+        public async Task Put([FromUri] string activationcode)
         {
-            // Put...
+            await user.ConfirmEmail(activationcode);
         }
 
-        // DELETE api/User/5
-        //ToDo
         public async void Delete(Guid id)
         {
             var User = await repo.GetByIdAsync(id);
             repo.DeleteAsync(User);
         }
+
+
     }
 }

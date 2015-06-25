@@ -38,6 +38,7 @@ namespace placeToBe.Model.Repositories {
             if (entity.Id != Guid.Empty) {
                 return await UpdateAsync(entity);
             }
+
             entity.Id = Guid.NewGuid();
             entity.lastUpdatedTimestamp = DateTime.Now;
             Task task = _collection.InsertOneAsync(entity);

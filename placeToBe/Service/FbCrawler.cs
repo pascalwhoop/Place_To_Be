@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -184,7 +184,9 @@ namespace placeToBe.Service {
                     try {
                         Task<Page> t = fetchAndStorePage(page); //TODO check if page is known to host events
                         Page p = t.Result;
-                        if (determineIfEventsShouldBeFetched(p)) fetchEventsOnPage(p.fbId).Wait(); //TODO check if events have been fetched within the last 24 h
+                        if (determineIfEventsShouldBeFetched(p))
+                            fetchEventsOnPage(p.fbId).Wait();
+                                //TODO check if events have been fetched within the last 24 h
                     }
                     catch (Exception exception) {
                         Debug.WriteLine(exception); // TODO VERY DIRTY FIX ASAP
@@ -340,13 +342,15 @@ namespace placeToBe.Service {
             Guid eventDbId = Guid.Empty; //put empty Guid in Place. this is the quivalent of a NULL for an object
 
             //if event not already in DB OR if already in DB but not up to date
-            if (e == null || e.lastUpdatedTimestamp == DateTime.MinValue||
+            if (e == null || e.lastUpdatedTimestamp == DateTime.MinValue ||
                 (e.lastUpdatedTimestamp != DateTime.MinValue &&
-                              e.lastUpdatedTimestamp - DateTime.Now.AddDays(-1) < TimeSpan.Zero)) {
-                                  if (e != null) eventDbId = e.Id; //if the Page was already in the DB, we make sure we dont loose our Guid
+                 e.lastUpdatedTimestamp - DateTime.Now.AddDays(-1) < TimeSpan.Zero)) {
+                if (e != null)
+                    eventDbId = e.Id; //if the Page was already in the DB, we make sure we dont loose our Guid
                 //Get Event information
                 e = JsonConvert.DeserializeObject<Event>(graphApiGet(result.fbId, "searchEventData"));
-                e.Id = eventDbId; //put the old Guid back in place or in case of a new Page the default value. we need this in our repo
+                e.Id = eventDbId;
+                    //put the old Guid back in place or in case of a new Page the default value. we need this in our repo
 
                 Debug.WriteLine("DB Push Event");
                 var task = eventRepo.InsertAsync(e);
@@ -354,7 +358,7 @@ namespace placeToBe.Service {
             }
             return e;
 
-            
+
         }
 
         private async Task<Page> fetchAndStorePage(FacebookPagingResult result) {
@@ -365,10 +369,12 @@ namespace placeToBe.Service {
             if (pageInDb == null || pageInDb.lastUpdatedTimestamp == DateTime.MinValue ||
                 (pageInDb.lastUpdatedTimestamp != DateTime.MinValue &&
                  pageInDb.lastUpdatedTimestamp - DateTime.Now.AddDays(-7) < TimeSpan.Zero)) {
-                if (pageInDb != null) pageDbId = pageInDb.Id; //if the Page was already in the DB, we make sure we dont loose our Guid
+                if (pageInDb != null)
+                    pageDbId = pageInDb.Id; //if the Page was already in the DB, we make sure we dont loose our Guid
                 //Get page information
                 pageInDb = JsonConvert.DeserializeObject<Page>(graphApiGet(result.fbId, "pageData"));
-                pageInDb.Id = pageDbId; //put the old Guid back in place or in case of a new Page the default value. we need this in our repo
+                pageInDb.Id = pageDbId;
+                    //put the old Guid back in place or in case of a new Page the default value. we need this in our repo
                 //and push it to db
                 Debug.WriteLine("DB Push Page");
                 var task = pageRepo.InsertAsync(pageInDb);
