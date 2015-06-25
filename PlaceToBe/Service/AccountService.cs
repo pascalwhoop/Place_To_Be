@@ -123,10 +123,8 @@ namespace placeToBe.Services
         {
 
             User user =await GetUser(activationcode);
-            await DeleteUser(user);
-
             user.status = true;
-            await UpdateUser(user);
+            await userRepo.UpdateAsync(user);
 
         }
 
@@ -134,15 +132,6 @@ namespace placeToBe.Services
         {
 
             return await userRepo.GetByActivationCode(activationcode);
-        }
-
-        public async Task DeleteUser(User user){
-            await userRepo.DeleteAsync(user);
-        }
-
-        public async Task UpdateUser(User user)
-        {
-            await userRepo.UpdateAsync(user);
         }
 
         /* SendActivationEmail: Send an email to user, register with "inactive" status.
