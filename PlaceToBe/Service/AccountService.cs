@@ -20,22 +20,27 @@ namespace placeToBe.Services
     {
         UserRepository userRepo = new UserRepository();
         int saltSize = 20;
+
+        public string fromAddress;
+        public string mailPassword;
+
         /// <summary>
         /// Registers a new User.
         /// </summary>
         /// <param name="email"></param>
         /// <param name="password"></param>
-        public async Task<Guid> Register(string email, string password)
+        public async Task<Guid> Register(string email, string password,string activationcode)
         {
             byte[] plainText = Encoding.UTF8.GetBytes(password);
             byte[] salt = GenerateSalt(saltSize);
             byte[] passwordSalt = GenerateSaltedHash(plainText, salt);
 
             User user = new User(email, passwordSalt, salt);
-            user.userId = new Guid();
-            //SendActivationEmail(email, password);
+            user.status = false;
+            user.activationcode = activationcode;
             return await userRepo.InsertAsync(user);
         }
+
 
         public async Task<FormsAuthenticationTicket> Login(string email, string password)
         {
@@ -69,36 +74,18 @@ namespace placeToBe.Services
 
         }
 
-        public void ConfirmEmail(string email)
-        {
-            MailMessage oMail = new System.Net.Mail.MailMessage();
-            SmtpClient smtp = new System.Net.Mail.SmtpClient();
-            oMail.From = new System.Net.Mail.MailAddress("placetobe@gmail.com");
-            //oMail.To.Add(TextBox1.Text.Trim());
-            oMail.Subject = "EMail Confirmation";
-            oMail.Body = "Body*";
-            oMail.IsBodyHtml = true;
-            smtp.Host = "smtp.sendgrid.net";
-            System.Net.NetworkCredential cred = new System.Net.NetworkCredential("myusername", "mypassword");
-            smtp.UseDefaultCredentials = false;
-            smtp.Credentials = cred;
-            smtp.Send(oMail);
-        }
+        /* Mail id password from where mail will be sent; At the moment from gmail 
+        / with "placetobecologne@gmail.com" asusername and "placetobe123" as password.
+        */
 
-        public void SendActivationEmail(string senden)
+        public async Task ConfirmEmail(string activationcode)
         {
-            /* Mail id password from where mail will be sent; At the moment from gmail 
-            / with "placetobecologne@gmail.com" asusername and "placetobe123" as password.
-             */
-            string activationCode = Guid.NewGuid().ToString();
-            string fromAddress = "placetobecologne@gmail.com";
-            string mailPassword = "placetobe123";
             
+            fromAddress = "placetobecologne@gmail.com";
+            mailPassword = "placetobe123";
 
-            string messageBody = "Confirm the mail:";
-            messageBody += "<br /><br />Please click the following link to activate your account";
-            messageBody += "<br /><a href = ' ActivationCode= " + activationCode + "'>Click here to activate your account.</a>";
-            messageBody += "<br /><br />Thanks";
+            string messageBody = "Mail confirmed.";
+            messageBody += "<br /><br />Thank you for the Registration";
 
             //Create smtp connection.
             SmtpClient client = new SmtpClient();
@@ -110,6 +97,52 @@ namespace placeToBe.Services
             client.UseDefaultCredentials = false;
             client.Credentials = new System.Net.NetworkCredential(fromAddress, mailPassword);
 
+            // Fill the mail form.
+            var send_mail = new MailMessage();
+
+            send_mail.IsBodyHtml = true;
+            //address from where mail will be sent.
+            send_mail.From = new MailAddress("placetobecologne@gmail.com");
+            //address to which mail will be sent.           
+            send_mail.To.Add(new MailAddress("madys1955@rhyta.com"));
+            //subject of the mail.
+            send_mail.Subject = "Confirmation: PlaceToBe";
+            send_mail.Body = messageBody;
+
+            User user = await userRepo.GetByActivationCode(activationcode);
+            user.status = true;
+            await userRepo.UpdateAsync(user);
+            
+            //Send the mail 
+            client.Send(send_mail);
+            
+        }
+
+        /* SendActivationEmail: Send an email to user, register with "inactive" status.
+         * Mail id password from where mail will be sent; At the moment from gmail 
+        / with "placetobecologne@gmail.com" asusername and "placetobe123" as password.
+        */
+        public async Task SendActivationEmail(string email, string passwort)
+        {
+            fromAddress = "placetobecologne@gmail.com";
+            mailPassword = "placetobe123";
+            
+            string activationCode = Guid.NewGuid().ToString();
+
+            string messageBody = "Confirm the mail:";
+            messageBody += "<br /><br />Please click the following link to activate your account";
+            messageBody += "<br /><a href = ' http://localhost:18172/api/user?confirm=" + activationCode + "'>Click here to activate your account.</a>";
+            messageBody += "<br /><br />Thanks"+activationCode;
+
+            //Create smtp connection.
+            SmtpClient client = new SmtpClient();
+            client.Port = 587; //outgoing port for the mail-server.
+            client.Host = "smtp.gmail.com";
+            client.EnableSsl = true;
+            client.Timeout = 10000;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.UseDefaultCredentials = false;
+            client.Credentials = new System.Net.NetworkCredential(fromAddress, mailPassword);
 
             // Fill the mail form.
             var send_mail = new MailMessage();
@@ -118,11 +151,16 @@ namespace placeToBe.Services
             //address from where mail will be sent.
             send_mail.From = new MailAddress("placetobecologne@gmail.com");
             //address to which mail will be sent.           
-            send_mail.To.Add(new MailAddress("MergimAlija@gmx.de"));
+            send_mail.To.Add(new MailAddress("Madys1955@rhyta.com"));
             //subject of the mail.
             send_mail.Subject = "Registration: PlaceToBe";
 
             send_mail.Body = messageBody;
+            //Register the user with inactive status (status==false)
+            await Register(email, passwort, activationCode);
+
+            
+            //Send the mail 
             client.Send(send_mail);
         }
 
