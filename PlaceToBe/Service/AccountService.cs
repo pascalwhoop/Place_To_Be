@@ -112,13 +112,37 @@ namespace placeToBe.Services
             sendMail.Subject = "Confirmation: PlaceToBe";
             sendMail.Body = messageBody;
 
-            User user = await userRepo.GetByActivationCode(activationcode);
-            user.status = true;
-            await userRepo.UpdateAsync(user);
+            await ChangeUserStatus(activationcode);
             
             //Send the mail 
             client.Send(sendMail);
             
+        }
+
+        public async Task ChangeUserStatus(string activationcode)
+        {
+
+            User user =await GetUser(activationcode);
+            await DeleteUser(user);
+
+            user.status = true;
+            await UpdateUser(user);
+
+        }
+
+        public async Task<User> GetUser(String activationcode)
+        {
+
+            return await userRepo.GetByActivationCode(activationcode);
+        }
+
+        public async Task DeleteUser(User user){
+            await userRepo.DeleteAsync(user);
+        }
+
+        public async Task UpdateUser(User user)
+        {
+            await userRepo.UpdateAsync(user);
         }
 
         /* SendActivationEmail: Send an email to user, register with "inactive" status.
@@ -154,7 +178,7 @@ namespace placeToBe.Services
             //address from where mail will be sent.
             send_mail.From = new MailAddress("placetobecologne@gmail.com");
             //address to which mail will be sent.           
-            send_mail.To.Add(new MailAddress("Madys1955@rhyta.com"));
+            send_mail.To.Add(new MailAddress("MergimAlija@gmx.de"));
             //subject of the mail.
             send_mail.Subject = "Registration: PlaceToBe";
 
