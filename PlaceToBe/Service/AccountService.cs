@@ -13,50 +13,52 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 
-
 namespace placeToBe.Services
 {
     public class AccountService
     {
         UserRepository userRepo = new UserRepository();
         int saltSize = 20;
-
-        public string fromAddress;
-        public string mailPassword;
-
-        /// <summary>
-        /// Registers a new User.
-        /// </summary>
-        /// <param name="email"></param>
-        /// <param name="password"></param>
-        public async Task<Guid> Register(string email, string password,string activationcode)
-        {
-            byte[] plainText = Encoding.UTF8.GetBytes(password);
-            byte[] salt = GenerateSalt(saltSize);
-            byte[] passwordSalt = GenerateSaltedHash(plainText, salt);
-
-            User user = new User(email, passwordSalt, salt);
-            user.status = false;
-            user.activationcode = activationcode;
-            return await userRepo.InsertAsync(user);
-        }
-
+        public string fromAddress = "placetobecologne@gmail.com";
+        private string mailPassword = "placetobe123";
 
         public async Task<FormsAuthenticationTicket> Login(string email, string password)
         {
-            byte[] plainText = Encoding.UTF8.GetBytes(password);
-            User user = await GetEmail(email);
-            byte[] salt = user.salt;
-            byte[] passwordSalt = GenerateSaltedHash(plainText, salt);
-           
-            bool compare = CompareByteArrays(passwordSalt,user.passwordSalt);
-            if (compare==true) 
+            try
             {
-                FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(email, false, 5);
-                return ticket;
+                byte[] plainText = Encoding.UTF8.GetBytes(password);
+                User user = await GetEmail(email);
+                byte[] salt = user.salt;
+                byte[] passwordSalt = GenerateSaltedHash(plainText, salt);
+                bool compare = CompareByteArrays(passwordSalt, user.passwordSalt);
+                //user password is correct            
+                if (compare == true && user.status == true)
+                {
+                    //Set a ticket to stay logged in.
+                    FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(email, false, 5);
+
+                    if (ticket.Expired)
+                    {
+                        FormsAuthentication.SignOut();
+                        return ticket;
+                    }
+                    return ticket;
+                }
+                else if (compare == true && user.status == false)
+                {
+                    UnauthorizedAccessException e;
+                    //ToDo: UI-Fehlermeldung: e.Message..(user not found, password false, status not activated)..
+                    return null;
+                }
+                else
+                {
+                    //User passwort incorrect or not found
+                    return null;
+                }
             }
-            else
+            catch (CookieException)
             {
+                //ToDo: UI-Fehlermeldung : "Cant create Cookie"
                 return null;
             }
         }
@@ -68,70 +70,91 @@ namespace placeToBe.Services
             FormsAuthentication.RedirectToLoginPage();
         }
 
+        public async Task ChangePasswort(string email, string oldpassword, string newpassword)
+        {
+            try
+            {
+                byte[] oldPw = Encoding.UTF8.GetBytes(oldpassword);
+                User user = await GetEmail(email);
+                byte[] oldSalt = user.salt;
+                byte[] oldPasswordSalt = GenerateSaltedHash(oldPw, oldSalt);
+                bool comparepw = CompareByteArrays(oldPasswordSalt, user.passwordSalt);
+
+                //user password is correct            
+                if (comparepw == true && user.status == true)
+                {
+                    byte[] newPw = Encoding.UTF8.GetBytes(newpassword);
+                    byte[] newSalt = GenerateSalt(saltSize);
+                    byte[] newPasswordSalt = GenerateSaltedHash(newPw, newSalt);
+                    user.passwordSalt = newPasswordSalt;
+                    user.salt = newSalt;
+                    await userRepo.UpdateAsync(user);
+                }
+                else
+                {
+                    //ToDo: Rückmeldung an UI : password is not correct or status is false
+                }
+            }
+            catch (Exception e)
+            {
+                //ToDo: Change password not possible because password is false, status is not activated.
+            }
+        }
+
         //Facebook-Login
         public void ExternalLogin()
         {
 
         }
 
-        /* Mail id password from where mail will be sent; At the moment from gmail 
+        /* Send Confirmationmail to the users email.
+         * Mail id password from where mail will be sent; At the moment from gmail 
         / with "placetobecologne@gmail.com" asusername and "placetobe123" as password.
         */
 
         public async Task ConfirmEmail(string activationcode)
         {
-            
-            fromAddress = "placetobecologne@gmail.com";
-            mailPassword = "placetobe123";
-
-            string messageBody = "Mail confirmed.";
-            messageBody += "<br /><br />Thank you for the Registration";
-
-            //Create smtp connection.
-            SmtpClient client = new SmtpClient
+            try
             {
-                Port = 587,
-                Host = "smtp.gmail.com",
-                EnableSsl = true,
-                Timeout = 10000,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false,
-                Credentials = new System.Net.NetworkCredential(fromAddress, mailPassword)
-            };
-            //outgoing port for the mail-server.
+                string messageBody = "Mail confirmed.";
+                messageBody += "<br /><br />Thank you for the Registration";
 
-            // Fill the mail form.
-            var sendMail = new MailMessage();
+                //Create smtp connection.
+                SmtpClient client = new SmtpClient
+                {
+                    //outgoing port for the mail-server.
+                    Port = 587,
+                    Host = "smtp.gmail.com",
+                    EnableSsl = true,
+                    Timeout = 10000,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    UseDefaultCredentials = false,
+                    Credentials = new System.Net.NetworkCredential(fromAddress, mailPassword)
+                };
 
-            sendMail.IsBodyHtml = true;
-            //address from where mail will be sent.
-            sendMail.From = new MailAddress("placetobecologne@gmail.com");
-            //address to which mail will be sent.           
-            sendMail.To.Add(new MailAddress("madys1955@rhyta.com"));
-            //subject of the mail.
-            sendMail.Subject = "Confirmation: PlaceToBe";
-            sendMail.Body = messageBody;
 
-            await ChangeUserStatus(activationcode);
-            
-            //Send the mail 
-            client.Send(sendMail);
-            
-        }
+                // Fill the mail form.
+                var sendMail = new MailMessage();
 
-        public async Task ChangeUserStatus(string activationcode)
-        {
+                sendMail.IsBodyHtml = true;
+                //address from where mail will be sent.
+                sendMail.From = new MailAddress("placetobecologne@gmail.com");
+                //address to which mail will be sent.           
+                User user = await GetUser(activationcode);
+                sendMail.To.Add(new MailAddress(user.email));
+                //subject of the mail.
+                sendMail.Subject = "Confirmation: PlaceToBe";
+                sendMail.Body = messageBody;
 
-            User user =await GetUser(activationcode);
-            user.status = true;
-            await userRepo.UpdateAsync(user);
+                await ChangeUserStatus(activationcode);
 
-        }
-
-        public async Task<User> GetUser(String activationcode)
-        {
-
-            return await userRepo.GetByActivationCode(activationcode);
+                //Send the mail 
+                client.Send(sendMail);
+            }
+            catch (Exception e)
+            {
+                //ToDo: UI-Ausgabe: Cant send  confirmation mail
+            }
         }
 
         /* SendActivationEmail: Send an email to user, register with "inactive" status.
@@ -140,15 +163,91 @@ namespace placeToBe.Services
         */
         public async Task SendActivationEmail(string email, string passwort)
         {
-            fromAddress = "placetobecologne@gmail.com";
-            mailPassword = "placetobe123";
-            
+            try
+            {
+                string activationCode = Guid.NewGuid().ToString();
+
+                string messageBody = "Confirm the mail:";
+                messageBody += "<br /><br />Please click the following link to activate your account";
+                messageBody += "<br /><a href = ' http://localhost:18172/api/user?activationcode=" + activationCode + "'>Click here to activate your account.</a>";
+                messageBody += "<br /><br />Thanks";
+
+                //Create smtp connection.
+                SmtpClient client = new SmtpClient();
+                //outgoing port for the mail-server.
+                client.Port = 587;
+                client.Host = "smtp.gmail.com";
+                client.EnableSsl = true;
+                client.Timeout = 10000;
+                client.DeliveryMethod = SmtpDeliveryMethod.Network;
+                client.UseDefaultCredentials = false;
+                client.Credentials = new System.Net.NetworkCredential(fromAddress, mailPassword);
+
+                // Fill the mail form.
+                var sendMail = new MailMessage();
+                sendMail.IsBodyHtml = true;
+                //address from where mail will be sent.
+                sendMail.From = new MailAddress("placetobecologne@gmail.com");
+                //address to which mail will be sent.           
+                sendMail.To.Add(new MailAddress(email));
+                //subject of the mail.
+                sendMail.Subject = "Registration: PlaceToBe";
+                sendMail.Body = messageBody;
+                //Register the user with inactive status (status==false)
+                await Register(email, passwort, activationCode);
+                //Send the mail 
+                client.Send(sendMail);
+            }
+            catch (Exception e)
+            {
+                //ToDo: UI-Ausgabe: Cant send Registration-email.
+            }
+        }
+
+        /// <summary>
+        /// Registers a new User.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="password"></param>
+        public async Task<Guid> Register(string email, string password, string activationcode)
+        {
+            byte[] plainText = Encoding.UTF8.GetBytes(password);
+            byte[] salt = GenerateSalt(saltSize);
+            byte[] passwordSalt = GenerateSaltedHash(plainText, salt);
+
+            User user = new User(email, passwordSalt, salt);
+            user.status = false;
+            user.activationcode = activationcode;
+            return await userRepo.InsertAsync(user);
+        }
+
+        public async Task ForgetPasswordReset(string email)
+        {
+            try
+            {
+                User forgetUserPassword = await userRepo.GetByEmailAsync(email);
+                byte[] newPassword = Encoding.UTF8.GetBytes(PW(8));
+                byte[] salt = GenerateSalt(saltSize);
+                byte[] passwordSalt = GenerateSaltedHash(newPassword, salt);
+                forgetUserPassword.passwordSalt = passwordSalt;
+                forgetUserPassword.salt = salt;
+                await userRepo.UpdateAsync(forgetUserPassword);
+                SendForgetPassword(newPassword, email);
+
+            }
+            catch (NullReferenceException usernull)
+            {
+                Console.WriteLine("{0} User ist null", usernull);
+            }
+        }
+        public void SendForgetPassword(byte[] pw, string email)
+        {
+            string pwString = Encoding.UTF8.GetString(pw);
             string activationCode = Guid.NewGuid().ToString();
 
-            string messageBody = "Confirm the mail:";
-            messageBody += "<br /><br />Please click the following link to activate your account";
-            messageBody += "<br /><a href = ' http://localhost:18172/api/user?confirm=" + activationCode + "'>Click here to activate your account.</a>";
-            messageBody += "<br /><br />Thanks"+activationCode;
+            string messageBody = "Your new password is: " + pwString;
+            messageBody += "<br /><a href = ' http://localhost:18172/api/login/ '>Click here to login with the new password.</a>";
+            messageBody += "<br /><br />Have Fun with placeToBe.";
 
             //Create smtp connection.
             SmtpClient client = new SmtpClient();
@@ -161,36 +260,63 @@ namespace placeToBe.Services
             client.Credentials = new System.Net.NetworkCredential(fromAddress, mailPassword);
 
             // Fill the mail form.
-            var send_mail = new MailMessage();
-
-            send_mail.IsBodyHtml = true;
+            var sendMail = new MailMessage();
+            sendMail.IsBodyHtml = true;
             //address from where mail will be sent.
-            send_mail.From = new MailAddress("placetobecologne@gmail.com");
+            sendMail.From = new MailAddress("placetobecologne@gmail.com");
             //address to which mail will be sent.           
-            send_mail.To.Add(new MailAddress("MergimAlija@gmx.de"));
+            sendMail.To.Add(new MailAddress(email));
             //subject of the mail.
-            send_mail.Subject = "Registration: PlaceToBe";
-
-            send_mail.Body = messageBody;
-            //Register the user with inactive status (status==false)
-            await Register(email, passwort, activationCode);
-
-            
+            sendMail.Subject = "PlaceToBe: New password";
+            sendMail.Body = messageBody;
             //Send the mail 
-            client.Send(send_mail);
+            client.Send(sendMail);
         }
 
-        public void ForgetPassword(string email)
-        {
-            var test = userRepo.GetByEmailAsync(email);
-        }
-
-        public void ResetPassword()
-        {
-
-        }
-
+        //  Methode zum generieren von zufälligen Passwörtern (string)
         #region Helper Methods
+
+        public string PW(int Länge)
+        {
+            string ret = string.Empty;
+            System.Text.StringBuilder SB = new System.Text.StringBuilder();
+            string content = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            Random rnd = new Random();
+            for (int i = 0; i < Länge; i++)
+                SB.Append(content[rnd.Next(content.Length)]);
+            return SB.ToString();
+        }
+        static byte[] GetBytes(string str)
+        {
+            byte[] bytes = new byte[str.Length];
+            //System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+            return bytes;
+        }
+
+        static string GetString(byte[] bytes)
+        {
+            char[] chars = new char[bytes.Length / sizeof(char)];
+            System.Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
+            return new string(chars);
+        }
+
+        //Change User status from false to true to activate the account.
+        public async Task ChangeUserStatus(string activationcode)
+        {
+
+            User user = await GetUser(activationcode);
+            user.status = true;
+            await userRepo.UpdateAsync(user);
+
+        }
+
+        //Get User from DB with activationcode
+        public async Task<User> GetUser(string activationcode)
+        {
+
+            return await userRepo.GetByActivationCode(activationcode);
+        }
+
         /// <summary>
         /// Get salt from db
         /// </summary>
