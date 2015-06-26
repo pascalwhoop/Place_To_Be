@@ -17,11 +17,12 @@ namespace placeToBe.Controllers
          * Diese Methode soll ein JSON Array von Events zurückgeben, welche für die Heatmap genutzt werden. 
          */
 
-        [Route("api/event/filter/{city}/{year}/{month}/{day}/{hour}")]
-        public async Task<List<LightEvent>> getEventsByTimeAndCity(Guid cityGuid, string year, string month, string day, string hour) {
+        [Route("api/event/filter/{id}/{year}/{month}/{day}/{hour}")]
+        public async Task<List<LightEvent>> getEventsByTimeAndCity(string id, string year, string month, string day, string hour)
+        {
 
             DateTime time = new DateTime(int.Parse(year), int.Parse(month), int.Parse(day), int.Parse(hour), 0, 0);
-            return await search.HeatSearch(cityGuid, time, time.AddHours(8));
+            return await search.HeatSearch(id, time, time.AddHours(8));
         } 
 
         // GET api/event/5

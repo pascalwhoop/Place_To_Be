@@ -2,10 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Bson;
@@ -19,15 +16,15 @@ using placeToBe.Model.Repositories;
 namespace placeToBe.Service {
     public class FbCrawler {
         private PageRepository pageRepo = new PageRepository();
-        private EventRepository eventRepo = new EventRepository();
-        private String fbAppSecret = "469300d9c3ed9fe6ff4144d025bc1148";
-        private String fbAppId = "857640940981214";
-        private String AppGoogleKey = "AIzaSyArx67_z9KxbrVMurzBhS2mzqDhrpz66s0";
+        private readonly EventRepository eventRepo = new EventRepository();
+        private readonly String fbAppSecret = "469300d9c3ed9fe6ff4144d025bc1148";
+        private readonly String fbAppId = "857640940981214";
+        private readonly String AppGoogleKey = "AIzaSyArx67_z9KxbrVMurzBhS2mzqDhrpz66s0";
         private String accessToken { get; set; }
         private String url;
-        private QueueManager functionsQueue;
-        private int maxWorkerThreads = 25;
-        private int maxAsyncThreads = 2000;
+        private readonly QueueManager functionsQueue;
+        private readonly int maxWorkerThreads = 25;
+        private readonly int maxAsyncThreads = 2000;
 
         /**
          * constructor. get the fb acces token to use the fb api and store it. in case it doesnt work we retry 20 times
@@ -61,7 +58,7 @@ namespace placeToBe.Service {
         //GET Request to the WEB APIs we use. the parameter condition 
         public String graphApiGet(String getData, String requestToPerform) //synchrone Operation
         {
-            String result = "";
+            var result = "";
 
             if (requestToPerform == "GOOGLE")
                 url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + getData + "&key=" + AppGoogleKey;
@@ -73,7 +70,7 @@ namespace placeToBe.Service {
                         break;
                     case "searchPlace":
                         //split[0]= latitude, split[1]=longitude, split[2]=distance, split[3]=limit
-                        String[] split = getData.Split(new[] {"|"}, StringSplitOptions.None);
+                        var split = getData.Split(new[] {"|"}, StringSplitOptions.None);
                         url = "https://graph.facebook.com/v2.3/search?q=&type=place&center=" + split[0] + "," + split[1] +
                               "&distance=" + split[2] + "&limit=" + split[3] +
                               "&fields=id,is_community_page&access_token=" + fbAppId + "|" + fbAppSecret;
@@ -100,7 +97,7 @@ namespace placeToBe.Service {
                 }
             }
 
-            Uri uri = new Uri(url);
+            var uri = new Uri(url);
 
             Debug.WriteLine("GET: " + requestToPerform);
             return UtilService.performGetRequest(uri);
@@ -115,12 +112,12 @@ namespace placeToBe.Service {
          * */
 
         public T[] shuffle<T>(T[] o) {
-            Random random = new Random();
-            int n = o.Length;
+            var random = new Random();
+            var n = o.Length;
 
-            for (int i = 0; i < n; i++) {
+            for (var i = 0; i < n; i++) {
                 //NextDouble -> random number between 0 and 1
-                int r = i + (int) (random.NextDouble()*(n - i));
+                var r = i + (int) (random.NextDouble()*(n - i));
                 var t = o[r];
                 o[r] = o[i];
                 o[i] = t;
@@ -136,30 +133,31 @@ namespace placeToBe.Service {
         */
 
         public async void performCrawlingForCity(City city) {
-            String distance = "2000";
-            String limit = "2000";
+            var distance = "2000";
+            var limit = "2000";
 
             //Get all Coordinates of a part of the City
-            List<Coordinates> coordListCity = createCoordinatesArray(city);
+            var coordListCity = createCoordinatesArray(city);
             //transform list into array
-            Coordinates[] coordArrayCity = coordListCity.ToArray();
+            var coordArrayCity = coordListCity.ToArray();
             //Shuffle the Array
-            Coordinates[] coordArrayCityShuffled = shuffle(coordArrayCity);
-
-            Debug.WriteLine("WILL FETCH ALL EVENTS FOR CITY. OUR SEARCH GRID HOLDS " + coordArrayCityShuffled.Length +
+            var coordArrayCityShuffled = shuffle(coordArrayCity);
+             
+            Debug.WriteLine("WILL FETCH ALL EVENTS FOR "+ city.formatted_address + " . OUR SEARCH GRID HOLDS " + coordArrayCityShuffled.Length +
                             " BLOCKS");
             Debug.WriteLine(
                 "==================================================================================================");
 
             var i = 0;
-            foreach (Coordinates coord in coordArrayCityShuffled) {
-                String getData = coord.latitude + "|" + coord.longitude + "|" + distance + "|" + limit;
+            foreach (var coord in coordArrayCityShuffled) {
+                var getData = coord.latitude + "|" + coord.longitude + "|" + distance + "|" + limit;
                 getData = getData.Replace(",", ".");
                 Debug.WriteLine("FETCHING BLOCK: " + i++);
                 Debug.WriteLine("COORDINATES: " + coord.latitude + " --- " + coord.longitude);
+                Debug.WriteLine("City: " + city.formatted_address);
                 Debug.WriteLine("===========================================");
                 //fetch all Places for this coordinate
-                List<FacebookPagingResult> pages =
+                var pages =
                     completePaging(
                         JsonConvert.DeserializeObject<FacebookPageResults>(graphApiGet(getData, "searchPlace")));
                 //and for each of them find all events if they arent a community page
@@ -182,11 +180,11 @@ namespace placeToBe.Service {
             foreach (var page in pages) {
                 if (!page.is_community_page) {
                     try {
-                        Task<Page> t = fetchAndStorePage(page); //TODO check if page is known to host events
-                        Page p = t.Result;
+                        var t = fetchAndStorePage(page); //TODO check if page is known to host events
+                        var p = t.Result;
                         if (determineIfEventsShouldBeFetched(p))
                             fetchEventsOnPage(p.fbId).Wait();
-                                //TODO check if events have been fetched within the last 24 h
+                        //TODO check if events have been fetched within the last 24 h
                     }
                     catch (Exception exception) {
                         Debug.WriteLine(exception); // TODO VERY DIRTY FIX ASAP
@@ -201,19 +199,17 @@ namespace placeToBe.Service {
             var pLastChecked = p.lastUpdatedTimestamp;
             var now = DateTime.Now;
             var timeDiff = now - pLastChecked;
-            if (timeDiff < TimeSpan.FromSeconds(5) || timeDiff > TimeSpan.FromHours(24)) {
-                shouldFetchEvents = true;
-            }
+            if (timeDiff < TimeSpan.FromSeconds(5) || timeDiff > TimeSpan.FromHours(24)) shouldFetchEvents = true;
             else shouldFetchEvents = false;
             return shouldFetchEvents;
         }
 
         //find events on every page in db
         public async Task fetchEventsOnPage(String pageId) {
-            String response = graphApiGet(pageId, "searchEvent");
-            List<FacebookPagingResult> results =
+            var response = graphApiGet(pageId, "searchEvent");
+            var results =
                 completePaging(JsonConvert.DeserializeObject<FacebookPageResults>(response));
-            foreach (FacebookPagingResult e in results) {
+            foreach (var e in results) {
                 if (e.attending_count > 5) {
                     try {
                         await fetchAndStoreEvent(e);
@@ -227,9 +223,9 @@ namespace placeToBe.Service {
 
         //GEt attending List of an event
         public List<Rsvp> fetchAttendingList(String eventId) {
-            String response = graphApiGet(eventId, "attendingList");
+            var response = graphApiGet(eventId, "attendingList");
 
-            List<FacebookPagingResult> r = completePaging(JsonConvert.DeserializeObject<FacebookPageResults>(response));
+            var r = completePaging(JsonConvert.DeserializeObject<FacebookPageResults>(response));
 
             return makeAttendingList(r);
         }
@@ -268,7 +264,7 @@ namespace placeToBe.Service {
             //var waitHandler = new ManualResetEvent(false);
             //ThreadPool.QueueUserWorkItem(new WaitCallback((_) =>
             //{
-            Page pagePage = await pageRepo.GetByFbIdAsync(fbId);
+            var pagePage = await pageRepo.GetByFbIdAsync(fbId);
             //    waitHandler.Set();
             //}));
             //waitHandler.WaitOne();
@@ -292,17 +288,17 @@ namespace placeToBe.Service {
 
         public List<Coordinates> createCoordinatesArray(City city) {
             const int hops = 100;
-            List<Coordinates> cityCoordArray = new List<Coordinates>();
+            var cityCoordArray = new List<Coordinates>();
 
-            double latHopDist = getHopDistance(city, "latitude", hops);
-            double lngHopDist = getHopDistance(city, "longitude", hops);
+            var latHopDist = getHopDistance(city, "latitude", hops);
+            var lngHopDist = getHopDistance(city, "longitude", hops);
 
-            double southWestLat = city.getPolygon()[3, 0]; //SouthwestLatitude
-            double southWestLng = city.getPolygon()[3, 1]; //SouthwestLongitude
+            var southWestLat = city.getPolygon()[3, 0]; //SouthwestLatitude
+            var southWestLng = city.getPolygon()[3, 1]; //SouthwestLongitude
 
-            for (int i = 0; i < hops; i++) {
-                for (int j = 0; j < hops; j++) {
-                    Coordinates coord = new Coordinates(southWestLat + latHopDist*i, southWestLng + lngHopDist*j);
+            for (var i = 0; i < hops; i++) {
+                for (var j = 0; j < hops; j++) {
+                    var coord = new Coordinates(southWestLat + latHopDist*i, southWestLng + lngHopDist*j);
                     cityCoordArray.Add(coord);
                 }
             }
@@ -338,8 +334,8 @@ namespace placeToBe.Service {
         }*/
 
         private async Task<Event> fetchAndStoreEvent(FacebookPagingResult result) {
-            Event e = await eventSearchByFbId(result.fbId);
-            Guid eventDbId = Guid.Empty; //put empty Guid in Place. this is the quivalent of a NULL for an object
+            var e = await eventSearchByFbId(result.fbId);
+            var eventDbId = Guid.Empty; //put empty Guid in Place. this is the quivalent of a NULL for an object
 
             //if event not already in DB OR if already in DB but not up to date
             if (e == null || e.lastUpdatedTimestamp == DateTime.MinValue ||
@@ -350,20 +346,19 @@ namespace placeToBe.Service {
                 //Get Event information
                 e = JsonConvert.DeserializeObject<Event>(graphApiGet(result.fbId, "searchEventData"));
                 e.Id = eventDbId;
-                    //put the old Guid back in place or in case of a new Page the default value. we need this in our repo
+                e = FillEmptyEventFields(e); //fill location
+                //put the old Guid back in place or in case of a new Page the default value. we need this in our repo
 
                 Debug.WriteLine("DB Push Event");
                 var task = eventRepo.InsertAsync(e);
                 task.Wait();
             }
             return e;
-
-
         }
 
         private async Task<Page> fetchAndStorePage(FacebookPagingResult result) {
-            var pageInDb = await pageRepo.GetByFbIdAsync(result.fbId);
-            Guid pageDbId = Guid.Empty; //put empty Guid in Place. this is the quivalent of a NULL for an object
+            var pageInDb = pageRepo.GetByFbIdAsync(result.fbId).Result;
+            var pageDbId = Guid.Empty; //put empty Guid in Place. this is the quivalent of a NULL for an object
 
             //(if page is not yet in DB) OR (if it has been updated in the last 7 days) we update and push to DB
             if (pageInDb == null || pageInDb.lastUpdatedTimestamp == DateTime.MinValue ||
@@ -374,7 +369,7 @@ namespace placeToBe.Service {
                 //Get page information
                 pageInDb = JsonConvert.DeserializeObject<Page>(graphApiGet(result.fbId, "pageData"));
                 pageInDb.Id = pageDbId;
-                    //put the old Guid back in place or in case of a new Page the default value. we need this in our repo
+                //put the old Guid back in place or in case of a new Page the default value. we need this in our repo
                 //and push it to db
                 Debug.WriteLine("DB Push Page");
                 var task = pageRepo.InsertAsync(pageInDb);
@@ -398,9 +393,9 @@ namespace placeToBe.Service {
             if (place == null) return;
             //Place
             if (condition == "searchPlace") {
-                JObject _place = JObject.Parse(place);
+                var _place = JObject.Parse(place);
                 try {
-                    Page page = JsonConvert.DeserializeObject<Page>(place);
+                    var page = JsonConvert.DeserializeObject<Page>(place);
                     //a place that is not community owned is == to a page in the facebook world
                     //insert in db
                     //pushPageToDb(page);
@@ -413,7 +408,7 @@ namespace placeToBe.Service {
             }
             //Event
             else if (condition == "searchEvent") {
-                Event eventNew = JsonConvert.DeserializeObject<Event>(place);
+                var eventNew = JsonConvert.DeserializeObject<Event>(place);
                 fetchAttendingList(eventNew.fbId);
             }
         }
@@ -457,12 +452,12 @@ namespace placeToBe.Service {
 
             if (angle == "latitude")
                 return Math.Abs((city.getPolygon()[3, 0] - city.getPolygon()[1, 0])/hops);
-            else return Math.Abs((city.getPolygon()[3, 1] - city.getPolygon()[1, 1])/hops);
+            return Math.Abs((city.getPolygon()[3, 1] - city.getPolygon()[1, 1])/hops);
         }
 
         /// <summary>
-        /// Adds GeoLocation data (latitude, longitude) to an Event. If successful the method goes on with adding the events 
-        /// start and end time.
+        ///     Adds GeoLocation data (latitude, longitude) to an Event. If successful the method goes on with adding the events
+        ///     start and end time.
         /// </summary>
         /// <param name="e">Event modified with location data</param>
         /// <returns>modified Event if sucsessful, otherwise null</returns>
@@ -479,19 +474,20 @@ namespace placeToBe.Service {
                          From that String we extract the latitude and longitude.
                 */
                 else if (e.place != null && e.place.name != null) {
-                    String getData = e.place.name;
-                    JObject obj = JObject.Parse(graphApiGet(getData, "GOOGLE"));
-                    Array arr = (Array) obj["Results"];
+                    //TODO Debug 
+                    var getData = e.place.name;
+                    var obj = JObject.Parse(graphApiGet(getData, "GOOGLE"));
+                    var arr = (Array) obj["Results"];
                     if (obj["results"] != null && arr != null && arr.Length != 0) {
-                        double lat = Convert.ToDouble(obj["results"][0]["geometry"]["location"]["lat"]);
-                        double lng = Convert.ToDouble(obj["results"][0]["geometry"]["location"]["lng"]);
+                        var lat = Convert.ToDouble(obj["results"][0]["geometry"]["location"]["lat"]);
+                        var lng = Convert.ToDouble(obj["results"][0]["geometry"]["location"]["lng"]);
                         e.geoLocationCoordinates = new GeoLocation(lat, lng);
                     }
                 }
                 else if (e.owner != null && e.owner.id != null) {
                     var page = JsonConvert.DeserializeObject<Page>(graphApiGet(e.owner.id, "pageData"));
                     if (page.location != null) {
-                        e.place = new Place() {
+                        e.place = new Place {
                             id = page.fbId,
                             location = page.location,
                             name = page.name
@@ -499,7 +495,9 @@ namespace placeToBe.Service {
                         e.geoLocationCoordinates = new GeoLocation(e.place.location.latitude, e.place.location.longitude);
                     }
                 }
-                else return e;
+                else {
+                    return e;
+                }
             }
             catch (NullReferenceException ex) {
                 Console.Write(ex.ToString());
@@ -543,7 +541,7 @@ namespace placeToBe.Service {
             do {
                 Action action;
                 actionAvailable = dbOperationsQueue.TryTake(out action, Timeout.Infinite);
-                if (actionAvailable) ThreadPool.QueueUserWorkItem(new WaitCallback((_) => { action.Invoke(); }));
+                if (actionAvailable) ThreadPool.QueueUserWorkItem(_ => { action.Invoke(); });
             } while (true);
         }
 

@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 using placeToBe.Model.Entities;
 using placeToBe.Model.Repositories;
 using placeToBe.Service;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace FacebookCrawler {
     internal class Program {
@@ -15,6 +17,7 @@ namespace FacebookCrawler {
         private string googleMapsKey = ConfigurationManager.AppSettings.Get("GoogleMapsKey");
 
         private static void Main(string[] args) {
+            setRedirectOutputToLogfile();
             Program p = new Program();
             while (true) {
                 p.runFacebookCrawlerOverCities(p.getAllCitiesFromDb());
@@ -64,13 +67,20 @@ namespace FacebookCrawler {
                 Thread.Sleep(1000*10*60);
                 return fetchCityDetailFromGMapsAndStoreInDb(city);
             }
-            
         }
 
         protected void runFacebookCrawlerOverCities(List<City> cities) {
-            FbCrawler fbCrawler = new FbCrawler();
 
-            foreach (City city in cities) {
+            cities.Sort((x, y) => DateTime.Compare(x.lastCheckedTime, y.lastCheckedTime));
+
+            var parallelOptions = new ParallelOptions{
+                MaxDegreeOfParallelism = 5
+                };
+
+
+            Parallel.ForEach(cities, parallelOptions,
+            city => {
+                FbCrawler fbCrawler = new FbCrawler();
                 Debug.WriteLine(
                     "#########################################################################################");
                 Debug.WriteLine(DateTime.Now);
@@ -78,11 +88,17 @@ namespace FacebookCrawler {
                                 " ################");
                 Debug.WriteLine(
                     "#########################################################################################");
-                fbCrawler.performCrawlingForCity(city);
                 city.lastCheckedTime = DateTime.Now;
+                fbCrawler.performCrawlingForCity(city);
                 var waitTask = cityRepo.UpdateAsync(city);
                 waitTask.Wait();
-            }
+            });
+        }
+
+        private static void setRedirectOutputToLogfile() {
+            Trace.Listeners.Add(new TextWriterTraceListener("crawlerDebug.log"));
+            Trace.AutoFlush = true;
+            Trace.Indent();
         }
     }
 }

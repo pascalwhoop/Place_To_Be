@@ -9,11 +9,12 @@ namespace placeToBe.Services
     public class SearchService {
 
         private EventRepository eventRepo = new EventRepository();
-        private CityRepository cityRepo = new CityRepository(); 
-        public async Task<List<LightEvent>> HeatSearch(Guid cityGuid, DateTime startTime, DateTime endTime ){
+        private CityRepository cityRepo = new CityRepository();
+        public async Task<List<LightEvent>> HeatSearch(string id, DateTime startTime, DateTime endTime)
+        {
             //Methode muss bearbeitet werden, sodass bestimmte Events abgerufen werden empfangen wird
 
-            var city = await cityRepo.GetByIdAsync(cityGuid);
+            var city = await cityRepo.getByPlaceId(id);
 
             return await eventRepo.getEventsByTimeAndPolygon(city.getPolygon(), startTime, endTime);
         }

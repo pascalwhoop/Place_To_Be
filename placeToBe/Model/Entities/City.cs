@@ -43,8 +43,8 @@ namespace placeToBe.Model.Entities {
             a[3, 0] = geometry.bounds.southwest.lat;
             a[3, 1] = geometry.bounds.southwest.lng;
             //northeast (again to make an enclosing form)
-            a[0, 0] = geometry.bounds.northeast.lat;
-            a[0, 1] = geometry.bounds.southwest.lng;
+            a[4, 0] = geometry.bounds.northeast.lat;
+            a[4, 1] = geometry.bounds.southwest.lng;
             return a;
         }
     }

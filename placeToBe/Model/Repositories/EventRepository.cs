@@ -55,8 +55,9 @@ namespace placeToBe.Model.Repositories
                 {"fbId", 1}
             };
             ProjectionDefinition<Event,LightEvent > projDefinition = new BsonDocument(projectionContent);
-            return await _collection.Find(filter).Project(projDefinition).ToListAsync();
-            ;
+            var task =  _collection.Find(filter).Project(projDefinition).ToListAsync();
+            var events = task.Result;
+            return events;
 
         }
 

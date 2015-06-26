@@ -25,9 +25,13 @@ namespace placeToBe.Model.Repositories
         }
 
         public async Task<City> getByPlaceId(string placeId) {
-            
+            var filter = Builders<City>.Filter.Eq("place_id", placeId);
+            return await _collection.Find(filter).FirstOrDefaultAsync(); 
         }
+
+
     }
+
 
     
 }
