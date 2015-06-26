@@ -19,46 +19,36 @@ namespace placeToBe.Controllers
         MongoDbRepository<User> repo = new MongoDbRepository<User>();
         AccountService user = new AccountService();
 
-        // GET api/User 
-        public async Task<IList<User>> Get()
+        //PUT- Send an activationemail and register a user with email and passwort
+        public async Task Post([FromUri]string email, [FromUri] string password)
         {
-            IList<User> list = await repo.GetAllAsync();
-            return list;
+            await user.SendActivationEmail(email, password);
         }
 
-        // GET api/User/5
-        public async Task<User> Get([FromUri]Guid id)
-        {
-            User User = await repo.GetByIdAsync(id);
-            return User;
-        }
-
-        // PUT Login - Get AuthenticationTicket for 5 minutes
-       
-        public async Task<FormsAuthenticationTicket> Put([FromUri]string loginmail, [FromUri]string loginpw, [FromUri] string ueberladung)
-        {
-            return await user.Login(loginmail, loginpw);
-        }
-
-
-        //Send activationsemail and register a user with email and passwort
-
-        public async Task Put([FromUri]string email, [FromUri] string passwort)
-        {
-            await user.SendActivationEmail(email, passwort);
-        }
-
+        //GET- user by activationcode for confirm mail. 
         public async Task Get([FromUri] string activationcode)
         {
             await user.ConfirmEmail(activationcode);
         }
 
-        public async void Delete(Guid id)
+        // PUT- Login - Get AuthenticationTicket for 5 minutes
+
+        public async Task<FormsAuthenticationTicket> Put([FromUri]string email, [FromUri]string password)
         {
-            var User = await repo.GetByIdAsync(id);
-            repo.DeleteAsync(User);
+            return await user.Login(email, password);
         }
 
+        //Reset the old password and send a new one to the email.
+        public async Task Put([FromUri]string email)
+        {
+            await user.ForgetPasswordReset(email);
+        }
+
+        //Change the password from the user. 
+        public async Task Put([FromUri]string email, [FromUri] string oldpassword, [FromUri] string newpassword)
+        {
+            await user.ChangePasswort(email, oldpassword, newpassword);
+        }
 
     }
 }
