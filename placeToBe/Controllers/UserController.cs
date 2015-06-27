@@ -19,35 +19,58 @@ namespace placeToBe.Controllers
         MongoDbRepository<User> repo = new MongoDbRepository<User>();
         AccountService user = new AccountService();
 
-        //PUT- Send an activationemail and register a user with email and passwort
-        public async Task Post([FromUri]string email, [FromUri] string password)
+        /// <summary>
+        /// PUT- Send an activationemail and register a user with email and passwort
+        /// </summary>
+        /// <param name="userEmail"></param>
+        /// <param name="userPassword"></param>
+        /// <returns></returns>
+        public async Task Post([FromUri]string userEmail, [FromUri] string userPassword)
         {
-            await user.SendActivationEmail(email, password);
+            await user.SendActivationEmail(userEmail, userPassword);
         }
 
-        //GET- user by activationcode for confirm mail. 
+        /// <summary>
+        /// GET- user by activationcode for confirm mail. 
+        /// </summary>
+        /// <param name="activationcode"></param>
+        /// <returns></returns>
         public async Task Get([FromUri] string activationcode)
         {
             await user.ConfirmEmail(activationcode);
         }
 
-        // PUT- Login - Get AuthenticationTicket for 5 minutes
-
-        public async Task<FormsAuthenticationTicket> Put([FromUri]string email, [FromUri]string password)
+        /// <summary>
+        /// PUT- Login - Get AuthenticationTicket for 5 minutes
+        /// </summary>
+        /// <param name="userEmail"></param>
+        /// <param name="userPassword"></param>
+        /// <returns></returns>
+        public async Task<FormsAuthenticationTicket> Put([FromUri]string userEmail, [FromUri]string userPassword)
         {
-            return await user.Login(email, password);
+            return await user.Login(userEmail, userPassword);
         }
 
-        //Reset the old password and send a new one to the email.
-        public async Task Put([FromUri]string email)
+        /// <summary>
+        /// Reset the old password and send a new one to the email.
+        /// </summary>
+        /// <param name="userEmail"></param>
+        /// <returns></returns>
+        public async Task Put([FromUri]string userEmail)
         {
-            await user.ForgetPasswordReset(email);
+            await user.ForgetPasswordReset(userEmail);
         }
 
-        //Change the password from the user. 
-        public async Task Put([FromUri]string email, [FromUri] string oldpassword, [FromUri] string newpassword)
+        /// <summary>
+        /// Change the password from user
+        /// </summary>
+        /// <param name="userEmail"></param>
+        /// <param name="oldPassword"></param>
+        /// <param name="newPassword"></param>
+        /// <returns></returns>
+        public async Task Put([FromUri]string userEmail, [FromUri] string oldPassword, [FromUri] string newPassword)
         {
-            await user.ChangePasswort(email, oldpassword, newpassword);
+            await user.ChangePasswort(userEmail, oldPassword, newPassword);
         }
 
     }
