@@ -19,23 +19,30 @@ namespace placeToBe.Services
     {
         UserRepository userRepo = new UserRepository();
         int saltSize = 20;
-        public string fromAddress = "placetobecologne@gmail.com";
-        private string mailPassword = "placetobe123";
+        private string fromAddress = System.Configuration.ConfigurationManager.AppSettings["placeToBeEmail"];
+        private string mailPassword = System.Configuration.ConfigurationManager.AppSettings["placeToBePasswordFromMail"];
 
-        public async Task<FormsAuthenticationTicket> Login(string email, string password)
+        /// <summary>
+        /// Login the user with given email and correct password.
+        /// </summary>
+        /// <param name="usersEmail"></param>
+        /// <param name="userPassword"></param>
+        /// <returns></returns>
+        public async Task<FormsAuthenticationTicket> Login(string usersEmail, string userPassword)
         {
             try
             {
-                byte[] plainText = Encoding.UTF8.GetBytes(password);
-                User user = await GetEmail(email);
+                byte[] plainText = Encoding.UTF8.GetBytes(userPassword);
+                User user = await GetEmail(usersEmail);
                 byte[] salt = user.salt;
                 byte[] passwordSalt = GenerateSaltedHash(plainText, salt);
                 bool compare = CompareByteArrays(passwordSalt, user.passwordSalt);
-                //user password is correct            
+
+                //statement: if users password is correct and status is activated          
                 if (compare == true && user.status == true)
                 {
-                    //Set a ticket to stay logged in.
-                    FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(email, false, 5);
+                    //Set a ticket for five minutes to stay logged in.
+                    FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(usersEmail, false, 5);
 
                     if (ticket.Expired)
                     {
@@ -47,12 +54,12 @@ namespace placeToBe.Services
                 else if (compare == true && user.status == false)
                 {
                     UnauthorizedAccessException e;
-                    //ToDo: UI-Fehlermeldung: e.Message..(user not found, password false, status not activated)..
+                    //ToDo: UI-Message: e.Message..(user not found, password false, status not activated)..
                     return null;
                 }
                 else
                 {
-                    //User passwort incorrect or not found
+                    //ToDo: UI-Message: passwort is incorrect or not found
                     return null;
                 }
             }
@@ -70,20 +77,27 @@ namespace placeToBe.Services
             FormsAuthentication.RedirectToLoginPage();
         }
 
-        public async Task ChangePasswort(string email, string oldpassword, string newpassword)
+        /// <summary>
+        /// Changes the password from user (with given email) from old password to new password.
+        /// </summary>
+        /// <param name="userEmail"></param>
+        /// <param name="oldPassword"></param>
+        /// <param name="newPassword"></param>
+        /// <returns></returns>
+        public async Task ChangePasswort(string userEmail, string oldPassword, string newPassword)
         {
             try
             {
-                byte[] oldPw = Encoding.UTF8.GetBytes(oldpassword);
-                User user = await GetEmail(email);
+                byte[] oldPw = Encoding.UTF8.GetBytes(oldPassword);
+                User user = await GetEmail(userEmail);
                 byte[] oldSalt = user.salt;
                 byte[] oldPasswordSalt = GenerateSaltedHash(oldPw, oldSalt);
                 bool comparepw = CompareByteArrays(oldPasswordSalt, user.passwordSalt);
 
-                //user password is correct            
+                //statement: when users password is correct and status is activated  -> true  
                 if (comparepw == true && user.status == true)
                 {
-                    byte[] newPw = Encoding.UTF8.GetBytes(newpassword);
+                    byte[] newPw = Encoding.UTF8.GetBytes(newPassword);
                     byte[] newSalt = GenerateSalt(saltSize);
                     byte[] newPasswordSalt = GenerateSaltedHash(newPw, newSalt);
                     user.passwordSalt = newPasswordSalt;
@@ -101,17 +115,17 @@ namespace placeToBe.Services
             }
         }
 
-        //Facebook-Login
+        //TODO: Facebook-Login
         public void ExternalLogin()
         {
 
         }
 
-        /* Send Confirmationmail to the users email.
-         * Mail id password from where mail will be sent; At the moment from gmail 
-        / with "placetobecologne@gmail.com" asusername and "placetobe123" as password.
-        */
-
+        /// <summary>
+        /// Send a confirmation-email to the users email and activate the account.
+        /// </summary>
+        /// <param name="activationcode"></param>
+        /// <returns></returns>
         public async Task ConfirmEmail(string activationcode)
         {
             try
@@ -131,14 +145,11 @@ namespace placeToBe.Services
                     UseDefaultCredentials = false,
                     Credentials = new System.Net.NetworkCredential(fromAddress, mailPassword)
                 };
-
-
                 // Fill the mail form.
                 var sendMail = new MailMessage();
-
                 sendMail.IsBodyHtml = true;
                 //address from where mail will be sent.
-                sendMail.From = new MailAddress("placetobecologne@gmail.com");
+                sendMail.From = new MailAddress(fromAddress);
                 //address to which mail will be sent.           
                 User user = await GetUser(activationcode);
                 sendMail.To.Add(new MailAddress(user.email));
@@ -157,11 +168,15 @@ namespace placeToBe.Services
             }
         }
 
-        /* SendActivationEmail: Send an email to user, register with "inactive" status.
-         * Mail id password from where mail will be sent; At the moment from gmail 
-        / with "placetobecologne@gmail.com" asusername and "placetobe123" as password.
-        */
-        public async Task SendActivationEmail(string email, string passwort)
+        /// <summary>
+        /// Send an email to user, register with "inactive" status.
+        /// Mail id password from where mail will be sent -> At the moment from gmail
+        /// with "placetobecologne@gmail.com".
+        /// </summary>
+        /// <param name="userEmail"></param>
+        /// <param name="userPassword"></param>
+        /// <returns></returns>
+        public async Task SendActivationEmail(string userEmail, string userPassword)
         {
             try
             {
@@ -187,14 +202,14 @@ namespace placeToBe.Services
                 var sendMail = new MailMessage();
                 sendMail.IsBodyHtml = true;
                 //address from where mail will be sent.
-                sendMail.From = new MailAddress("placetobecologne@gmail.com");
+                sendMail.From = new MailAddress(fromAddress);
                 //address to which mail will be sent.           
-                sendMail.To.Add(new MailAddress(email));
+                sendMail.To.Add(new MailAddress(userEmail));
                 //subject of the mail.
                 sendMail.Subject = "Registration: PlaceToBe";
                 sendMail.Body = messageBody;
                 //Register the user with inactive status (status==false)
-                await Register(email, passwort, activationCode);
+                await Register(userEmail, userPassword, activationCode);
                 //Send the mail 
                 client.Send(sendMail);
             }
@@ -205,34 +220,39 @@ namespace placeToBe.Services
         }
 
         /// <summary>
-        /// Registers a new User.
+        /// Registers a new User to DB
         /// </summary>
-        /// <param name="email"></param>
-        /// <param name="password"></param>
-        public async Task<Guid> Register(string email, string password, string activationcode)
+        /// <param name="userEmail"></param>
+        /// <param name="userPassword"></param>
+        public async Task<Guid> Register(string userEmail, string userPassword, string activationcode)
         {
-            byte[] plainText = Encoding.UTF8.GetBytes(password);
+            byte[] plainText = Encoding.UTF8.GetBytes(userPassword);
             byte[] salt = GenerateSalt(saltSize);
             byte[] passwordSalt = GenerateSaltedHash(plainText, salt);
 
-            User user = new User(email, passwordSalt, salt);
+            User user = new User(userEmail, passwordSalt, salt);
             user.status = false;
             user.activationcode = activationcode;
             return await userRepo.InsertAsync(user);
         }
 
-        public async Task ForgetPasswordReset(string email)
+        /// <summary>
+        /// Reset the password from the users mail and then send a mail to user with a new password
+        /// </summary>
+        /// <param name="userEmail"></param>
+        /// <returns></returns>
+        public async Task ForgetPasswordReset(string userEmail)
         {
             try
             {
-                User forgetUserPassword = await userRepo.GetByEmailAsync(email);
-                byte[] newPassword = Encoding.UTF8.GetBytes(PW(8));
+                User forgetUserPassword = await userRepo.GetByEmailAsync(userEmail);
+                byte[] newPassword = Encoding.UTF8.GetBytes(createRandomString(8));
                 byte[] salt = GenerateSalt(saltSize);
                 byte[] passwordSalt = GenerateSaltedHash(newPassword, salt);
                 forgetUserPassword.passwordSalt = passwordSalt;
                 forgetUserPassword.salt = salt;
                 await userRepo.UpdateAsync(forgetUserPassword);
-                SendForgetPassword(newPassword, email);
+                SendForgetPassword(newPassword, userEmail);
 
             }
             catch (NullReferenceException usernull)
@@ -240,9 +260,15 @@ namespace placeToBe.Services
                 Console.WriteLine("{0} User ist null", usernull);
             }
         }
-        public void SendForgetPassword(byte[] pw, string email)
+
+        /// <summary>
+        /// Send a mail with a new password to the users email
+        /// </summary>
+        /// <param name="bytePassword"></param>
+        /// <param name="userEmail"></param>
+        public void SendForgetPassword(byte[] bytePassword, string userEmail)
         {
-            string pwString = Encoding.UTF8.GetString(pw);
+            string pwString = Encoding.UTF8.GetString(bytePassword);
             string activationCode = Guid.NewGuid().ToString();
 
             string messageBody = "Your new password is: " + pwString;
@@ -263,9 +289,9 @@ namespace placeToBe.Services
             var sendMail = new MailMessage();
             sendMail.IsBodyHtml = true;
             //address from where mail will be sent.
-            sendMail.From = new MailAddress("placetobecologne@gmail.com");
+            sendMail.From = new MailAddress(fromAddress);
             //address to which mail will be sent.           
-            sendMail.To.Add(new MailAddress(email));
+            sendMail.To.Add(new MailAddress(userEmail));
             //subject of the mail.
             sendMail.Subject = "PlaceToBe: New password";
             sendMail.Body = messageBody;
@@ -273,26 +299,40 @@ namespace placeToBe.Services
             client.Send(sendMail);
         }
 
-        //  Methode zum generieren von zufälligen Passwörtern (string)
         #region Helper Methods
 
-        public string PW(int Länge)
+        /// <summary>
+        /// Create a random string from a specific content
+        /// </summary>
+        /// <param name="length"></param>
+        /// <returns>string</returns>
+        public string createRandomString(int length)
         {
             string ret = string.Empty;
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            string content = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            string content = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789";
             Random rnd = new Random();
-            for (int i = 0; i < Länge; i++)
+            for (int i = 0; i < length; i++)
                 SB.Append(content[rnd.Next(content.Length)]);
             return SB.ToString();
         }
+
+        /// <summary>
+        /// Return bytes from a given string
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns>byte[]</returns>
         static byte[] GetBytes(string str)
         {
             byte[] bytes = new byte[str.Length];
             //System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
             return bytes;
         }
-
+        /// <summary>
+        /// Convert a byte-array to a string
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns>string</returns>
         static string GetString(byte[] bytes)
         {
             char[] chars = new char[bytes.Length / sizeof(char)];
@@ -300,7 +340,12 @@ namespace placeToBe.Services
             return new string(chars);
         }
 
-        //Change User status from false to true to activate the account.
+        /// <summary>
+        /// Change User status from false to true to activate the account.
+        /// </summary>
+        /// <param name="activationcode"></param>
+        /// <returns></returns>
+
         public async Task ChangeUserStatus(string activationcode)
         {
 
@@ -310,7 +355,9 @@ namespace placeToBe.Services
 
         }
 
-        //Get User from DB with activationcode
+        ///<summary>Get User from DB </summary>
+        /// <param name="activationcode" </ param>
+        /// <returns>returns the users activationcode</returns>
         public async Task<User> GetUser(string activationcode)
         {
 
@@ -341,7 +388,7 @@ namespace placeToBe.Services
         }
 
         /// <summary>
-        /// 
+        /// Generate a "salted" Hashcode from a given plaintext and a salt.
         /// </summary>
         /// <param name="plainText">password text</param>
         /// <param name="salt">generated Salt</param>
@@ -365,6 +412,12 @@ namespace placeToBe.Services
             return algorithm.ComputeHash(plainTextWithSaltBytes);
         }
 
+        /// <summary>
+        /// Compare two byte-arrays.
+        /// </summary>
+        /// <param name="array1"></param>
+        /// <param name="array2"></param>
+        /// <returns></returns>
         public static bool CompareByteArrays(byte[] array1, byte[] array2)
         {
             if (array1.Length != array2.Length)
