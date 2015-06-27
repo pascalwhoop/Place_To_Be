@@ -1,9 +1,4 @@
-﻿using MongoDB.Driver;
-using placeToBe.Model;
-using placeToBe.Model.Entities;
-using placeToBe.Model.Repositories;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -11,6 +6,14 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.Helpers;
+using Facebook;
+using Microsoft.Ajax.Utilities;
+using MongoDB.Driver;
+using placeToBe.Model.Entities;
+using placeToBe.Model.Repositories;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace placeToBe.Services
 {
@@ -23,6 +26,21 @@ namespace placeToBe.Services
         public int xRateLimitRemaining;
         public int xRateReset;
         public DateTime lastRequest;
+
+
+        public String[] GetNamesArray(String[] jsonArray)
+        {
+            String[] onlyPreNameArray = new string[] {};
+            String[] splitItem;
+            int i = 0;
+            foreach (var item in jsonArray)
+            {
+                splitItem=item.Split(new[] {" "},StringSplitOptions.None);
+                onlyPreNameArray[i] = splitItem[0];
+
+            }
+            return onlyPreNameArray;
+        }
 
 
         /// <summary>
@@ -59,6 +77,7 @@ namespace placeToBe.Services
             try
             {
                 gender = await SearchDbForGender(name);
+                
             }
             catch (Exception e)
             {
@@ -68,8 +87,13 @@ namespace placeToBe.Services
             if (gender == null)
             {
                 gender = GetGenderFromApi(name);
+                Debug.WriteLine("######## Got it from Api");
 
                 PushGenderToDb(gender);
+            }
+            else
+            {
+                Debug.WriteLine("######### Already in DB");
             }
 
             return gender;
@@ -82,7 +106,7 @@ namespace placeToBe.Services
         public Gender GetGenderFromApi(String name)
         {
             String result;
-            Gender gender;
+            Gender gender = null;
 
             HttpWebRequest request;
             String getData = "name=" + name;
@@ -95,7 +119,7 @@ namespace placeToBe.Services
             request.AllowAutoRedirect = true;
 
             UTF8Encoding enc = new UTF8Encoding();
-            
+
 
             HttpWebResponse Response;
             try
@@ -107,22 +131,24 @@ namespace placeToBe.Services
                     {
                         using (StreamReader readStream = new StreamReader(responseStream, Encoding.UTF8))
                         {
-                            this.xRateLimitRemaining = Int32.Parse(Response.Headers["X-Rate-Limit-Remaining"]);
-                            this.xRateReset = Int32.Parse(Response.Headers["X-Rate-Reset"]);
-                            this.lastRequest = DateTime.Now;
+                            xRateLimitRemaining = Int32.Parse(Response.Headers["X-Rate-Limit-Remaining"]);
+                            xRateReset = Int32.Parse(Response.Headers["X-Rate-Reset"]);
+                            lastRequest = DateTime.Now;
 
                             //String of the json from genderize.io
                             result = readStream.ReadToEnd();
-
-                            //convert String to c# Object
-                            gender = GenderToObject(result);
+                            gender = JsonConvert.DeserializeObject<Gender>(result);
+                            if (gender.gender == null)
+                            {
+                                gender.gender = "undifined";
+                            }
 
                             return gender;
                         }
                     }
                 }
             }
-            catch (System.Net.WebException webEx)
+            catch (WebException webEx)
             {
                 if (xRateLimitRemaining == 0)
                 {
@@ -131,32 +157,39 @@ namespace placeToBe.Services
                         double difference = (DateTime.Now.AddDays(1) - DateTime.Now).TotalSeconds;
                         //round and seconds to milliseconds
                         int differenceInt = (Convert.ToInt32(Math.Floor(difference))) * 1000;
-
+                        Debug.WriteLine("####### Waiting "+ differenceInt);
                         Thread.Sleep(differenceInt);
                     }
                     else
                     {
-                        double difference = (DateTime.Now - this.lastRequest).TotalSeconds;
+                        double difference = (DateTime.Now - lastRequest).TotalSeconds;
                         //round and seconds to milliseconds
-                        int differenceInt = (Convert.ToInt32(Math.Floor(difference))) * 1000;
+                        int differenceInt = (Convert.ToInt32(Math.Floor(difference)));
 
-                        int sleepDifference = xRateReset - differenceInt;
+                        int sleepDifference = (xRateReset - differenceInt) * 1000;
+                        Debug.WriteLine("####### Waiting " + sleepDifference);
                         Thread.Sleep(sleepDifference);
                     }
                     return GetGenderFromApi(name);
                 }
-                else
-                {
-                    Debug.WriteLine("Error: " + webEx.Message);
-                    throw webEx;
-
-                }
+                Debug.WriteLine("Error: " + webEx.Message);
+                throw webEx;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: " + ex.Message);
-                throw ex;
-
+                if (gender != null)
+                {
+                    gender.name = name;
+                    gender.gender = "undifined";
+                    gender.count = 0;
+                    gender.probability = 0;
+                    return gender;
+                }
+                else
+                {
+                    throw;
+                }
             }
 
         }
@@ -208,12 +241,12 @@ namespace placeToBe.Services
         }
 
         #region HelperMethods
-        private Gender GenderToObject(String result)
-        {
-            String json = @result;
-            Gender gender = new Gender(json);
-            return gender;
-        }
+        //private Gender GenderToObject(String result)
+        //{
+        //    String json = @result;
+        //    Gender gender = new Gender(json);
+        //    return gender;
+        //}
 
         private async void UpdateGenderStat(Event eventNew)
         {
@@ -247,6 +280,11 @@ namespace placeToBe.Services
                 Thread.Sleep(15000);
                 PushGenderToDb(gender);
             }
+            catch (AggregateException)
+            {
+                
+                Debug.WriteLine("Invalid -> dont save");
+            }
         }
 
         private async Task<Event> SearchDbForEvent(String fbId)
@@ -256,7 +294,6 @@ namespace placeToBe.Services
 
         public async Task<Gender> SearchDbForGender(String name)
         {
-
             return await repoGender.GetByNameAsync(name);
         }
 
