@@ -30,10 +30,10 @@ namespace placeToBe
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
-            Thread backGender;
-            backGender = new Thread(GenderizeInit);
-            backGender.IsBackground = true;
-            backGender.Start();
+            //Thread backGender;
+            //backGender = new Thread(GenderizeInit);
+            //backGender.IsBackground = true;
+            //backGender.Start();
 
         }
 
