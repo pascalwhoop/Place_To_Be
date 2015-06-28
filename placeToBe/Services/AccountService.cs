@@ -84,7 +84,7 @@ namespace placeToBe.Services
         /// <param name="oldPassword"></param>
         /// <param name="newPassword"></param>
         /// <returns></returns>
-        public async Task<String> ChangePasswort(string userEmail, string oldPassword, string newPassword)
+        public async Task ChangePasswort(string userEmail, string oldPassword, string newPassword)
         {
             try
             {
@@ -103,25 +103,19 @@ namespace placeToBe.Services
                     user.passwordSalt = newPasswordSalt;
                     user.salt = newSalt;
                     await userRepo.UpdateAsync(user);
-                    return "Your Password has been changed successfully.";
+
                 }
-                else if(comparePasswords==false&& user.status==true)
+                else
                 {
-                    return "Your password is incorrect";
-                    //ToDo: Rückmeldung an UI : password is not correct or status is false
-                }
-                else if (comparePasswords == true && user.status == false)
-                {
-                    return "Your account is not activated.";
+                    //ToDo: Change password not possible because password is false, status is not activated.
                 }
             }
             catch (Exception e)
             {
                 //ToDo: Change password not possible because password is false, status is not activated.
-                return "Your password is incorrect and your account is not activated";
+
             }
 
-            return null;
         }
 
         //TODO: Facebook-Login
