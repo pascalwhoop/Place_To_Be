@@ -284,6 +284,7 @@ namespace placeToBe.Services
             {
                 
                 Debug.WriteLine("Invalid -> dont save");
+                throw;
             }
         }
 

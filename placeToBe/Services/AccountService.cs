@@ -32,14 +32,14 @@ namespace placeToBe.Services
         {
             try
             {
-                byte[] plainText = Encoding.UTF8.GetBytes(userPassword);
+                byte[] userPasswordInBytes = Encoding.UTF8.GetBytes(userPassword);
                 User user = await GetEmail(usersEmail);
                 byte[] salt = user.salt;
-                byte[] passwordSalt = GenerateSaltedHash(plainText, salt);
-                bool compare = CompareByteArrays(passwordSalt, user.passwordSalt);
+                byte[] passwordSalt = GenerateSaltedHash(userPasswordInBytes, salt);
+                bool comparePasswords = CompareByteArrays(passwordSalt, user.passwordSalt);
 
                 //statement: if users password is correct and status is activated          
-                if (compare == true && user.status == true)
+                if (comparePasswords == true && user.status == true)
                 {
                     //Set a ticket for five minutes to stay logged in.
                     FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(usersEmail, false, 5);
@@ -51,7 +51,7 @@ namespace placeToBe.Services
                     }
                     return ticket;
                 }
-                else if (compare == true && user.status == false)
+                else if (comparePasswords == true && user.status == false)
                 {
                     UnauthorizedAccessException e;
                     //ToDo: UI-Message: e.Message..(user not found, password false, status not activated)..
@@ -84,35 +84,44 @@ namespace placeToBe.Services
         /// <param name="oldPassword"></param>
         /// <param name="newPassword"></param>
         /// <returns></returns>
-        public async Task ChangePasswort(string userEmail, string oldPassword, string newPassword)
+        public async Task<String> ChangePasswort(string userEmail, string oldPassword, string newPassword)
         {
             try
             {
-                byte[] oldPw = Encoding.UTF8.GetBytes(oldPassword);
+                byte[] oldPasswordBytes = Encoding.UTF8.GetBytes(oldPassword);
                 User user = await GetEmail(userEmail);
                 byte[] oldSalt = user.salt;
-                byte[] oldPasswordSalt = GenerateSaltedHash(oldPw, oldSalt);
-                bool comparepw = CompareByteArrays(oldPasswordSalt, user.passwordSalt);
+                byte[] oldPasswordSalt = GenerateSaltedHash(oldPasswordBytes, oldSalt);
+                bool comparePasswords = CompareByteArrays(oldPasswordSalt, user.passwordSalt);
 
                 //statement: when users password is correct and status is activated  -> true  
-                if (comparepw == true && user.status == true)
+                if (comparePasswords == true && user.status == true)
                 {
-                    byte[] newPw = Encoding.UTF8.GetBytes(newPassword);
+                    byte[] newPasswordBytes = Encoding.UTF8.GetBytes(newPassword);
                     byte[] newSalt = GenerateSalt(saltSize);
-                    byte[] newPasswordSalt = GenerateSaltedHash(newPw, newSalt);
+                    byte[] newPasswordSalt = GenerateSaltedHash(newPasswordBytes, newSalt);
                     user.passwordSalt = newPasswordSalt;
                     user.salt = newSalt;
                     await userRepo.UpdateAsync(user);
+                    return "Your Password has been changed successfully.";
                 }
-                else
+                else if(comparePasswords==false&& user.status==true)
                 {
+                    return "Your password is incorrect";
                     //ToDo: Rückmeldung an UI : password is not correct or status is false
+                }
+                else if (comparePasswords == true && user.status == false)
+                {
+                    return "Your account is not activated.";
                 }
             }
             catch (Exception e)
             {
                 //ToDo: Change password not possible because password is false, status is not activated.
+                return "Your password is incorrect and your account is not activated";
             }
+
+            return null;
         }
 
         //TODO: Facebook-Login
@@ -246,7 +255,7 @@ namespace placeToBe.Services
             try
             {
                 User forgetUserPassword = await userRepo.GetByEmailAsync(userEmail);
-                byte[] newPassword = Encoding.UTF8.GetBytes(createRandomString(8));
+                byte[] newPassword = Encoding.UTF8.GetBytes(CreateRandomString(8));
                 byte[] salt = GenerateSalt(saltSize);
                 byte[] passwordSalt = GenerateSaltedHash(newPassword, salt);
                 forgetUserPassword.passwordSalt = passwordSalt;
@@ -268,10 +277,9 @@ namespace placeToBe.Services
         /// <param name="userEmail"></param>
         public void SendForgetPassword(byte[] bytePassword, string userEmail)
         {
-            string pwString = Encoding.UTF8.GetString(bytePassword);
-            string activationCode = Guid.NewGuid().ToString();
+            string passwordString = Encoding.UTF8.GetString(bytePassword);
 
-            string messageBody = "Your new password is: " + pwString;
+            string messageBody = "Your new password is: " + passwordString;
             messageBody += "<br /><a href = ' http://localhost:18172/api/login/ '>Click here to login with the new password.</a>";
             messageBody += "<br /><br />Have Fun with placeToBe.";
 
@@ -306,15 +314,14 @@ namespace placeToBe.Services
         /// </summary>
         /// <param name="length"></param>
         /// <returns>string</returns>
-        public string createRandomString(int length)
+        public string CreateRandomString(int length)
         {
-            string ret = string.Empty;
-            System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            string content = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789";
+            StringBuilder stringBuilder = new System.Text.StringBuilder();
+            string content = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
             Random rnd = new Random();
             for (int i = 0; i < length; i++)
-                SB.Append(content[rnd.Next(content.Length)]);
-            return SB.ToString();
+                stringBuilder.Append(content[rnd.Next(content.Length)]);
+            return stringBuilder.ToString();
         }
 
         /// <summary>

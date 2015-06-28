@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 
-namespace placeToBe.Service
+namespace placeToBe.Services
 {
     /**
      * a class that contains some static utility stuff
