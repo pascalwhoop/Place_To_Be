@@ -1,4 +1,4 @@
-
+databaseWork/
 .idea/
 
 */node_modules/
@@ -211,3 +211,5 @@ FakesAssemblies/
 # Visual Studio 6 workspace options file
 *.opt
 google_maps_api_v3_21_externs.js
+
+PlaceToBe/Frontend/app/src/.DS_Store

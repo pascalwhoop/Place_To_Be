@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Entity.Infrastructure;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -39,11 +40,17 @@ namespace placeToBe.Model.Repositories {
                 return await UpdateAsync(entity);
             }
 
-            entity.Id = Guid.NewGuid();
-            entity.lastUpdatedTimestamp = DateTime.Now;
-            Task task = _collection.InsertOneAsync(entity);
-            task.Wait();
-            return entity.Id;
+            try {
+                entity.Id = Guid.NewGuid();
+                entity.lastUpdatedTimestamp = DateTime.Now;
+                Task task = _collection.InsertOneAsync(entity);
+                task.Wait();
+                return entity.Id;
+            }
+            catch (Exception ex) {
+                Debug.WriteLine(ex);
+                return Guid.Empty;
+            }
         }
 
         public async Task<Guid> UpdateAsync(TEntity entity) {

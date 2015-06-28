@@ -72,6 +72,7 @@ namespace FacebookCrawler {
         protected void runFacebookCrawlerOverCities(List<City> cities) {
 
             cities.Sort((x, y) => DateTime.Compare(x.lastCheckedTime, y.lastCheckedTime));
+            cities.Reverse();
 
             var parallelOptions = new ParallelOptions{
                 MaxDegreeOfParallelism = 5

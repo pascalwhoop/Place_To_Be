@@ -49,7 +49,6 @@ namespace placeToBe.Model.Entities
         public CoverPhoto cover { get; set; }
         [DataMember]
         public Place place { get; set; }
-        [DataMember]
         public Category[] categoryList { get; set;  }
         [DataMember]
         public string name { get; set; }
