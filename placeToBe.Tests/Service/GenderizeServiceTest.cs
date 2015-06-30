@@ -10,111 +10,168 @@ using System.Threading.Tasks;
 
 namespace placeToBe.Tests.Service
 {
+
     [TestClass]
     public class GenderizeServiceTest
     {
         [TestMethod]
-        public void GetGender()
+        public void GetGenderFemale()
         {
 
-            ////Test wirft eine Exception, wenn auf die Methode Get GetByIdAsync zugegriffen wird 
+            //Arrange 
+            GenderizeService service = new GenderizeService();
 
 
-            ////Arrange
-            //GenderizeService service = new GenderizeService();
+            //Test female 
+            string namefemale = "Laura";
+            string expectedfemale = "female";
 
-            ////Test female
-            //string namefemale = "Laura";
-            //string expectedfemale = "\"gender\":\"female\"";
+            //Act
+            Task<Gender> gendertaskfemale = service.GetGender(namefemale);
+            Gender genderfemale = gendertaskfemale.Result;
+            String resultfemale = genderfemale.gender;
 
-            ////Act
+         
 
-            //Task<Gender> gender = service.GetGender(namefemale);
-
-
-            ////Assert
-
-
-
-            ////string substringf = wholestringf.Substring(16,17);
-            //Assert.AreEqual(gender, expectedfemale);
-
-
-
-            //    //Test male
-            //    //Arrange
-            //    string namemale = "Johan";
-            //    string expectedmale = "\"gender\":\"male\"";
-
-            //    //Act
-
-            //    service.SetGender(namemale);
-
-
-            //    //Assert
-
-            //    string wholestringm = service.GetGender();
-            //    string substringm = wholestringm.Substring(16, 15);
-            //    Assert.AreEqual(substringm, expectedmale);
-
-
-
-            //    //Test mit unisex Namen 
-            //    //Test funktioniert nur mit Namen, die 3 Buchstaben enthalten
-            //    //Fuer andere Namen bitte Substring aendern!
-            //    //Methode funktioniert nicht mir unisex Namen 
-            //    //Fuer Kim wird female ausgegeben
-
-            //    //Arrange
-            //    string nameunisex = "Kim";
-            //    string expectedunisex1 = "\"gender\":\"male\"";  //beide gender
-            //    string expectedunisex2 = "\"gender\":\"female\""; //sollen getestet werden 
-
-            //    //Act
-
-            //    service.SetGender(nameunisex);
-
-            //    //Assert
-
-
-            //    //string wholestringu1 = service.GetGenderInternal();
-            //    //string substringu1 = wholestringu1.Substring(15, 16); //Test
-            //    //Assert.AreEqual(substringu1, expectedunisex1);       //gender male
-
-
-            //    string wholestringu2 = service.GetGender();
-            //    string substringu2 = wholestringu2.Substring(14, 17); //Test
-            //    Assert.AreEqual(substringu2, expectedunisex2);       //gender female
+            //Assert
+            Assert.AreEqual(resultfemale, expectedfemale);
+            
 
         }
 
         [TestMethod]
-        public void SetGender()
+        public void GetGenderMale()
         {
             //Arrange
             GenderizeService service = new GenderizeService();
-            string name = "Laura";
+            //Test male 
+            string namemale = "Johan";
+            string expectedmale = "male";
 
             //Act
-            service.GetGenderFromApi(name);
+            Task<Gender> gendertaskmale = service.GetGender(namemale);
+            Gender gendermale = gendertaskmale.Result;
+            String resultmale = gendermale.gender;
+
 
             //Assert
+            Assert.AreEqual(resultmale, expectedmale);
+        }
+
+         [TestMethod]
+        public void GetGenderUni()
+        {
+             //Test doenst work with unisex names
+             //Test expects for "Kim" the gender female
+
+            //Arrange
+            GenderizeService service = new GenderizeService();
+            //Test unisex 
+            string nameuni = "Kim";
+            //string expecteduni1 = "male";   //testing both genders for 
+            string expecteduni2 = "female"; //unisex names 
+
+            //Act
+            Task<Gender> gendertaskuni = service.GetGender(nameuni);
+            Gender genderuni = gendertaskuni.Result;
+            String resultuni = genderuni.gender;
+
+
+            //Assert
+            //Assert.AreEqual(resultuni, expecteduni1);
+            Assert.AreEqual(resultuni, expecteduni2);
+
+        }
+
+        [TestMethod]
+        public void GetGenderFromApiFemale()
+        {
+            //Arrange
+            GenderizeService service = new GenderizeService();
+            //Test female
+            String namefemale = "Laura";
+            String expectedfemale = "female";
+
+            //Act
+            Gender genderfemale = service.GetGenderFromApi(namefemale);
+            String resultfemale = genderfemale.gender;
+
+            //Assert
+            Assert.AreEqual(resultfemale, expectedfemale);
+
+        }
+
+        [TestMethod]
+        public void GetGenderFromApiMale()
+        {
+            //Arrange
+            GenderizeService service = new GenderizeService();
+            //Test male
+            String namemale = "Johan";
+            String expectedmale = "male";
+
+            //Act
+            Gender gendermale = service.GetGenderFromApi(namemale);
+            String resultmale = gendermale.gender;
+
+            //Assert
+            Assert.AreEqual(resultmale, expectedmale);
+
+        }
+
+        [TestMethod]
+        public void GetGenderFromApiUni()
+        {
+            //Test doenst work with unisex names
+            //Test expects for "Kim" the gender female
+
+            //Arrange
+            GenderizeService service = new GenderizeService();
+            //Test unisex
+            String nameuni = "Kim";
+            String expecteduni1 = "female"; //testing both genders
+            //String expecteduni2 = "male";//for unisex names
+
+            //Act
+            Gender genderuni = service.GetGenderFromApi(nameuni);
+            String resultuni = genderuni.gender;
+
+            //Assert
+            Assert.AreEqual(resultuni, expecteduni1);
+            //Assert.AreEqual(resultuni, expecteduni2);
+        }
+
+        [TestMethod]
+        public void GetNamesArray()
+        {
+            //Arrange
+            GenderizeService service = new GenderizeService();
+            //fragen wie das aussehen soll 
+            String[] ja;
+
 
         }
 
         [TestMethod]
         public void GetGenderStat()
         {
+            //TODO Test funktioniert nicht, da auf die InsertAsync Methode nicht gewartet wird
             //Arrange 
             GenderizeService service = new GenderizeService();
             Event test = new Event();
-            test.fbId = "12387";
+            test.fbId = "123877171";
             test.attendingFemale = 150;
             test.attendingMale = 140;
 
+            MongoDbRepository<Event> model = new MongoDbRepository<Event>();
+            var task = model.InsertAsync(test);
+
 
             //Act
-            service.CreateGenderStat(test);
+            Task<int[]> stat = service.CreateGenderStat(test);
+            int[] genderstat = stat.Result;
+
+            //Fragen was result ist, wie das aussieht 
 
         }
     }
