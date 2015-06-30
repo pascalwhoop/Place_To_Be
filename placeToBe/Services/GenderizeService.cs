@@ -28,18 +28,18 @@ namespace placeToBe.Services
         public DateTime lastRequest;
 
 
-        public String[] GetNamesArray(String[] jsonArray)
+        public List<String> GetPrenamesStringArray(List<Rsvp> rsvpArray)
         {
-            String[] onlyPreNameArray = new string[] {};
+            List<String> onlyPrenameList = new List<String>();
             String[] splitItem;
             int i = 0;
-            foreach (var item in jsonArray)
+            foreach (var item in rsvpArray)
             {
-                splitItem=item.Split(new[] {" "},StringSplitOptions.None);
-                onlyPreNameArray[i] = splitItem[0];
+                splitItem=item.name.Split(new[] {" ", "-"}, StringSplitOptions.None);
+                onlyPrenameList.Add(splitItem[0]);
 
             }
-            return onlyPreNameArray;
+            return onlyPrenameList;
         }
 
 
@@ -209,12 +209,13 @@ namespace placeToBe.Services
 
 
             //GET list of people attending the event
-            List<Rsvp> list = eventNew.attending;
-            Rsvp[] array = list.ToArray();
+            List<Rsvp> attendingList = eventNew.attending;
+            List<String> preNameList=GetPrenamesStringArray(attendingList);
+            String[] preNameArray = preNameList.ToArray();
 
-            for (int i = 0; i < array.Length; i++)
+            for (int i = 0; i < preNameArray.Length; i++)
             {
-                gender = await GetGender(array[i].name);
+                gender = await GetGender(preNameArray[i]);
                 if (gender.gender == "male")
                 {
                     male++;
