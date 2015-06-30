@@ -1,5 +1,5 @@
 ﻿using placeToBe.Model.Entities;
-using placeToBe.Service;
+using placeToBe.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

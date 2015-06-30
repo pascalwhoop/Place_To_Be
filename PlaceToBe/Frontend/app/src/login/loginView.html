@@ -1,1 +1,25 @@
-<h2>TODO Login</h2>
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <title>placeToBe Facebook login</title>
+        <meta charset="UTF-8">
+        <meta name="author" content="Stephan Blumenthal">
+        <script src="loginController.js"></script> 
+    </head>
+    <body>
+        <!--
+          Below we include the Login Button social plugin. This button uses
+          the JavaScript SDK to present a graphical Login button that triggers
+          the FB.login() function when clicked.
+        -->
+
+        <fb:login-button scope="public_profile,email,user_friends" onlogin="checkLoginState();">
+        </fb:login-button>
+     
+        <div class="fb-login-button" data-max-rows="2" data-size="xlarge" data-show-faces="true" data-auto-logout-link="true"></div>
+
+        <div id="status">
+        </div>
+
+    </body>
+</html>
