@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using placeToBe.Model.Entities;
-using placeToBe.Service;
+using placeToBe.Services;
 
 namespace placeToBe.Tests.Service {
 
