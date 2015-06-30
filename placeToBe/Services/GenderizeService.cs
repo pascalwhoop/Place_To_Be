@@ -211,11 +211,10 @@ namespace placeToBe.Services
             //GET list of people attending the event
             List<Rsvp> attendingList = eventNew.attending;
             List<String> preNameList=GetPrenamesStringArray(attendingList);
-            String[] preNameArray = preNameList.ToArray();
 
-            for (int i = 0; i < preNameArray.Length; i++)
+            foreach (string name in preNameList)
             {
-                gender = await GetGender(preNameArray[i]);
+                gender = await GetGender(name);
                 if (gender.gender == "male")
                 {
                     male++;
@@ -235,9 +234,9 @@ namespace placeToBe.Services
             eventNew.attendingUndefined = undefined;
             UpdateGenderStat(eventNew);
 
-            int[] maleFemaleUndifined = { male, female, undefined };
+            int[] maleFemaleUndifinedArray = { male, female, undefined };
 
-            return maleFemaleUndifined;
+            return maleFemaleUndifinedArray;
 
         }
 
@@ -285,7 +284,6 @@ namespace placeToBe.Services
             {
                 
                 Debug.WriteLine("Invalid -> dont save");
-                throw;
             }
         }
 
