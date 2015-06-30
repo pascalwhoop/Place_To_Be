@@ -7,7 +7,7 @@ using System.Web;
 using Newtonsoft.Json;
 using placeToBe.Model.Entities;
 using placeToBe.Model.Repositories;
-using placeToBe.Service;
+using placeToBe.Services;
 using System.IO;
 using System.Threading.Tasks;
 
