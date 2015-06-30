@@ -1,0 +1,45 @@
+<md-dialog aria-label="Login">
+  <form>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Login</h2>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+      <div layout="column">
+        <md-content layout-padding layout="row" layout-sm="column">
+          <md-input-container>
+            <label>Username</label>
+            <input ng-model="user.username">
+          </md-input-container>
+          <md-input-container>
+            <label>Password</label>
+            <input ng-model="user.password" type="password">
+          </md-input-container>
+        </md-content>
+        <!--
+          Below we include the Login Button social plugin. This button uses
+          the JavaScript SDK to present a graphical Login button that triggers
+          the FB.login() function when clicked.
+        -->
+
+        <!--<md-button ng-click="fbLogin()">Login with FB instead</md-button>-->
+
+
+      </div>
+    </md-dialog-content>
+
+    <!--the bottom rows-->
+    <div class="md-actions" layout="row">
+      <span flex></span>
+      <md-button ng-click="answer('Cancel')" class="md-primary">
+        Cancel
+      </md-button>
+      <md-button ng-click="login(user)" class="md-primary">
+        Login
+      </md-button>
+    </div>
+  </form>
+</md-dialog>
+
+

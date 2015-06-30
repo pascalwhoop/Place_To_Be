@@ -10,7 +10,9 @@
     "angular-aria": "^1.4.x",
     "angular-material": "^0.9.0",
     "angular-route": "^1.4.x",
-    "ngmap": "~1.7.10"
+    "ngmap": "~1.7.10",
+    "angular-resource": "~1.4.1",
+    "ng-facebook": "~0.1.6"
   },
   "devDependencies": {
     "angular-material": "~0.9.4"

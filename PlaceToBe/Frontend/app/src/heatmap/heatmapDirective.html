@@ -1,11 +1,14 @@
-<map center="city.center" style="height: 700px;" id="heatmapContainer"   street-view-control="false"></map>
+<div layout="row" style="height: 100%;">
+  <map center="city.center" id="heatmapContainer"
+       disable-default-u-i="true"
+       zoom-control="true"
+       zoom-control-options="{{ {position: google.maps.ControlPosition.RIGHT_TOP} }}"
+    style="height:100%" flex="100">
+  </map>
 
-<div id="placetobe-map-settings">
-  <input type="text" ng-model="city.name" ng-disabled="true" placeholder="City"/>
-  <p>Datum<input type="date" ng-model="startDate"/></p>
-  <p>Uhrzeit <select ng-options="n for n in [] | range:0:23" ng-model="startHour"></select></p>
-  <button ng-click="fetchEvents(city.name, startDate, startHour)" class="btn">FetchEvents</button>
+
 </div>
+
 
 <div id="placetobe-dev-settings" ng-if="false">
   <div class="col-md-6" style="padding: 10px">

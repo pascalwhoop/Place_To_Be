@@ -1,28 +1,18 @@
-﻿using placeToBe.Model.Entities;
-using placeToBe.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Threading;
 using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
-using System.Web.Optimization;
 using System.Web.Routing;
-using Facebook;
-using Microsoft.Ajax.Utilities;
-using MongoDB.Bson;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using placeToBe.Model.Entities;
 using placeToBe.Services;
-using WebGrease.Css.Extensions;
 
 namespace placeToBe
 {
-    public class WebApiApplication : System.Web.HttpApplication
+    public class WebApiApplication : HttpApplication
     {
         protected void Application_Start() {
 

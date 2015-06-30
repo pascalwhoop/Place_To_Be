@@ -1,6 +1,44 @@
-<div ng-if="filter">
-  <placetobe-heatmap city="filter.city" event-source="eventSourceUrl" time="filter.time"></placetobe-heatmap>
-</div>
+
+<!--Header-->
+<md-toolbar layout="row">
+
+
+  <span flex="5"></span>
+  <md-select placeholder="City" ng-model="ctrl.userState" flex="20">
+    <md-option ng-repeat="city in cities" ng-click="query.place = city">{{city.formatted_address}}</md-option>
+  </md-select>
+  <span flex="5"></span>
+  <!--<md-input-container flex>
+    <label>City</label>
+    <select ng-options="city as city.formatted_address for city in cities" ng-model="query.place"></select>
+  </md-input-container>-->
+  <!--Date-->
+  <md-input-container flex="20">
+    <label>Date</label>
+    <input type="date" ng-model="query.startDate">
+  </md-input-container>
+  <span flex="5"></span>
+  <md-select placeholder="Time" ng-model="query.startHour" flex="20">
+    <md-option ng-repeat="n in [] | range:0:23" value="{{n}}">{{n}}:00</md-option>
+  </md-select>
+  <div><md-button ng-click="fetchEvents(query)" class="md-raised">FetchEvents</md-button></div>
+  <!--to login with FB or our own accounts-->
+  <login-button></login-button>
+</md-toolbar>
+
+<!--Content View-->
+<md-content flex id="content" >
+  <placetobe-heatmap query="query" data="heatmapData" ng-if="heatmapData"></placetobe-heatmap>
+
+  <div ng-if="!heatmapData">
+    <p>
+      Select a city, time and date above and we'll show you our results!
+    </p>
+  </div>
+</md-content>
+
+
+
 
 
 
