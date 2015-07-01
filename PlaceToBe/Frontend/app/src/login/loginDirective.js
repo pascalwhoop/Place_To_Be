@@ -39,10 +39,14 @@ angular.module('placeToBe')
           };
 
           $scope.fbLogin = function(){
-            $facebook.getLoginStatus().then(function(response){
-              console.log(response);
-            })
+            $facebook.login().then(fbLoginSuccess)
           };
+
+          var fbLoginSuccess = function(response){
+            $facebook.api("/me").then(function(response){
+              $scope.welcomeMsg = "Welcome " + response.name;
+            })
+          }
 
 
         }
