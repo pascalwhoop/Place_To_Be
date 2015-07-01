@@ -37,7 +37,7 @@ namespace placeToBe.Model.Entities
         }
         public int FB_ID { get; set; }
         public string emailFB { get; set; }
-        public string firstName {get; set;}
+        public string firstName { get; set; }
         public string lastName { get; set; }
         public string nickname { get; set; }
         public string gender { get; set; }
