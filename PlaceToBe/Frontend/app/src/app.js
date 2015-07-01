@@ -1,21 +1,14 @@
-angular
-  .module('placeToBe', ['ngMaterial', 'ngRoute', 'ngMap', 'ngResource', 'ngFacebook'])
-  .config(function($mdThemingProvider, $mdIconProvider){
+//main app entry point
+angular.module('placeToBe', ['ngMaterial', 'ngRoute', 'ngMap', 'ngResource', 'ngFacebook'])
 
-    $mdIconProvider
-      .defaultIconSet("./assets/svg/avatars.svg", 128)
-      .icon("menu"       , "./assets/svg/menu.svg"        , 24)
-      .icon("share"      , "./assets/svg/share.svg"       , 24)
-      .icon("google_plus", "./assets/svg/google_plus.svg" , 512)
-      .icon("hangouts"   , "./assets/svg/hangouts.svg"    , 512)
-      .icon("twitter"    , "./assets/svg/twitter.svg"     , 512)
-      .icon("phone"      , "./assets/svg/phone.svg"       , 512);
-
+  //setting the theme of our app
+  .config(function($mdThemingProvider){
     $mdThemingProvider.theme('default')
       .primaryPalette('cyan')
       .accentPalette('deep-orange');
 
   })
+  //our apps routes
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {
@@ -26,9 +19,12 @@ angular
         redirectTo: '/'
       });
   })
+  //configuring facebook plugin with AppID and permissions
   .config(function($facebookProvider){
     $facebookProvider.setAppId('857640940981214');
+    $facebookProvider.setPermissions("email,user_likes,user_friends,user_events,user_actions.music,user_actions.news,user_actions.books,rsvp_event,");
   })
+  //downloading facebook Javascript
   .run(function($rootScope){
     (function(d, s, id){
       var js, fjs = d.getElementsByTagName(s)[0];
@@ -39,22 +35,3 @@ angular
     }(document, 'script', 'facebook-jssdk'));
   });
 
-/*red
- pink
- purple
- deep-purple
- indigo
- blue
- light-blue
- cyan
- teal
- green
- light-green
- lime
- yellow
- amber
- orange
- deep-orange
- brown
- grey
- blue-grey*/
