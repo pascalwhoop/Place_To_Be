@@ -1,5 +1,5 @@
 angular
-  .module('placeToBe', ['ngMaterial', 'ngRoute', 'ngMap'])
+  .module('placeToBe', ['ngMaterial', 'ngRoute', 'ngMap', 'ngResource', 'ngFacebook'])
   .config(function($mdThemingProvider, $mdIconProvider){
 
     $mdIconProvider
@@ -12,8 +12,8 @@ angular
       .icon("phone"      , "./assets/svg/phone.svg"       , 512);
 
     $mdThemingProvider.theme('default')
-      .primaryPalette('brown')
-      .accentPalette('red');
+      .primaryPalette('cyan')
+      .accentPalette('deep-orange');
 
   })
   .config(function ($routeProvider) {
@@ -22,11 +22,30 @@ angular
         templateUrl: 'src/heatmap/heatmapView.html',
         controller: 'heatmapController'
       })
-      .when('/login',{
-        templateUrl: 'src/login/loginView.html',
-        controller: 'loginController'
-      })
       .otherwise({
         redirectTo: '/'
       });
+  })
+  .config(function($facebookProvider){
+    $facebookProvider.setAppId('857640940981214');
   });
+
+/*red
+ pink
+ purple
+ deep-purple
+ indigo
+ blue
+ light-blue
+ cyan
+ teal
+ green
+ light-green
+ lime
+ yellow
+ amber
+ orange
+ deep-orange
+ brown
+ grey
+ blue-grey*/

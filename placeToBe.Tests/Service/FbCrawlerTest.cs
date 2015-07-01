@@ -4,7 +4,7 @@ using System.Runtime.Serialization.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using placeToBe;
 using placeToBe.Model;
-using placeToBe.Service;
+using placeToBe.Services;
 using placeToBe.Model.Entities;
 
 

@@ -9,27 +9,36 @@
   <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no"/>
 
   <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="./bower_components/angular-material/angular-material.css"/>
   <link rel="stylesheet" href="assets/app.css"/>
 </head>
 
 <body ng-app="placeToBe" layout="row">
 
+<!--side navigation pane-->
 <md-sidenav class="site-sidenav md-sidenav-left md-whiteframe-z2"
             md-component-id="left"
             md-is-locked-open="$mdMedia('gt-sm')">
 
-  <md-toolbar class="md-whiteframe-z1">
-        <h1>Nav</h1>
-  </md-toolbar>
+  <header>
+    <a href="#/">
+      <i class="fa fa-map-marker main-logo"></i>
+      <h2>placeToBe</h2>
+    </a>
+  </header>
 
   <md-list>
     <md-list-item>
-        <a href="#/" class="md-button" style="width:100%">Home</a>
+        <md-button go-click="#/" >Home</md-button>
     </md-list-item>
 
     <md-list-item>
-      <a href="#login" class="md-button" style="width:100%">Login</a>
+      <md-button go-click="#preferences" class="md-button">Preferences</md-button>
+    </md-list-item>
+
+    <md-list-item>
+      <md-button ng-href="http://pascalbrokmeier.de/placetobe" target="_blank" class="md-button">About</md-button>
     </md-list-item>
 
   </md-list>
@@ -37,30 +46,29 @@
 </md-sidenav>
 
 
-<div flex layout="column" tabIndex="-1" role="main" class="md-whiteframe-z2">
+<div flex layout="column" tabIndex="-1" role="main" class="md-whiteframe-z2" ng-view=""></div>
 
-  <md-toolbar layout="row" class="md-whiteframe-z1">
-    <h1>placeToBe - Find your way!</h1>
-  </md-toolbar>
-
-  <md-content flex id="content" ng-view="">
-  </md-content>
-
-</div>
 <script src="http://maps.google.com/maps/api/js?libraries=visualization,geometry"></script>
 
 <script src="./bower_components/angular/angular.js"></script>
 <script src="./bower_components/angular-animate/angular-animate.js"></script>
 <script src="./bower_components/angular-aria/angular-aria.js"></script>
 <script src="./bower_components/angular-route/angular-route.js"></script>
+<script src="./bower_components/angular-resource/angular-resource.js"></script>
 <script src="./bower_components/angular-material/angular-material.js"></script>
 <script src="./bower_components/ngmap/build/scripts/ng-map.js"></script>
 
+<script src="https://connect.facebook.net/en_US/sdk.js"></script>
+<script src="./bower_components/ng-facebook/ngFacebook.js"></script>
+
+
 <script src="./src/app.js"></script>
 <script src="./src/services/gaussianservice.js"></script>
-<script src="./src/filters/range.js"></script>
+<script src="./src/util/filters/range.js"></script>
+<script src="./src/util/directives/goClick.js"></script>
 <script src="./src/heatmap/heatmapController.js"></script>
 <script src="./src/login/loginController.js"></script>
+<script src="./src/login/loginDirective.js"></script>
 <script src="./src/heatmap/heatmapDirective.js"></script>
 
 

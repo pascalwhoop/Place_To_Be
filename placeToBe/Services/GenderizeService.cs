@@ -24,9 +24,9 @@ namespace placeToBe.Services
 
         public List<string> getPrenamesStringArray(List<Rsvp> rsvpArray)
         {
-            var onlyPrenameList = new List<string>();
-            string[] splitItem;
-            var i = 0;
+            List<String> onlyPrenameList = new List<String>();
+            String[] splitItem;
+            
             foreach (var item in rsvpArray)
             {
                 splitItem = item.name.Split(new[] {" ", "-"}, StringSplitOptions.None);
@@ -72,6 +72,7 @@ namespace placeToBe.Services
             }
             catch (Exception)
             {
+                Console.WriteLine("{0} Exception caught.", e);
                 gender = null;
             }
 
@@ -177,8 +178,8 @@ namespace placeToBe.Services
                     gender.probability = 0;
                     return gender;
                 }
-                throw;
-            }
+                    throw;
+                }
         }
 
         /// <summary>
@@ -246,6 +247,7 @@ namespace placeToBe.Services
             }
             catch (MongoWaitQueueFullException)
             {
+                Console.WriteLine("{0} Exception caught.", ex);
                 Thread.Sleep(15000);
                 updateGenderStat(eventNew);
             }
@@ -263,6 +265,7 @@ namespace placeToBe.Services
             }
             catch (MongoWaitQueueFullException)
             {
+                Console.WriteLine("{0} Exception caught.", ex);
                 Thread.Sleep(15000);
                 pushGenderToDb(gender);
             }

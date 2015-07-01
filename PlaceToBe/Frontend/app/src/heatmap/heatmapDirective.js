@@ -14,24 +14,18 @@ angular.module('placeToBe')
         var geocoder = new google.maps.Geocoder();
         var mapObj = null;
         var heatmapLayer = null;
-        scope.dataReceived= false;
-
-        scope.startDate = new Date();
-        scope.startHour = 18;
-
 
         /*VARIABLES THAT INFLUENCE THE RENDERING OF THE HEATMAP*/
-        scope.SIZE_PER_PERSON = 0.00001; //in latitude/longitude 0.00001 ~ == 1m
+        scope.SIZE_PER_PERSON = 0.00003; //in latitude/longitude 0.00001 ~ == 1m
         scope.PERSONS_PER_POINT = 40;
         scope.TILE_SIZE = 256;
-        scope.METER_RADIUS_PER_POINT= 20;
-        var eventArray = [];
+        scope.METER_RADIUS_PER_POINT= 100;
 
 
         scope.$on('mapInitialized', function (event, map) {
           mapObj = map;
           geocoder.geocode({
-            address: scope.city.name
+            address: scope.query.place.formatted_address
           }, function (results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
               map.setCenter(results[0].geometry.location);
@@ -40,16 +34,18 @@ angular.module('placeToBe')
           });
 
 
+          scope.refreshHeatmap();
+          google.maps.event.addListener(mapObj, 'zoom_changed', function () {
+            heatmapLayer.setOptions({radius: getNewRadius()});
+          });
         });
 
-        /**
+        /*/!**
          * fetchEvents calls the backend passed to the directive and then passes them to a callback
          * @param city
          * @param time
-         */
+         *!/
         scope.fetchEvents = function (city, startDate, startHour) {
-           //MOCK data
-          //callback(MOCK_EVENTS);
 
 
           $http.get(buildUrl(city, startDate, startHour))
@@ -60,24 +56,14 @@ angular.module('placeToBe')
               scope.dataReceived = true;
               handleEvents(data);
             }); //for now the cologne/now is not important, we just want to show a map
-        };
+        };*/
 
-        var buildUrl = function(city, startDate, hour){
-          return scope.eventSource + "/filter/" + city + "/" + startDate.getFullYear() + "/" + (startDate.getMonth()+1) + "/" + (startDate.getDate()+1) + "/" + hour
-        };
 
         scope.refreshHeatmap = function(){
-            heatmapLayer.setMap(null);
-            setHeatmapDataArrayAsLayer(getHeatmapDataArrayForEvents(eventArray));
+            if(heatmapLayer != null) heatmapLayer.setMap(null);
+            setHeatmapDataArrayAsLayer(getHeatmapDataArrayForEvents(scope.data));
         };
 
-        var handleEvents = function (events) {
-          setHeatmapDataArrayAsLayer(getHeatmapDataArrayForEvents(events));
-
-          google.maps.event.addListener(mapObj, 'zoom_changed', function () {
-            heatmapLayer.setOptions({radius: getNewRadius()});
-          });
-        };
 
         var setHeatmapDataArrayAsLayer = function(heatmapData){
           heatmapData = new google.maps.MVCArray(heatmapData);
@@ -113,6 +99,7 @@ angular.module('placeToBe')
           }
         };
 
+        //=================================================================================
         //Mercator --BEGIN--   code from Google Maps Examples
 
         function bound(value, opt_min, opt_max) {
@@ -204,9 +191,8 @@ angular.module('placeToBe')
       restrict: 'E',
       //linking the attribute "city" value to the scope.city variable (maybe others too)
       scope: {
-        city: "=",
-        time: "=",
-        eventSource: "="
+        data: "=",
+        query: "="
       }
     };
   });
