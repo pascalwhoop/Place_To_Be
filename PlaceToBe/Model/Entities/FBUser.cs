@@ -7,6 +7,20 @@ namespace placeToBe.Model.Entities
 {
     public class FBUser : User
     {
+        /// <summary>
+        /// Faceboob Entity
+        /// </summary>
+        /// <param name="FB_ID"></param>
+        /// <param name="emailFB"></param>
+        /// <param name="firstName"></param>
+        /// <param name="lastName"></param>
+        /// <param name="nickname"></param>
+        /// <param name="gender"></param>
+        /// <param name="httpLink"></param>
+        /// <param name="country"></param>
+        /// <param name="timezone"></param>
+        /// <param name="updatedTimeFB"></param>
+        /// <param name="verified"></param>
         public FBUser(int FB_ID, string emailFB, string firstName, string lastName, string nickname, string gender, string httpLink, string country, int timezone, string updatedTimeFB, bool verified)
         {
             this.FB_ID = FB_ID;
