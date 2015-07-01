@@ -118,10 +118,25 @@ namespace placeToBe.Services
 
         }
 
-        //TODO: Facebook-Login
-        public void ExternalLogin()
+        /// <summary>
+        /// When User log in with Facebook the User-Token will be saved in our database.
+        /// </summary>
+        /// <param name="FB_ID"></param>
+        /// <param name="emailFB"></param>
+        /// <param name="firstName"></param>
+        /// <param name="lastName"></param>
+        /// <param name="nickname"></param>
+        /// <param name="gender"></param>
+        /// <param name="httpLink"></param>
+        /// <param name="country"></param>
+        /// <param name="timezone"></param>
+        /// <param name="updatedTimeFB"></param>
+        /// <param name="verified"></param>
+        /// <returns></returns>
+        public async Task SaveFBData(int FB_ID, string emailFB, string firstName, string lastName, string nickname, string gender, string httpLink, string country, int timezone, string updatedTimeFB, bool verified)
         {
-
+            FBUser fbuser = new FBUser(FB_ID, emailFB, firstName, lastName, nickname, gender, httpLink, country, timezone, updatedTimeFB, verified);
+            await userRepo.InsertAsync(fbuser);
         }
 
         /// <summary>
@@ -170,6 +185,7 @@ namespace placeToBe.Services
                 //ToDo: UI-Ausgabe: Cant send  confirmation mail
             }
         }
+
 
         /// <summary>
         /// Send an email to user, register with "inactive" status.
