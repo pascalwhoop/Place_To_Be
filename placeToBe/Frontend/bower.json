@@ -12,7 +12,9 @@
     "angular-route": "^1.4.x",
     "ngmap": "~1.7.10",
     "angular-resource": "~1.4.1",
-    "ng-facebook": "~0.1.6"
+    "ng-facebook": "~0.1.6",
+    "seedrandom": "~2.4.0",
+    "angular-messages": "~1.4.1"
   },
   "devDependencies": {
     "angular-material": "~0.9.4"

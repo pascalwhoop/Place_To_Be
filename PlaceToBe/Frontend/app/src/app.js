@@ -1,5 +1,5 @@
 //main app entry point
-angular.module('placeToBe', ['ngMaterial', 'ngRoute', 'ngMap', 'ngResource', 'ngFacebook'])
+angular.module('placeToBe', ['ngMaterial', 'ngRoute', 'ngMap', 'ngResource', 'ngFacebook', 'ngMessages'])
 
   //setting the theme of our app
   .config(function($mdThemingProvider){

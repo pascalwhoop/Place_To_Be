@@ -19,53 +19,56 @@ angular.module('placeToBe')
         scope.SIZE_PER_PERSON = 0.00003; //in latitude/longitude 0.00001 ~ == 1m
         scope.PERSONS_PER_POINT = 40;
         scope.TILE_SIZE = 256;
-        scope.METER_RADIUS_PER_POINT= 100;
+        scope.METER_RADIUS_PER_POINT = 100;
 
-
-        scope.$on('mapInitialized', function (event, map) {
-          mapObj = map;
-          geocoder.geocode({
-            address: scope.query.place.formatted_address
-          }, function (results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-              map.setCenter(results[0].geometry.location);
-              map.fitBounds(results[0].geometry.bounds);
-            }
-          });
-
-
-          scope.refreshHeatmap();
-          google.maps.event.addListener(mapObj, 'zoom_changed', function () {
-            heatmapLayer.setOptions({radius: getNewRadius()});
-          });
+        //watch both data & query attributes for changes
+        scope.$watch('data', function (newValue, oldValue) {
+          if (newValue && mapObj) //if value has changed and we have a map object already initialized
+          {
+            refreshHeatmapLayer();
+          }
         });
 
-        /*/!**
-         * fetchEvents calls the backend passed to the directive and then passes them to a callback
-         * @param city
-         * @param time
-         *!/
-        scope.fetchEvents = function (city, startDate, startHour) {
+        //only change map location if place changed
+        scope.$watch('query', function (newValue, oldValue) {
+          if (newValue && mapObj) //if value has changed and we have a map object already initialized
+          {
+            if(newValue.place.place_id != oldValue.place.place_id){
+              setMapLocation(newValue.place.formatted_address);
+            }
+          }
+        }, true); // watch the query value. deep value dirty checking here! so compares every part of the object
 
+        //once map is initialized (google maps internal) we fetch our first set of data
+        scope.$on('mapInitialized', function (event, map) {
+          mapObj = map;
+          google.maps.event.addListener(mapObj, 'zoom_changed', function () {
+            if(heatmapLayer) heatmapLayer.setOptions({radius: getNewRadius()});
+          });
 
-          $http.get(buildUrl(city, startDate, startHour))
-            .success(function (data, status, headers, config) {
+          setMapLocation(scope.query.place.formatted_address,refreshHeatmapLayer); //set locatin then pass the refreshHeatmapLayer as a callback
 
-              //callback(data.slice(0,20));
-              eventArray = data;
-              scope.dataReceived = true;
-              handleEvents(data);
-            }); //for now the cologne/now is not important, we just want to show a map
-        };*/
+        });
 
-
-        scope.refreshHeatmap = function(){
-            if(heatmapLayer != null) heatmapLayer.setMap(null);
-            setHeatmapDataArrayAsLayer(getHeatmapDataArrayForEvents(scope.data));
+        var setMapLocation = function (locationString, callback) {
+          geocoder.geocode({
+            address: locationString
+          }, function (results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+              mapObj.setCenter(results[0].geometry.location);
+              mapObj.fitBounds(results[0].geometry.bounds);
+              if(callback) callback(); //call callback if present
+            }
+          });
         };
 
 
-        var setHeatmapDataArrayAsLayer = function(heatmapData){
+        var refreshHeatmapLayer = function(){
+          if (heatmapLayer != null) heatmapLayer.setMap(null);
+          setHeatmapDataArrayAsLayer(getHeatmapDataArrayForEvents(scope.data));
+        };
+
+        var setHeatmapDataArrayAsLayer = function (heatmapData) {
           heatmapData = new google.maps.MVCArray(heatmapData);
           heatmapLayer = new google.maps.visualization.HeatmapLayer({
             data: heatmapData,
@@ -75,7 +78,7 @@ angular.module('placeToBe')
           heatmapLayer.setMap(mapObj);
         };
 
-        var getHeatmapDataArrayForEvents= function(events){
+        var getHeatmapDataArrayForEvents = function (events) {
           var heatmapData = [];
           events.forEach(function (element) {
               addPointsForEachGuest(element, heatmapData);
@@ -84,17 +87,23 @@ angular.module('placeToBe')
           return heatmapData;
         };
 
+        //a method to create a heatmap around a coordinate
         var addPointsForEachGuest = function (event, heatmapData) {
-          if(!event.geoLocationCoordinates || !event.geoLocationCoordinates.coordinates) return;
+          //create a random number generator. we always use the same seed to always get the same visual representation of an event
+          var rng = new Math.seedrandom("seed");
+          //if event has no coordinates ignore this event
+          if (!event.geoLocationCoordinates || !event.geoLocationCoordinates.coordinates) return;
+          //calculate the maximum radius that should be filled with heatpoint dots
           var maxEventRadius = scope.SIZE_PER_PERSON * Math.pow(event.attending_count, 0.66666);
+          //we create points for every X people (PERSONS_PER_POINT)
           for (var i = 0; i < Math.ceil(event.attending_count / scope.PERSONS_PER_POINT); i++) {
-            var heatPointDistance = maxEventRadius * Math.random();
-            var angle = Math.random() * Math.PI * 2;
+            //how far away from the event center?
+            var heatPointDistance = maxEventRadius * rng.quick();
+            //which direction from the event center?
+            var angle = rng.quick() * Math.PI * 2;
             var a = event.geoLocationCoordinates.coordinates[0] + Math.cos(angle) * heatPointDistance;
             var b = event.geoLocationCoordinates.coordinates[1] + Math.sin(angle) * heatPointDistance;
             var latLng = new google.maps.LatLng(a, b);
-
-
             heatmapData.push(latLng);
           }
         };
@@ -182,7 +191,7 @@ angular.module('placeToBe')
           });
        */
 
-        //"api/event/filter/{city}/{year}/{month}/{day}/{hour}
+      //"api/event/filter/{city}/{year}/{month}/{day}/{hour}
 
 
       //this is the HTML template for the directive

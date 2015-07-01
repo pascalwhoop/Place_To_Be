@@ -7,46 +7,68 @@
  * # heatmapDirective
  */
 angular.module('placeToBe')
-  .directive('loginButton', function ($http, $mdDialog, loginService) {
+  .directive('loginButton', function ($http, $mdDialog) {
     return {
       //here we place the logic of the directive (link function)
       link: function (scope, element, attr) {
-        scope.func = false;
 
-        scope.showLoginDialog = function(event){
+        scope.showLoginDialog = function (event) {
           $mdDialog.show({
             controller: LoginDialogController,
             templateUrl: 'src/login/loginDirective.html',
             parent: angular.element(document.body),
             targetEvent: event
           })
-            .then(function(answer) {
-              $scope.alert = 'You said the information was "' + answer + '".';
-            }, function() {
-              $scope.alert = 'You cancelled the dialog.';
-            });
         };
 
-        function LoginDialogController($scope, $mdDialog, $facebook) {
-          $scope.hide = function() {
+        function LoginDialogController($scope, $mdDialog, loginService) {
+          $scope.hide = function () {
             $mdDialog.hide();
           };
-          $scope.cancel = function() {
+          $scope.cancel = function () {
             $mdDialog.cancel();
           };
-          $scope.answer = function(answer) {
+          $scope.answer = function (answer) {
             $mdDialog.hide(answer);
           };
 
-          $scope.fbLogin = function(){
-            $facebook.login().then(fbLoginSuccess)
+          $scope.registerDialog = false;
+          $scope.toggleRegister = function () {
+            $scope.registerDialog = !$scope.registerDialog;
           };
 
-          var fbLoginSuccess = function(response){
-            $facebook.api("/me").then(function(response){
-              $scope.welcomeMsg = "Welcome " + response.name;
+          //we register a User. passing the values to our service
+          $scope.registerUser = function (user) {
+            $scope.serverWait = true;
+            loginService.registerUser(user).then(function(successRes){
+              $scope.serverWait = false;
+            }, function(errResponse){
+
             })
-          }
+          };
+
+          $scope.loginUser = function(user){
+            $scope.browser = true;
+            loginService.loginUser(user).then(function(successRes){
+              $scope.serverWait = false;
+            }, function(errResponse){
+
+            })
+          };
+
+          $scope.fbLogin = function () {
+            loginService.facebook.login().then(function (response) {
+              loginService.facebook.getLoginStatus(function (response) {
+                console.log(response);
+              });
+            });
+            loginService.facebook.getLoginStatus();
+            loginService.facebook.getAuthResponse();
+            /*
+             $mdDialog.hide();
+
+             })*/
+          };
 
 
         }
@@ -55,14 +77,12 @@ angular.module('placeToBe')
       },
 
       //this is the HTML template for the directive
-      template: "<md-button ng-click='showLoginDialog($event)' class='md-raised'>{{loggedIn ? 'Logout' : 'Login'}}</md-button>",
+      template: "<md-button ng-click='showLoginDialog($event)' class='md-raised'>{{(loginService.getLoginState() == 'connected') ? 'Logout' : 'Login'}}</md-button>",
       //we set it so only element tags are relevant
       restrict: 'E',
       //linking the attribute "city" value to the scope.city variable (maybe others too)
       scope: {
-        city: "=",
-        time: "=",
-        eventSource: "="
+        loginService: "="
       }
     };
   });

@@ -8,16 +8,20 @@
  * Controller of the frontendApp
  */
 angular.module('placeToBe')
-  .controller('heatmapController', function ($scope, $http, $resource, loginService) {
+  .controller('heatmapController', function ($scope, $http, $resource, loginService, configService) {
 
+    $scope.loginService = loginService;
+
+    $scope.loggedIn = loginService.getLoginState();
 
     $scope.query = {
       place: {},
       startDate: new Date(),
       startHour: 18
     };
-    //$scope.eventSourceUrl = "https://placetobe-koeln.azurewebsites.net/api/event";
-    var BASE_URL = "http://192.168.125.136:18172/api";
+
+    var BASE_URL = configService.BASE_URL;
+    //var BASE_URL = "http://192.168.125.136:18172/api";
 
     /**
      * fetchEvents calls the backend passed to the directive and then passes them to a callback
@@ -25,14 +29,13 @@ angular.module('placeToBe')
      * @param time
      */
     $scope.fetchEvents = function (query) {
+      if(!query.place || !query.place.place_id) return;
 
       $http.get(buildEventQueryUrl(query.place, query.startDate, query.startHour))
         .success(function (data, status, headers, config) {
-
           //place the data from the server into a variable and make the heatmap visible
           $scope.heatmapData = data;
-
-
+          localStorage.setItem("ptb_lastQuery", JSON.stringify(query));
         });
     };
 
@@ -45,7 +48,11 @@ angular.module('placeToBe')
       $scope.cities = cities;
     });
 
-
-
-
+    //set last query as current query
+    var localStorageQuery = localStorage.getItem("ptb_lastQuery");
+    if(localStorageQuery) {
+      $scope.query = JSON.parse(localStorageQuery);
+      $scope.query.startDate = new Date($scope.query.startDate);
+      $scope.fetchEvents($scope.query);
+    }
   });
