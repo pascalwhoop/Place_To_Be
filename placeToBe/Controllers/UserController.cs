@@ -25,6 +25,11 @@ namespace placeToBe.Controllers
         /// <param name="userEmail"></param>
         /// <param name="userPassword"></param>
         /// <returns></returns>
+        public async Task Post(int FB_ID, string emailFB, string firstName, string lastName, string nickname, string gender, string httpLink, string country, int timezone, string updatedTimeFB, bool verified)
+        {
+            await user.SaveFBData(FB_ID, emailFB, firstName, lastName, nickname, gender, httpLink, country, timezone, updatedTimeFB, verified);
+        }
+
         public async Task Post([FromUri]string userEmail, [FromUri] string userPassword)
         {
             await user.SendActivationEmail(userEmail, userPassword);
