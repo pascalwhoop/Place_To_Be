@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Collections;
 
 
 namespace placeToBe.Model.Repositories {

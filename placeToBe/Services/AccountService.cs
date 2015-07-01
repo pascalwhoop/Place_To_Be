@@ -113,7 +113,7 @@ namespace placeToBe.Services
             catch (Exception e)
             {
                 //ToDo: Change password not possible because password is false, status is not activated.
-
+                Console.WriteLine("{0} Exception caught.", e);
             }
 
         }
@@ -182,6 +182,7 @@ namespace placeToBe.Services
             }
             catch (Exception e)
             {
+                Console.WriteLine("{0} Exception caught.", e);
                 //ToDo: UI-Ausgabe: Cant send  confirmation mail
             }
         }
@@ -234,6 +235,7 @@ namespace placeToBe.Services
             }
             catch (Exception e)
             {
+                Console.WriteLine("{0} Exception caught.", e);
                 //ToDo: UI-Ausgabe: Cant send Registration-email.
             }
         }

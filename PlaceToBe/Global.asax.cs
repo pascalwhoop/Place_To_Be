@@ -36,7 +36,7 @@ namespace placeToBe
             JToken resultObjects = JToken.Parse(json);
             List<String> array = new List<string>();
             String[] splittedArray;
-            int i = 0;
+            
             foreach (JToken token in resultObjects)
             {
                 splittedArray = token.ToString().Split(new[]{" ","-"},StringSplitOptions.None);
@@ -50,7 +50,7 @@ namespace placeToBe
             foreach (String element in array)
             {
                 Debug.WriteLine("########GETTING GENDER FOR "+element+" ############");
-                genderArray[j]=await genderService.GetGender(element);
+                genderArray[j]=await genderService.getGender(element);
                 Debug.WriteLine("######Gender: " + genderArray[j].gender+" ######## "+(j+1));
                 j++;
             }
