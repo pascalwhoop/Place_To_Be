@@ -7,7 +7,7 @@
  * # heatmapDirective
  */
 angular.module('placeToBe')
-  .directive('loginButton', function ($http, $mdDialog) {
+  .directive('loginButton', function ($http, $mdDialog, loginService) {
     return {
       //here we place the logic of the directive (link function)
       link: function (scope, element, attr) {

@@ -8,7 +8,7 @@
  * Controller of the frontendApp
  */
 angular.module('placeToBe')
-  .controller('heatmapController', function ($scope, $http, $resource) {
+  .controller('heatmapController', function ($scope, $http, $resource, loginService) {
 
 
     $scope.query = {

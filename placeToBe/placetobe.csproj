@@ -251,6 +251,27 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <!-- manually changed this -->
     <Content Include="Frontend\app\assets\app.css" />
+    <Content Include="Frontend\app\assets\favicons\android-icon-144x144.png" />
+    <Content Include="Frontend\app\assets\favicons\android-icon-192x192.png" />
+    <Content Include="Frontend\app\assets\favicons\android-icon-36x36.png" />
+    <Content Include="Frontend\app\assets\favicons\android-icon-48x48.png" />
+    <Content Include="Frontend\app\assets\favicons\android-icon-72x72.png" />
+    <Content Include="Frontend\app\assets\favicons\android-icon-96x96.png" />
+    <Content Include="Frontend\app\assets\favicons\apple-icon-114x114.png" />
+    <Content Include="Frontend\app\assets\favicons\apple-icon-120x120.png" />
+    <Content Include="Frontend\app\assets\favicons\apple-icon-144x144.png" />
+    <Content Include="Frontend\app\assets\favicons\apple-icon-152x152.png" />
+    <Content Include="Frontend\app\assets\favicons\apple-icon-180x180.png" />
+    <Content Include="Frontend\app\assets\favicons\apple-icon-57x57.png" />
+    <Content Include="Frontend\app\assets\favicons\apple-icon-60x60.png" />
+    <Content Include="Frontend\app\assets\favicons\apple-icon-72x72.png" />
+    <Content Include="Frontend\app\assets\favicons\apple-icon-76x76.png" />
+    <Content Include="Frontend\app\assets\favicons\apple-icon-precomposed.png" />
+    <Content Include="Frontend\app\assets\favicons\apple-icon.png" />
+    <Content Include="Frontend\app\assets\favicons\browserconfig.xml" />
+    <Content Include="Frontend\app\assets\favicons\favicon-16x16.png" />
+    <Content Include="Frontend\app\assets\favicons\favicon-32x32.png" />
+    <Content Include="Frontend\app\assets\favicons\favicon-96x96.png" />
     <Content Include="Frontend\app\assets\svg\avatar-1.svg" />
     <Content Include="Frontend\app\assets\svg\avatar-4.svg" />
     <Content Include="Frontend\app\assets\svg\avatars.svg" />
@@ -261,6 +282,10 @@
     <Content Include="Frontend\app\assets\svg\phone.svg" />
     <Content Include="Frontend\app\assets\svg\share.svg" />
     <Content Include="Frontend\app\assets\svg\twitter.svg" />
+    <Content Include="Frontend\app\bower_components\angular-resource\angular-resource.js" />
+    <Content Include="Frontend\app\bower_components\angular-resource\angular-resource.min.js" />
+    <Content Include="Frontend\app\bower_components\ng-facebook\ngFacebook.js" />
+    <Content Include="Frontend\app\favicon.ico" />
     <Content Include="Frontend\app\index.html" />
     <Content Include="Frontend\app\bower_components\angular\angular.js" />
     <Content Include="Frontend\app\bower_components\angular-animate\angular-animate.js" />
@@ -269,6 +294,10 @@
     <Content Include="Frontend\app\bower_components\angular-material\angular-material.js" />
     <Content Include="Frontend\app\bower_components\angular-material\angular-material.css" />
     <Content Include="Frontend\app\bower_components\ngmap\build\scripts\ng-map.js" />
+    <Content Include="Frontend\app\ms-icon-144x144.png" />
+    <Content Include="Frontend\app\ms-icon-150x150.png" />
+    <Content Include="Frontend\app\ms-icon-310x310.png" />
+    <Content Include="Frontend\app\ms-icon-70x70.png" />
     <Content Include="Frontend\app\src\app.js" />
     <Content Include="Frontend\app\src\filters\range.js" />
     <Content Include="Frontend\app\src\heatmap\heatmapController.js" />
@@ -277,8 +306,13 @@
     <Content Include="Frontend\app\src\heatmap\heatmapDirective.js" />
     <Content Include="Frontend\app\src\heatmap\heatmapView.html" />
     <Content Include="Frontend\app\src\login\loginController.js" />
+    <Content Include="Frontend\app\src\login\loginDirective.html" />
+    <Content Include="Frontend\app\src\login\loginDirective.js" />
     <Content Include="Frontend\app\src\login\loginView.html" />
     <Content Include="Frontend\app\src\services\gaussianservice.js" />
+    <Content Include="Frontend\app\src\services\loginservice.js" />
+    <Content Include="Frontend\app\src\util\directives\goClick.js" />
+    <Content Include="Frontend\app\src\util\filters\range.js" />
     <Content Include="Global.asax" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -306,6 +340,8 @@
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
+    <Content Include="Frontend\app\bower_components\angular-resource\angular-resource.min.js.map" />
+    <Content Include="Frontend\app\manifest.json" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

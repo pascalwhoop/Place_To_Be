@@ -133,6 +133,32 @@ md-button.menuBtn > md-icon {
   transition: all 100ms ease-out 30ms;
 }
 
+/*FB Login Button*/
+button.md-button.md-raised.fb-login-button{
+  background-color: #3b5998;
+  color: white;
+}
+
+button.md-button.md-raised.fb-login-button:not([disabled]):hover{
+  background-color: #8b9dc3 !important;
+}
+
+button.md-button.md-raised.fb-login-button:not([disabled]):active, button.md-button.md-raised.fb-login-button:not([disabled]).md-focused{
+  background-color: #dfe3ee !important;
+  color: #3b5998 !important;
+}
+
+button.md-button.md-raised.fb-login-button:not([disabled]):active > md-icon{
+  color: #3b5998 !important;
+}
+
+
+button.md-button.md-raised.fb-login-button > md-icon{
+  color: white;
+  height: 16px;
+  padding: 0 9px 0 0;
+}
+
 #content img {
   display: block;
   height: auto;
@@ -151,6 +177,8 @@ md-toolbar h1 {
   font-size: 1.250em;
   font-weight: 400;
 }
+
+
 
 .avatar {
   position: relative;
