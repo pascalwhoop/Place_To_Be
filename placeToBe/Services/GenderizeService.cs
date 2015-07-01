@@ -70,7 +70,7 @@ namespace placeToBe.Services
             {
                 gender = await searchDbForGender(name);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 Console.WriteLine("{0} Exception caught.", e);
                 gender = null;
@@ -245,8 +245,9 @@ namespace placeToBe.Services
             {
                 Console.Write(e.Message);
             }
-            catch (MongoWaitQueueFullException)
+            catch (MongoWaitQueueFullException ex)
             {
+
                 Console.WriteLine("{0} Exception caught.", ex);
                 Thread.Sleep(15000);
                 updateGenderStat(eventNew);
@@ -263,7 +264,7 @@ namespace placeToBe.Services
             {
                 Console.Write(e.Message);
             }
-            catch (MongoWaitQueueFullException)
+            catch (MongoWaitQueueFullException ex)
             {
                 Console.WriteLine("{0} Exception caught.", ex);
                 Thread.Sleep(15000);

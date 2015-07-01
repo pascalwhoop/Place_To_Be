@@ -50,7 +50,7 @@ namespace placeToBe
             foreach (String element in array)
             {
                 Debug.WriteLine("########GETTING GENDER FOR "+element+" ############");
-                genderArray[j]=await genderService.GetGender(element);
+                genderArray[j]=await genderService.getGender(element);
                 Debug.WriteLine("######Gender: " + genderArray[j].gender+" ######## "+(j+1));
                 j++;
             }
