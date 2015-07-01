@@ -7,6 +7,7 @@ namespace placeToBe.Model.Entities
 {
     public class FBUser : User
     {
+        //Test
         /// <summary>
         /// Faceboob Entity
         /// </summary>
