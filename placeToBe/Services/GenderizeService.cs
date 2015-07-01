@@ -32,7 +32,7 @@ namespace placeToBe.Services
         {
             List<String> onlyPrenameList = new List<String>();
             String[] splitItem;
-            int i = 0;
+            
             foreach (var item in rsvpArray)
             {
                 splitItem=item.name.Split(new[] {" ", "-"}, StringSplitOptions.None);
@@ -81,6 +81,7 @@ namespace placeToBe.Services
             }
             catch (Exception e)
             {
+                Console.WriteLine("{0} Exception caught.", e);
                 gender = null;
             }
 
@@ -260,6 +261,7 @@ namespace placeToBe.Services
             }
             catch (MongoWaitQueueFullException ex)
             {
+                Console.WriteLine("{0} Exception caught.", ex);
                 Thread.Sleep(15000);
                 UpdateGenderStat(eventNew);
             }
@@ -277,6 +279,7 @@ namespace placeToBe.Services
             }
             catch (MongoWaitQueueFullException ex)
             {
+                Console.WriteLine("{0} Exception caught.", ex);
                 Thread.Sleep(15000);
                 PushGenderToDb(gender);
             }

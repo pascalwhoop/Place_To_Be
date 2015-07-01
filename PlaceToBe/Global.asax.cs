@@ -36,7 +36,7 @@ namespace placeToBe
             JToken resultObjects = JToken.Parse(json);
             List<String> array = new List<string>();
             String[] splittedArray;
-            int i = 0;
+            
             foreach (JToken token in resultObjects)
             {
                 splittedArray = token.ToString().Split(new[]{" ","-"},StringSplitOptions.None);
