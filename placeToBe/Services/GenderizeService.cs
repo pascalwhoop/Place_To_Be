@@ -6,55 +6,47 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Helpers;
-using Facebook;
-using Microsoft.Ajax.Utilities;
 using MongoDB.Driver;
+using Newtonsoft.Json;
 using placeToBe.Model.Entities;
 using placeToBe.Model.Repositories;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace placeToBe.Services
 {
     public class GenderizeService
     {
-
-        GenderRepository repoGender = new GenderRepository();
         EventRepository repoEvent = new EventRepository();
-        public String URL { get; set; }
+        GenderRepository repoGender = new GenderRepository();
+        public DateTime lastRequest;
         public int xRateLimitRemaining;
         public int xRateReset;
-        public DateTime lastRequest;
+        public string url { get; set; }
 
-
-        public List<String> GetPrenamesStringArray(List<Rsvp> rsvpArray)
+        public List<string> getPrenamesStringArray(List<Rsvp> rsvpArray)
         {
             List<String> onlyPrenameList = new List<String>();
             String[] splitItem;
-            int i = 0;
+            
             foreach (var item in rsvpArray)
             {
-                splitItem=item.name.Split(new[] {" ", "-"}, StringSplitOptions.None);
+                splitItem = item.name.Split(new[] {" ", "-"}, StringSplitOptions.None);
                 onlyPrenameList.Add(splitItem[0]);
-
             }
             return onlyPrenameList;
         }
 
-
         /// <summary>
-        /// return the gender statistik of a specific event
+        ///     return the gender statistik of a specific event
         /// </summary>
         /// <param name="fbId">id of an event</param>
         /// <returns>return an int[] array with value of array[0]=male, array[1]=female, array[2]=undifined</returns>
-        public async Task<int[]> GetGenderStat(String fbId)
+        public async Task<int[]> getGenderStat(string fbId)
         {
-            int[] genderStat = new int[3];
-            Event eventNew = await SearchDbForEvent(fbId);
+            var genderStat = new int[3];
+            var eventNew = await searchDbForEvent(fbId);
             if (eventNew.attendingMale == 0 && eventNew.attendingFemale == 0 && eventNew.attendingUndefined == 0)
             {
-                genderStat = await CreateGenderStat(eventNew);
+                genderStat = await createGenderStat(eventNew);
             }
             else
             {
@@ -67,29 +59,31 @@ namespace placeToBe.Services
         }
 
         /// <summary>
-        /// Search for a gender by name and returns it.
+        ///     Search for a gender by name and returns it.
         /// </summary>
         /// <param name="name">name of a person</param>
         /// <returns>gender of the name</returns>
-        public async Task<Gender> GetGender(String name)
+        public async Task<Gender> getGender(string name)
         {
             Gender gender;
             try
             {
-                gender = await SearchDbForGender(name);
-                
+                gender = await searchDbForGender(name);
             }
             catch (Exception e)
             {
+                Console.WriteLine("{0} Exception caught.", e);
                 gender = null;
             }
 
             if (gender == null)
             {
-                gender = GetGenderFromApi(name);
+                gender = getGenderFromApi(name);
+                Debug.WriteLine(gender.name);
+                Debug.WriteLine(gender.Id);
                 Debug.WriteLine("######## Got it from Api");
 
-                PushGenderToDb(gender);
+                pushGenderToDb(gender);
             }
             else
             {
@@ -100,39 +94,37 @@ namespace placeToBe.Services
         }
 
         /// <summary>
-        /// GetGender uses the genderize.io API to get the gender of a prename
+        ///     GetGender uses the genderize.io API to get the gender of a prename
         /// </summary>
         /// <param name="name">using a name of a person to get the gender</param>
-        public Gender GetGenderFromApi(String name)
+        public Gender getGenderFromApi(string name)
         {
-            String result;
+            string result;
             Gender gender = null;
 
-            HttpWebRequest request;
-            String getData = "name=" + name;
-            URL = "http://api.genderize.io/?";
-            Uri uri = new Uri(URL + getData);
-            request = (HttpWebRequest)WebRequest.Create(uri);
+            var getData = "name=" + name;
+            url = "http://api.genderize.io/?";
+            var uri = new Uri(url + getData);
+            var request = (HttpWebRequest) WebRequest.Create(uri);
 
             request.Method = "GET";
 
             request.AllowAutoRedirect = true;
 
-            UTF8Encoding enc = new UTF8Encoding();
+            new UTF8Encoding();
 
 
-            HttpWebResponse Response;
+            HttpWebResponse response;
             try
             {
-                using (Response = (HttpWebResponse)request.GetResponse())
+                using (response = (HttpWebResponse) request.GetResponse())
                 {
-
-                    using (Stream responseStream = Response.GetResponseStream())
+                    using (var responseStream = response.GetResponseStream())
                     {
-                        using (StreamReader readStream = new StreamReader(responseStream, Encoding.UTF8))
+                        using (var readStream = new StreamReader(responseStream, Encoding.UTF8))
                         {
-                            xRateLimitRemaining = Int32.Parse(Response.Headers["X-Rate-Limit-Remaining"]);
-                            xRateReset = Int32.Parse(Response.Headers["X-Rate-Reset"]);
+                            xRateLimitRemaining = int.Parse(response.Headers["X-Rate-Limit-Remaining"]);
+                            xRateReset = int.Parse(response.Headers["X-Rate-Reset"]);
                             lastRequest = DateTime.Now;
 
                             //String of the json from genderize.io
@@ -154,26 +146,26 @@ namespace placeToBe.Services
                 {
                     if (xRateReset == 0)
                     {
-                        double difference = (DateTime.Now.AddDays(1) - DateTime.Now).TotalSeconds;
+                        var difference = (DateTime.Now.AddDays(1) - DateTime.Now).TotalSeconds;
                         //round and seconds to milliseconds
-                        int differenceInt = (Convert.ToInt32(Math.Floor(difference))) * 1000;
-                        Debug.WriteLine("####### Waiting "+ differenceInt);
+                        var differenceInt = (Convert.ToInt32(Math.Floor(difference)))*1000;
+                        Debug.WriteLine("####### Waiting " + differenceInt);
                         Thread.Sleep(differenceInt);
                     }
                     else
                     {
-                        double difference = (DateTime.Now - lastRequest).TotalSeconds;
+                        var difference = (DateTime.Now - lastRequest).TotalSeconds;
                         //round and seconds to milliseconds
-                        int differenceInt = (Convert.ToInt32(Math.Floor(difference)));
+                        var differenceInt = (Convert.ToInt32(Math.Floor(difference)));
 
-                        int sleepDifference = (xRateReset - differenceInt) * 1000;
+                        var sleepDifference = (xRateReset - differenceInt)*1000;
                         Debug.WriteLine("####### Waiting " + sleepDifference);
                         Thread.Sleep(sleepDifference);
                     }
-                    return GetGenderFromApi(name);
+                    return getGenderFromApi(name);
                 }
                 Debug.WriteLine("Error: " + webEx.Message);
-                throw webEx;
+                throw;
             }
             catch (Exception ex)
             {
@@ -186,35 +178,30 @@ namespace placeToBe.Services
                     gender.probability = 0;
                     return gender;
                 }
-                else
-                {
                     throw;
                 }
-            }
-
         }
 
         /// <summary>
-        /// Get the amount of males and females for an event
+        ///     Get the amount of males and females for an event
         /// </summary>
-        /// <param name="eventGenStat"></param>
         /// <returns>returns array with array[0]=male, array[1]=female, array[2]=undifined</returns>
-        public async Task<int[]> CreateGenderStat(Event eventNew)
+        public async Task<int[]> createGenderStat(Event newEvent)
         {
-            int male = 0;
-            int female = 0;
-            int undefined = 0;
+            var male = 0;
+            var female = 0;
+            var undefined = 0;
 
             Gender gender;
 
 
             //GET list of people attending the event
-            List<Rsvp> attendingList = eventNew.attending;
-            List<String> preNameList=GetPrenamesStringArray(attendingList);
+            var attendingList = newEvent.attending;
+            var preNameList = getPrenamesStringArray(attendingList);
 
-            foreach (string name in preNameList)
+            foreach (var name in preNameList)
             {
-                gender = await GetGender(name);
+                gender = await getGender(name);
                 if (gender.gender == "male")
                 {
                     male++;
@@ -229,18 +216,18 @@ namespace placeToBe.Services
                 }
             }
 
-            eventNew.attendingMale = male;
-            eventNew.attendingFemale = female;
-            eventNew.attendingUndefined = undefined;
-            UpdateGenderStat(eventNew);
+            newEvent.attendingMale = male;
+            newEvent.attendingFemale = female;
+            newEvent.attendingUndefined = undefined;
+            updateGenderStat(newEvent);
 
-            int[] maleFemaleUndifinedArray = { male, female, undefined };
+            int[] maleFemaleUndifinedArray = {male, female, undefined};
 
             return maleFemaleUndifinedArray;
-
         }
 
         #region HelperMethods
+
         //private Gender GenderToObject(String result)
         //{
         //    String json = @result;
@@ -248,7 +235,7 @@ namespace placeToBe.Services
         //    return gender;
         //}
 
-        private async void UpdateGenderStat(Event eventNew)
+        private async void updateGenderStat(Event eventNew)
         {
             try
             {
@@ -260,12 +247,14 @@ namespace placeToBe.Services
             }
             catch (MongoWaitQueueFullException ex)
             {
+
+                Console.WriteLine("{0} Exception caught.", ex);
                 Thread.Sleep(15000);
-                UpdateGenderStat(eventNew);
+                updateGenderStat(eventNew);
             }
         }
 
-        private async void PushGenderToDb(Gender gender)
+        private async void pushGenderToDb(Gender gender)
         {
             try
             {
@@ -277,22 +266,18 @@ namespace placeToBe.Services
             }
             catch (MongoWaitQueueFullException ex)
             {
+                Console.WriteLine("{0} Exception caught.", ex);
                 Thread.Sleep(15000);
-                PushGenderToDb(gender);
-            }
-            catch (AggregateException)
-            {
-                
-                Debug.WriteLine("Invalid -> dont save");
+                pushGenderToDb(gender);
             }
         }
 
-        private async Task<Event> SearchDbForEvent(String fbId)
+        private async Task<Event> searchDbForEvent(string fbId)
         {
             return await repoEvent.GetByFbIdAsync(fbId);
         }
 
-        public async Task<Gender> SearchDbForGender(String name)
+        public async Task<Gender> searchDbForGender(string name)
         {
             return await repoGender.GetByNameAsync(name);
         }

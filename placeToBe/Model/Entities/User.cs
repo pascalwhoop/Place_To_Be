@@ -7,6 +7,8 @@ namespace placeToBe.Model.Entities
 {
     public class User : EntityBase
     {
+        //The 0-parameter constructor is necessary for the structure of inheritance
+        public User(){}
         public User(string email)
         {
             this.email = email;
@@ -20,7 +22,6 @@ namespace placeToBe.Model.Entities
         public string email { get; set; }
         public byte[] passwordSalt { get; set; }
         public byte[] salt { get; set; }
-        
         // if status == true then the user is activated/confirmed, else not activated/confirmed
         public bool status { get; set; }
         public string activationcode { get; set; }

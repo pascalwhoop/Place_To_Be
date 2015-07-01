@@ -58,8 +58,6 @@ namespace placeToBe.Services {
         //GET Request to the WEB APIs we use. the parameter condition 
         public String graphApiGet(String getData, String requestToPerform) //synchrone Operation
         {
-            var result = "";
-
             if (requestToPerform == "GOOGLE")
                 url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + getData + "&key=" + AppGoogleKey;
             else {
@@ -428,6 +426,7 @@ namespace placeToBe.Services {
             }
             catch (MongoWaitQueueFullException ex) {
                 //Thread.Sleep(15000);
+                Console.WriteLine("{0} Exception caught.", ex);
                 functionsQueue.AddToDbQueue(() => pushPageToDb(newPage));
 
                 //pushPageToDb(newPage);
@@ -438,6 +437,7 @@ namespace placeToBe.Services {
                 }
             }
             catch (MongoConnectionException ex) {
+                Console.WriteLine("{0} Exception caught.", ex);
                 pageRepo = new PageRepository();
                 functionsQueue.AddToDbQueue(() => pushPageToDb(newPage));
                 //pushPageToDb(newPage);
