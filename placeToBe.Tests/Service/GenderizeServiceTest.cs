@@ -114,7 +114,7 @@ namespace placeToBe.Tests.Service
 
 
             //Act
-            service.CreateGenderStat(test);
+            service.createGenderStat(test);
 
         }
     }
