@@ -213,7 +213,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Model\Entities\Category.cs" />
     <Compile Include="Model\Entities\City.cs" />
     <Compile Include="Model\Entities\FacebookPagingResult.cs" />
     <Compile Include="Model\Entities\FBUser.cs" />
