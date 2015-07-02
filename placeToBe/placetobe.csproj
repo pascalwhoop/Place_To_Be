@@ -215,7 +215,7 @@
     </Compile>
     <Compile Include="Model\Entities\City.cs" />
     <Compile Include="Model\Entities\FacebookPagingResult.cs" />
-    <Compile Include="Model\Entities\FBUser.cs" />
+    <Compile Include="Model\Entities\FbUser.cs" />
     <Compile Include="Model\Entities\Gender.cs" />
     <Compile Include="Model\Entities\EntityBase.cs" />
     <Compile Include="Model\Entities\Event.cs" />

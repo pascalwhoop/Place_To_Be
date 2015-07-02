@@ -178,7 +178,7 @@ namespace placeToBe.Services
         public async Task SaveFBData(FbUser user)
         {
             FbUser fbuser = new FbUser();
-            await userRepo.InsertAsync(fbuser);
+            await fbUserRepo.InsertAsync(fbuser);
         }
 
         /// <summary>
