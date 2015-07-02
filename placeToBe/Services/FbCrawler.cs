@@ -40,6 +40,11 @@ namespace placeToBe.Services {
                     Debug.Write(".");
                     Thread.Sleep(1000);
                     accessToken = graphApiGet("", "FBAppToken");
+
+                    if (accessToken != "")
+                    {
+                        break;
+                    }
                 }
             }
 

@@ -6,10 +6,10 @@ using System.Web;
 
 namespace placeToBe.Model.Entities
 {
-    public class FBUser : User
+    public class FbUser : EntityBase
     {
         [JsonProperty("id")]
-        public int FB_ID { get; set; }
+        public int fbId { get; set; }
         [JsonProperty("email")]
         public string emailFB { get; set; }
         [JsonProperty("first_name")]
@@ -31,7 +31,8 @@ namespace placeToBe.Model.Entities
         [JsonProperty("verified")]
         public bool verified { get; set; }
         public Friends friends { get; set; }
-
+        public string shortAccessToken { get; set; }
+        public string longAccessToken { get; set; }
     }
 
     public class Summary
