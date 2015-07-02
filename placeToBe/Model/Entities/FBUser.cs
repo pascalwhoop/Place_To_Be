@@ -31,7 +31,8 @@ namespace placeToBe.Model.Entities
         [JsonProperty("verified")]
         public bool verified { get; set; }
         public Friends friends { get; set; }
-
+        public string shortAccessToken { get; set; }
+        public string longAccessToken { get; set; }
     }
 
     public class Summary
