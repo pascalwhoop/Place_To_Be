@@ -17,6 +17,7 @@ namespace placeToBe.Services {
     public class FbCrawler {
         private PageRepository pageRepo = new PageRepository();
         private readonly EventRepository eventRepo = new EventRepository();
+        GenderizeService genderizeService=new GenderizeService();
         private readonly String fbAppSecret = "469300d9c3ed9fe6ff4144d025bc1148";
         private readonly String fbAppId = "857640940981214";
         private readonly String AppGoogleKey = "AIzaSyArx67_z9KxbrVMurzBhS2mzqDhrpz66s0";
@@ -39,6 +40,11 @@ namespace placeToBe.Services {
                     Debug.Write(".");
                     Thread.Sleep(1000);
                     accessToken = graphApiGet("", "FBAppToken");
+
+                    if (accessToken != "")
+                    {
+                        break;
+                    }
                 }
             }
 
@@ -345,6 +351,8 @@ namespace placeToBe.Services {
                 e = JsonConvert.DeserializeObject<Event>(graphApiGet(result.fbId, "searchEventData"));
                 e.Id = eventDbId;
                 e = FillEmptyEventFields(e); //fill location
+                //use attending list to get the genderlist
+                e = await genderizeService.createGenderStat(e);
                 //put the old Guid back in place or in case of a new Page the default value. we need this in our repo
 
                 Debug.WriteLine("DB Push Event");

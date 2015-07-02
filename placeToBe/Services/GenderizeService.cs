@@ -39,24 +39,18 @@ namespace placeToBe.Services
         ///     return the gender statistik of a specific event
         /// </summary>
         /// <param name="fbId">id of an event</param>
-        /// <returns>return an int[] array with value of array[0]=male, array[1]=female, array[2]=undifined</returns>
-        public async Task<int[]> getGenderStat(string fbId)
-        {
-            var genderStat = new int[3];
-            var eventNew = await searchDbForEvent(fbId);
-            if (eventNew.attendingMale == 0 && eventNew.attendingFemale == 0 && eventNew.attendingUndefined == 0)
-            {
-                genderStat = await createGenderStat(eventNew);
-            }
-            else
-            {
-                genderStat[0] = eventNew.attendingMale;
-                genderStat[1] = eventNew.attendingFemale;
-                genderStat[2] = eventNew.attendingUndefined;
-            }
+        /// <returns>return an int[] array with value of array[0]=male, array[1]=female, array[2]=undefined</returns>
+        //public async Task<Event> getGenderStat(Event newEvent)
+        //{
+        //    var genderStat = new int[3];
+        //        genderStat = await createGenderStat(newEvent);
 
-            return genderStat;
-        }
+        //        genderStat[0] = newEvent.attendingMale;
+        //        genderStat[1] = newEvent.attendingFemale;
+        //        genderStat[2] = newEvent.attendingUndefined;
+
+        //    return ;
+        //}
 
         /// <summary>
         ///     Search for a gender by name and returns it.
@@ -79,8 +73,6 @@ namespace placeToBe.Services
             if (gender == null)
             {
                 gender = getGenderFromApi(name);
-                Debug.WriteLine(gender.name);
-                Debug.WriteLine(gender.Id);
                 Debug.WriteLine("######## Got it from Api");
 
                 pushGenderToDb(gender);
@@ -132,7 +124,7 @@ namespace placeToBe.Services
                             gender = JsonConvert.DeserializeObject<Gender>(result);
                             if (gender.gender == null)
                             {
-                                gender.gender = "undifined";
+                                gender.gender = "undefined";
                             }
 
                             return gender;
@@ -173,7 +165,7 @@ namespace placeToBe.Services
                 if (gender != null)
                 {
                     gender.name = name;
-                    gender.gender = "undifined";
+                    gender.gender = "undefined";
                     gender.count = 0;
                     gender.probability = 0;
                     return gender;
@@ -185,8 +177,8 @@ namespace placeToBe.Services
         /// <summary>
         ///     Get the amount of males and females for an event
         /// </summary>
-        /// <returns>returns array with array[0]=male, array[1]=female, array[2]=undifined</returns>
-        public async Task<int[]> createGenderStat(Event newEvent)
+        /// <returns>returns array with array[0]=male, array[1]=female, array[2]=undefined</returns>
+        public async Task<Event> createGenderStat(Event newEvent)
         {
             var male = 0;
             var female = 0;
@@ -219,11 +211,8 @@ namespace placeToBe.Services
             newEvent.attendingMale = male;
             newEvent.attendingFemale = female;
             newEvent.attendingUndefined = undefined;
-            updateGenderStat(newEvent);
 
-            int[] maleFemaleUndifinedArray = {male, female, undefined};
-
-            return maleFemaleUndifinedArray;
+            return newEvent;
         }
 
         #region HelperMethods

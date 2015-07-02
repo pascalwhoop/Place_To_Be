@@ -7,6 +7,7 @@ using MongoDB.Driver;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver.Core;
+using MongoDB.Driver.GeoJsonObjectModel;
 
 namespace placeToBe.Model.Repositories
 {
@@ -44,6 +45,7 @@ namespace placeToBe.Model.Repositories
         public async Task<List<LightEvent>> getEventsByTimeAndPolygon(double[,] polygon, DateTime startTime,
             DateTime endTime) {
 
+            
             var builder = Builders<Event>.Filter;
             var filter = builder.GeoWithinPolygon("geoLocationCoordinates", polygon) &
                          builder.Gte("startDateTime", startTime.AddHours(-4)) & builder.Lt("startDateTime", endTime);
@@ -60,6 +62,35 @@ namespace placeToBe.Model.Repositories
             return events;
 
         }
+
+        public async Task<List<Event>> getFullEventListByPointInRadius(double latitude, double longitude, DateTime startTime, DateTime endTime)
+        {
+            double maxDistance = 200;//in meters
+            //muss eine GeoJson point sein, wenn einfach latitude und longitude uebergeben werden dann sucht er im umkreis des lat und lng jeweils
+            var point = GeoJson.Point(GeoJson.Geographic(latitude, longitude));
+            var builder = Builders<Event>.Filter;
+            var filter = builder.NearSphere("geoLocationCoordinates", point, maxDistance)
+                & builder.Gte("startDateTime", startTime.AddHours(-4)) & builder.Lt("startDateTime", endTime);
+            
+
+            Dictionary<String, Object> projectionContent = new Dictionary<string, object>() {
+                {"attendingCount", 1},
+                {"geoLocationCoordinates", 1},
+                {"name", 1},
+                {"fbId", 1},
+                {"description",1},
+                {"coverPhoto",1},
+                {"place", 1},
+                {"start_time",1},
+                {"end_time",1},
+                {"attendMale",1},
+                {"attendingFemale",1}
+            };
+            ProjectionDefinition<Event, Event> projDefinition = new BsonDocument(projectionContent);
+            var task = _collection.Find(filter).Project(projDefinition).ToListAsync();
+            var events = task.Result;
+            return events;
+        } 
 
         /*//TODO delete, only for testing purposes
         public async Task<List<LightEvent>> getSoonEvents(string time) {

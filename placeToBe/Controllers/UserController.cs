@@ -20,16 +20,30 @@ namespace placeToBe.Controllers
         AccountService user = new AccountService();
 
         /// <summary>
+        /// Save the FB Data in the database.
+        /// </summary>
+        /// <param name="FB_ID"></param>
+        /// <param name="emailFB"></param>
+        /// <param name="firstName"></param>
+        /// <param name="lastName"></param>
+        /// <param name="nickname"></param>
+        /// <param name="gender"></param>
+        /// <param name="httpLink"></param>
+        /// <param name="country"></param>
+        /// <param name="timezone"></param>
+        /// <param name="updatedTimeFB"></param>
+        /// <param name="verified"></param>
+        /// <returns></returns>
+        public async Task Post(FbUser fbuser)
+        {
+            await user.SaveFBData(fbuser);
+        }
+        /// <summary>
         /// PUT- Send an activationemail and register a user with email and passwort
         /// </summary>
         /// <param name="userEmail"></param>
         /// <param name="userPassword"></param>
         /// <returns></returns>
-        public async Task Post(int FB_ID, string emailFB, string firstName, string lastName, string nickname, string gender, string httpLink, string country, int timezone, string updatedTimeFB, bool verified)
-        {
-            await user.SaveFBData(FB_ID, emailFB, firstName, lastName, nickname, gender, httpLink, country, timezone, updatedTimeFB, verified);
-        }
-
         public async Task Post([FromUri]string userEmail, [FromUri] string userPassword)
         {
             await user.SendActivationEmail(userEmail, userPassword);

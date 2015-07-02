@@ -1,4 +1,5 @@
-﻿using placeToBe.Model;
+﻿using Newtonsoft.Json;
+using placeToBe.Model;
 using placeToBe.Model.Entities;
 using placeToBe.Model.Repositories;
 using System;
@@ -17,10 +18,51 @@ namespace placeToBe.Services
 {
     public class AccountService
     {
+        private readonly String fbAppSecret = "469300d9c3ed9fe6ff4144d025bc1148";
+        private readonly String fbAppId = "857640940981214";
         UserRepository userRepo = new UserRepository();
+        FbUserRepository fbUserRepo = new FbUserRepository();
         int saltSize = 20;
         private string fromAddress = System.Configuration.ConfigurationManager.AppSettings["placeToBeEmail"];
         private string mailPassword = System.Configuration.ConfigurationManager.AppSettings["placeToBePasswordFromMail"];
+
+
+        /// <summary>
+        /// Checks if the users request is authorized by proofing users access token:
+        /// 1. Check if it equals the users access token in the Database.
+        /// 2. If not... inspecting access tokens (user and app access token) via Facebooks Graph API
+        /// </summary>
+        /// <param name="userAccessToken">The users access token which has to be validated</param>
+        /// <param name="userPassword">The users Facebook-Id</param>
+        /// <returns>true if access token is validated, otherwise false</returns>
+        public async Task<bool> authorizeRequest(String userAccessToken, String userFbId)
+        {
+            
+            FbUser user = await fbUserRepo.GetByFbIdAsync(userFbId);
+
+            if (userAccessToken == user.shortAccessToken)
+                return true;
+            else
+            {
+                String appAccessToken = UtilService.performGetRequest(new Uri("https://graph.facebook.com/oauth/access_token?client_id=" + fbAppId + "&client_secret=" +
+                              fbAppSecret + "&grant_type=client_credentials"));
+
+                String jsonResponse = UtilService.performGetRequest(new Uri("https://graph.facebook.com/v2.3/debug_token?input_token=" + userAccessToken + "&access_token=" + appAccessToken));
+
+                Inspection insp = JsonConvert.DeserializeObject<Inspection>(jsonResponse);
+
+                if (insp.is_valid == true)
+                {
+                    user.shortAccessToken = userAccessToken;
+                    await fbUserRepo.InsertAsync(user);
+                    return true;
+                }
+                else
+                    return false;             
+            }
+        }
+
+
 
         /// <summary>
         /// Login the user with given email and correct password.
@@ -133,10 +175,10 @@ namespace placeToBe.Services
         /// <param name="updatedTimeFB"></param>
         /// <param name="verified"></param>
         /// <returns></returns>
-        public async Task SaveFBData(int FB_ID, string emailFB, string firstName, string lastName, string nickname, string gender, string httpLink, string country, int timezone, string updatedTimeFB, bool verified)
+        public async Task SaveFBData(FbUser user)
         {
-            FBUser fbuser = new FBUser(FB_ID, emailFB, firstName, lastName, nickname, gender, httpLink, country, timezone, updatedTimeFB, verified);
-            await userRepo.InsertAsync(fbuser);
+            FbUser fbuser = new FbUser();
+            await fbUserRepo.InsertAsync(fbuser);
         }
 
         /// <summary>

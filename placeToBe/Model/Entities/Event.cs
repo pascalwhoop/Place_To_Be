@@ -113,4 +113,10 @@ namespace placeToBe.Model.Entities
         public string rsvp_status { get; set; }
         public string id { get; set; }
     }
+
+    public class Category
+    {
+        public string id { get; set; }
+        public string name { get; set; }
+    }
 }
