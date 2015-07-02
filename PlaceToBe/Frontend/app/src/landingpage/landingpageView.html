@@ -1,6 +1,6 @@
 <md-toolbar layout="row" layout-align="end center">
   <span flex></span>
-  <login-button login-service="loginService" style="margin-right: 27px;"></login-button>
+  <login-button login-service="loginService""></login-button>
 </md-toolbar>
 
 <div class="text-page-content" layout="row">
@@ -13,6 +13,9 @@
 
     <p>And the best part: We even know what kind of people you'll run into if you follow our lead. So go ahead and
       filter yourself or let us recommend places to you, that you might like.</p>
+
+    <h3 ng-hide="loginService.getLoginStateSync()" style="font-weight: 500">Login in the top right to get Started!</h3>
+
   </div>
 
   <div flex="50">

@@ -11,6 +11,7 @@ angular.module('placeToBe', ['ngMaterial', 'ngRoute', 'ngMap', 'ngResource', 'ng
   //our apps routes
   .config(function ($routeProvider) {
     $routeProvider
+
       .when('/', {
         templateUrl: 'src/landingpage/landingpageView.html',
         controller: 'landingpageController'
@@ -33,7 +34,7 @@ angular.module('placeToBe', ['ngMaterial', 'ngRoute', 'ngMap', 'ngResource', 'ng
     $facebookProvider.setPermissions("email,user_likes,user_friends,user_events,user_actions.music,user_actions.news,user_actions.books,rsvp_event,");
   })
   //downloading facebook Javascript
-  .run(function($rootScope){
+  .run(function(loginService){
     (function(d, s, id){
       var js, fjs = d.getElementsByTagName(s)[0];
       if (d.getElementById(id)) {return;}
@@ -41,5 +42,6 @@ angular.module('placeToBe', ['ngMaterial', 'ngRoute', 'ngMap', 'ngResource', 'ng
       js.src = "//connect.facebook.net/en_US/sdk.js";
       fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
+
   });
 

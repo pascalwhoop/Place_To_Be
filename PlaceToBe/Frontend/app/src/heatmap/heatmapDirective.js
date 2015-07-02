@@ -43,7 +43,11 @@ angular.module('placeToBe')
         scope.$on('mapInitialized', function (event, map) {
           mapObj = map;
           google.maps.event.addListener(mapObj, 'zoom_changed', function () {
-            if(heatmapLayer) heatmapLayer.setOptions({radius: getNewRadius()});
+            if(heatmapLayer){
+              setTimeout(function(){
+                heatmapLayer.setOptions({radius: getNewRadius()});
+              },2);
+            }
           });
 
           setMapLocation(scope.query.place.formatted_address,refreshHeatmapLayer); //set locatin then pass the refreshHeatmapLayer as a callback
@@ -65,7 +69,18 @@ angular.module('placeToBe')
 
         var refreshHeatmapLayer = function(){
           if (heatmapLayer != null) heatmapLayer.setMap(null);
-          setHeatmapDataArrayAsLayer(getHeatmapDataArrayForEvents(scope.data));
+
+          //here we use some reeeaaally nifty stuff. lets employ a webworker! (yep I'm pretty proud about doing this, lets see if it works too ;)
+          var worker = new Worker('src/heatmap/heatmapLayerWebWorker.js');
+          worker.addEventListener('message', function(e){
+            var gMapsLatLngArray = [];
+            e.data.forEach(function(e){
+              gMapsLatLngArray.push(new google.maps.LatLng(e.lat, e.lng));
+            });
+            setHeatmapDataArrayAsLayer(gMapsLatLngArray);
+          },false);
+          worker.postMessage(scope.data);
+          //setHeatmapDataArrayAsLayer(getHeatmapDataArrayForEvents(scope.data));
         };
 
         var setHeatmapDataArrayAsLayer = function (heatmapData) {
@@ -78,17 +93,18 @@ angular.module('placeToBe')
           heatmapLayer.setMap(mapObj);
         };
 
-        var getHeatmapDataArrayForEvents = function (events) {
+         /*
+         * var getHeatmapDataArrayForEvents = function (events) {
           var heatmapData = [];
           events.forEach(function (element) {
-              addPointsForEachGuest(element, heatmapData);
-            }
+          addPointsForEachGuest(element, heatmapData);
+          }
           );
           return heatmapData;
-        };
+          };
 
-        //a method to create a heatmap around a coordinate
-        var addPointsForEachGuest = function (event, heatmapData) {
+          //a method to create a heatmap around a coordinate
+          var addPointsForEachGuest = function (event, heatmapData) {
           //create a random number generator. we always use the same seed to always get the same visual representation of an event
           var rng = new Math.seedrandom("seed");
           //if event has no coordinates ignore this event
@@ -97,16 +113,16 @@ angular.module('placeToBe')
           var maxEventRadius = scope.SIZE_PER_PERSON * Math.pow(event.attending_count, 0.66666);
           //we create points for every X people (PERSONS_PER_POINT)
           for (var i = 0; i < Math.ceil(event.attending_count / scope.PERSONS_PER_POINT); i++) {
-            //how far away from the event center?
-            var heatPointDistance = maxEventRadius * rng.quick();
-            //which direction from the event center?
-            var angle = rng.quick() * Math.PI * 2;
-            var a = event.geoLocationCoordinates.coordinates[0] + Math.cos(angle) * heatPointDistance;
-            var b = event.geoLocationCoordinates.coordinates[1] + Math.sin(angle) * heatPointDistance;
-            var latLng = new google.maps.LatLng(a, b);
-            heatmapData.push(latLng);
+          //how far away from the event center?
+          var heatPointDistance = maxEventRadius * rng.quick();
+          //which direction from the event center?
+          var angle = rng.quick() * Math.PI * 2;
+          var a = event.geoLocationCoordinates.coordinates[0] + Math.cos(angle) * heatPointDistance;
+          var b = event.geoLocationCoordinates.coordinates[1] + Math.sin(angle) * heatPointDistance;
+          var latLng = new google.maps.LatLng(a, b);
+          heatmapData.push(latLng);
           }
-        };
+          };*/
 
         //=================================================================================
         //Mercator --BEGIN--   code from Google Maps Examples
