@@ -47,6 +47,18 @@ namespace placeToBe.Model.Entities
         public int timezone { get; set; }
         public string updatedTimeFB { get; set; }
         public bool verified { get; set; }
+        public Friends friends { get; set; }
 
+    }
+
+    public class Summary
+    {
+        public int total_count { get; set; }
+    }
+
+    public class Friends
+    {
+        public List<object> data { get; set; }
+        public Summary summary { get; set; }
     }
 }
