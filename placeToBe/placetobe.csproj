@@ -224,6 +224,7 @@
     <Compile Include="Model\Entities\User.cs" />
     <Compile Include="Model\Repositories\CityRepository.cs" />
     <Compile Include="Model\Repositories\EventRepository.cs" />
+    <Compile Include="Model\Repositories\FbUserRepository.cs" />
     <Compile Include="Model\Repositories\GenderRepository.cs" />
     <Compile Include="Model\Repositories\IRepository.cs" />
     <Compile Include="Model\Repositories\MongoDbRepository.cs" />

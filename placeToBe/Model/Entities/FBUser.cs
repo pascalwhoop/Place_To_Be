@@ -6,10 +6,10 @@ using System.Web;
 
 namespace placeToBe.Model.Entities
 {
-    public class FBUser : User
+    public class FBUser : EntityBase
     {
         [JsonProperty("id")]
-        public int FB_ID { get; set; }
+        public int fbId { get; set; }
         [JsonProperty("email")]
         public string emailFB { get; set; }
         [JsonProperty("first_name")]
