@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Web.Http;
 using placeToBe.Model.Entities;
@@ -28,9 +29,13 @@ namespace placeToBe.Controllers
         [Route("api/event/filter/{latitude}/{longitude}/{year}/{month}/{day}/{hour}")]
         public async Task<List<Event>> getNearEventsByPointWithDescription(string latitude, string longitude,string year, string month, string day, string hour)
         {
+
             DateTime time = new DateTime(int.Parse(year), int.Parse(month), int.Parse(day), int.Parse(hour), 0, 0);
-            double latitudeDouble = Convert.ToDouble(latitude);
-            double longitudeDouble = Convert.ToDouble(longitude);
+            Debug.WriteLine(time);
+            double latitudeDouble = double.Parse(latitude, System.Globalization.CultureInfo.InvariantCulture);
+            double longitudeDouble = double.Parse(longitude, System.Globalization.CultureInfo.InvariantCulture); 
+            Debug.WriteLine(latitudeDouble);
+            Debug.WriteLine(longitudeDouble);
             return await search.findNearEventFromAPoint(latitudeDouble, longitudeDouble, time, time.AddHours(8));
         }
 
