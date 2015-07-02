@@ -34,9 +34,9 @@ namespace placeToBe.Controllers
         /// <param name="updatedTimeFB"></param>
         /// <param name="verified"></param>
         /// <returns></returns>
-        public async Task Post(FBUser user)
+        public async Task Post(FBUser fbuser)
         {
-            await user.SaveFBData(user);
+            await user.SaveFBData(fbuser);
         }
         /// <summary>
         /// PUT- Send an activationemail and register a user with email and passwort
