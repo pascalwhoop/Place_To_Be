@@ -12,8 +12,16 @@ angular.module('placeToBe', ['ngMaterial', 'ngRoute', 'ngMap', 'ngResource', 'ng
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {
+        templateUrl: 'src/landingpage/landingpageView.html',
+        controller: 'landingpageController'
+      })
+      .when('/heatmap', {
         templateUrl: 'src/heatmap/heatmapView.html',
         controller: 'heatmapController'
+      })
+      .when('/profile', {
+        templateUrl: 'src/profile/profileView.html',
+        controller: 'profileController'
       })
       .otherwise({
         redirectTo: '/'

@@ -1,6 +1,6 @@
 
 <!--Header-->
-<md-toolbar layout="row">
+<md-toolbar layout="row" layout-align="end center">
   <span flex="5"></span>
   <md-select placeholder="City" ng-model="ctrl.userState" flex="20" ng-change="fetchEvents(query)">
     <md-option ng-repeat="city in cities |orderBy: 'formatted_address'" ng-click="query.place = city">{{city.formatted_address}}</md-option>
@@ -16,8 +16,8 @@
   </md-select>
   <!--<div><md-button ng-click="fetchEvents(query)" class="md-raised">FetchEvents</md-button></div>-->
   <!--to login with FB or our own accounts-->
-  <span flex="10"></span>
-  <login-button flex="15" login-service="loginService"></login-button>
+  <span flex></span>
+  <login-button login-service="loginService"></login-button>
 </md-toolbar>
 
 <!--Content View-->

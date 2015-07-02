@@ -8,7 +8,7 @@
     "angular": "^1.4.x",
     "angular-animate": "^1.4.x",
     "angular-aria": "^1.4.x",
-    "angular-material": "^0.9.0",
+    "angular-material": "^0.10.0",
     "angular-route": "^1.4.x",
     "ngmap": "~1.7.10",
     "angular-resource": "~1.4.1",
