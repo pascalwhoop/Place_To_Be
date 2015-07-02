@@ -6,7 +6,7 @@ using System.Web;
 
 namespace placeToBe.Model.Entities
 {
-    public class FBUser : EntityBase
+    public class FbUser : EntityBase
     {
         [JsonProperty("id")]
         public int fbId { get; set; }

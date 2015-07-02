@@ -38,7 +38,7 @@ namespace placeToBe.Services
         public async Task<bool> authorizeRequest(String userAccessToken, String userFbId)
         {
             
-            FBUser user = await fbUserRepo.GetByFbIdAsync(userFbId);
+            FbUser user = await fbUserRepo.GetByFbIdAsync(userFbId);
 
             if (userAccessToken == user.shortAccessToken)
                 return true;
@@ -175,9 +175,9 @@ namespace placeToBe.Services
         /// <param name="updatedTimeFB"></param>
         /// <param name="verified"></param>
         /// <returns></returns>
-        public async Task SaveFBData(FBUser user)
+        public async Task SaveFBData(FbUser user)
         {
-            FBUser fbuser = new FBUser();
+            FbUser fbuser = new FbUser();
             await userRepo.InsertAsync(fbuser);
         }
 

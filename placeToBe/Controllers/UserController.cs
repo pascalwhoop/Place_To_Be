@@ -34,7 +34,7 @@ namespace placeToBe.Controllers
         /// <param name="updatedTimeFB"></param>
         /// <param name="verified"></param>
         /// <returns></returns>
-        public async Task Post(FBUser fbuser)
+        public async Task Post(FbUser fbuser)
         {
             await user.SaveFBData(fbuser);
         }
