@@ -23,7 +23,16 @@ namespace placeToBe.Controllers
 
             DateTime time = new DateTime(int.Parse(year), int.Parse(month), int.Parse(day), int.Parse(hour), 0, 0);
             return await search.HeatSearch(id, time, time.AddHours(8));
-        } 
+        }
+
+        [Route("api/event/filter/{latitude}/{longitude}/{year}/{month}/{day}/{hour}")]
+        public async Task<List<Event>> getNearEventsByPointWithDescription(string latitude, string longitude,string year, string month, string day, string hour)
+        {
+            DateTime time = new DateTime(int.Parse(year), int.Parse(month), int.Parse(day), int.Parse(hour), 0, 0);
+            double latitudeDouble = Convert.ToDouble(latitude);
+            double longitudeDouble = Convert.ToDouble(longitude);
+            return await search.findNearEventFromAPoint(latitudeDouble, longitudeDouble, time, time.AddHours(8));
+        }
 
         // GET api/event/5
         // Gibt ein bestimmtes Event zurück
