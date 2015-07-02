@@ -61,6 +61,34 @@ namespace placeToBe.Model.Repositories
 
         }
 
+        public async Task<List<Event>> getFullEventListByPointInRadius(double latitude, double longitude, DateTime startTime, DateTime endTime)
+        {
+            double? maxDistance = 2000;//in meters
+            double? minDistance = 0;
+
+            var builder = Builders<Event>.Filter;
+            var filter = builder.NearSphere("geoLocationCoordinates", latitude, longitude, maxDistance, minDistance)
+                & builder.Gte("startDateTime", startTime.AddHours(-4)) & builder.Lt("startDateTime", endTime); 
+
+            Dictionary<String, Object> projectionContent = new Dictionary<string, object>() {
+                {"attendingCount", 1},
+                {"geoLocationCoordinates", 1},
+                {"name", 1},
+                {"fbId", 1},
+                {"description",1},
+                {"coverPhoto",1},
+                {"place", 1},
+                {"startDateTime",1},
+                {"endDateTime",1},
+                {"attendMale",1},
+                {"attendingFemale",1}
+            };
+            ProjectionDefinition<Event, Event> projDefinition = new BsonDocument(projectionContent);
+            var task = _collection.Find(filter).Project(projDefinition).ToListAsync();
+            var events = task.Result;
+            return events;
+        } 
+
         /*//TODO delete, only for testing purposes
         public async Task<List<LightEvent>> getSoonEvents(string time) {
             var max = Double.Parse(time);
