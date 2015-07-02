@@ -133,9 +133,9 @@ namespace placeToBe.Services
         /// <param name="updatedTimeFB"></param>
         /// <param name="verified"></param>
         /// <returns></returns>
-        public async Task SaveFBData(int FB_ID, string emailFB, string firstName, string lastName, string nickname, string gender, string httpLink, string country, int timezone, string updatedTimeFB, bool verified)
+        public async Task SaveFBData(FBUser user)
         {
-            FBUser fbuser = new FBUser(FB_ID, emailFB, firstName, lastName, nickname, gender, httpLink, country, timezone, updatedTimeFB, verified);
+            FBUser fbuser = new FBUser();
             await userRepo.InsertAsync(fbuser);
         }
 
