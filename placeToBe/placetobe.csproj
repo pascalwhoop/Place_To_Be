@@ -283,9 +283,17 @@
     <Content Include="Frontend\app\assets\svg\phone.svg" />
     <Content Include="Frontend\app\assets\svg\share.svg" />
     <Content Include="Frontend\app\assets\svg\twitter.svg" />
+    <Content Include="Frontend\app\bower_components\angular-material\angular-material.min.css" />
+    <Content Include="Frontend\app\bower_components\angular-material\angular-material.min.js" />
+    <Content Include="Frontend\app\bower_components\angular-messages\angular-messages.js" />
+    <Content Include="Frontend\app\bower_components\angular-messages\angular-messages.min.js" />
     <Content Include="Frontend\app\bower_components\angular-resource\angular-resource.js" />
     <Content Include="Frontend\app\bower_components\angular-resource\angular-resource.min.js" />
+    <Content Include="Frontend\app\bower_components\font-awesome-bower\css\font-awesome.css" />
+    <Content Include="Frontend\app\bower_components\font-awesome-bower\fonts\fontawesome-webfont.svg" />
     <Content Include="Frontend\app\bower_components\ng-facebook\ngFacebook.js" />
+    <Content Include="Frontend\app\bower_components\seedrandom\seedrandom.js" />
+    <Content Include="Frontend\app\bower_components\seedrandom\seedrandom.min.js" />
     <Content Include="Frontend\app\favicon.ico" />
     <Content Include="Frontend\app\index.html" />
     <Content Include="Frontend\app\bower_components\angular\angular.js" />
@@ -305,14 +313,22 @@
     <Content Include="Frontend\app\src\heatmap\heatmapDirective.html" />
     <Content Include="Frontend\app\src\heatmap\heatmapDirective.js" />
     <Content Include="Frontend\app\src\heatmap\heatmapDirective.js" />
+    <Content Include="Frontend\app\src\heatmap\heatmapLayerWebWorker.js" />
     <Content Include="Frontend\app\src\heatmap\heatmapView.html" />
+    <Content Include="Frontend\app\src\landingpage\landingpageController.js" />
+    <Content Include="Frontend\app\src\landingpage\landingpageView.html" />
     <Content Include="Frontend\app\src\login\loginController.js" />
     <Content Include="Frontend\app\src\login\loginDirective.html" />
     <Content Include="Frontend\app\src\login\loginDirective.js" />
+    <Content Include="Frontend\app\src\login\loginLogoutButtonsDirectives.js" />
     <Content Include="Frontend\app\src\login\loginView.html" />
+    <Content Include="Frontend\app\src\login\logoutDirective.html" />
+    <Content Include="Frontend\app\src\mainController.js" />
+    <Content Include="Frontend\app\src\profile\profileController.js" />
+    <Content Include="Frontend\app\src\profile\profileView.html" />
     <Content Include="Frontend\app\src\services\gaussianservice.js" />
     <Content Include="Frontend\app\src\services\loginservice.js" />
-    <Content Include="Frontend\app\src\util\directives\goClick.js" />
+    <Content Include="Frontend\app\src\util\directives\utilDirectives.js" />
     <Content Include="Frontend\app\src\util\filters\range.js" />
     <Content Include="Global.asax" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
@@ -343,6 +359,12 @@
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
     <Content Include="Frontend\app\bower_components\angular-resource\angular-resource.min.js.map" />
     <Content Include="Frontend\app\manifest.json" />
+    <Content Include="Frontend\app\bower_components\angular-messages\angular-messages.min.js.map" />
+    <Content Include="Frontend\app\bower_components\font-awesome-bower\fonts\fontawesome-webfont.eot" />
+    <Content Include="Frontend\app\bower_components\font-awesome-bower\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Frontend\app\bower_components\font-awesome-bower\fonts\fontawesome-webfont.woff" />
+    <Content Include="Frontend\app\bower_components\font-awesome-bower\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Frontend\app\bower_components\font-awesome-bower\fonts\FontAwesome.otf" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
