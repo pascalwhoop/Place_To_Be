@@ -501,7 +501,7 @@ namespace placeToBe.Services
 
         public async Task<Boolean> CheckIfUserExists(string userEmail)
         {
-            if (await GetUserByEmail(userEmail) != null)
+            if (await GetUserByEmail(userEmail) == null)
             {
                 return true;
             }
