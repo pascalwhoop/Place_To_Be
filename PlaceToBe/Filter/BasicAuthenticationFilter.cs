@@ -5,22 +5,16 @@ using System.Net.Http;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
+using System.Web;
 using System.Web.Http.Controllers;
+using System.Web.Http.Filters;
 
-// Seht ihr die KlassE?
 /// <summary>
 /// Generic Basic Authentication filter that checks for basic authentication
 /// headers and challenges for authentication if no authentication is provided
 /// Sets the Thread Principle with a GenericAuthenticationPrincipal.
-/// 
-/// You can override the OnAuthorize method for custom auth logic that
-/// might be application specific.    
 /// </summary>
-/// <remarks>Always remember that Basic Authentication passes username and passwords
-/// from client to server in plain text, so make sure SSL is used with basic auth
-/// to encode the Authorization header on all requests (not just the login).
-/// </remarks>
-using System.Web.Http.Filters;
+
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]
 public class BasicAuthenticationFilter : AuthorizationFilterAttribute
 {
@@ -57,7 +51,7 @@ public class BasicAuthenticationFilter : AuthorizationFilterAttribute
             }
 
 
-            if (!OnAuthorizeUser(identity.Name, identity.Password, actionContext))
+            if (!OnAuthorizeUser(identity.Name, identity.password, actionContext))
             {
                 Challenge(actionContext);
                 return;
@@ -67,21 +61,17 @@ public class BasicAuthenticationFilter : AuthorizationFilterAttribute
 
             Thread.CurrentPrincipal = principal;
 
-            // inside of ASP.NET this is required
-            //if (HttpContext.Current != null)
-            //    HttpContext.Current.User = principal;
+            if (HttpContext.Current != null)
+                HttpContext.Current.User = principal;
 
             base.OnAuthorization(actionContext);
         }
     }
 
     /// <summary>
-    /// Base implementation for user authentication - you probably will
-    /// want to override this method for application specific logic.
-    /// 
+    /// Base implementation for user authentication
     /// The base implementation merely checks for username and password
     /// present and set the Thread principal.
-    /// 
     /// Override this method if you want to customize Authentication
     /// and store user data as needed in a Thread Principle or other
     /// Request specific storage.
