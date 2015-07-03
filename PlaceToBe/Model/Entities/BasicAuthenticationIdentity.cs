@@ -7,6 +7,8 @@ using System.Web;
 namespace placeToBe.Model.Entities
 {
     public class BasicAuthenticationIdentity : GenericIdentity
+    
+    //TestCommit wegen cs.project Datei
     {
         public BasicAuthenticationIdentity(string name, string password)
             : base(name, "Basic")
