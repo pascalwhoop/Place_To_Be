@@ -63,9 +63,8 @@ namespace placeToBe.Model.Repositories
 
         }
 
-        public async Task<List<Event>> getFullEventListByPointInRadius(double latitude, double longitude, DateTime startTime, DateTime endTime)
-        {
-            double maxDistance = 200;//in meters
+        public async Task<List<Event>> getFullEventListByPointInRadius(double latitude, double longitude, int radius, DateTime startTime, DateTime endTime) {
+            double maxDistance = radius;
             //muss eine GeoJson point sein, wenn einfach latitude und longitude uebergeben werden dann sucht er im umkreis des lat und lng jeweils
             var point = GeoJson.Point(GeoJson.Geographic(latitude, longitude));
             var builder = Builders<Event>.Filter;

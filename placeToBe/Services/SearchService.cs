@@ -31,9 +31,9 @@ namespace placeToBe.Services
             return _event;
         }
 
-        public async Task<List<Event>> findNearEventFromAPoint(double latitude, double longitude, DateTime startTime, DateTime endTime)
+        public async Task<List<Event>> findNearEventFromAPoint(double latitude, double longitude, int radius, DateTime startTime, DateTime endTime)
         {
-            return await eventRepo.getFullEventListByPointInRadius(latitude, longitude, startTime, endTime);
+            return await eventRepo.getFullEventListByPointInRadius(latitude, longitude, radius, startTime, endTime);
         } 
 
         public void FriendSearch()

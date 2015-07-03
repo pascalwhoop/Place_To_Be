@@ -74,8 +74,8 @@ namespace placeToBe.Services
             {
                 gender = getGenderFromApi(name);
                 Debug.WriteLine("######## Got it from Api");
-
-                pushGenderToDb(gender);
+                if (gender != null) pushGenderToDb(gender);
+                
             }
             else
             {
@@ -136,7 +136,7 @@ namespace placeToBe.Services
             {
                 if (xRateLimitRemaining == 0)
                 {
-                    if (xRateReset == 0)
+                    /*if (xRateReset == 0)
                     {
                         var difference = (DateTime.Now.AddDays(1) - DateTime.Now).TotalSeconds;
                         //round and seconds to milliseconds
@@ -153,8 +153,9 @@ namespace placeToBe.Services
                         var sleepDifference = (xRateReset - differenceInt)*1000;
                         Debug.WriteLine("####### Waiting " + sleepDifference);
                         Thread.Sleep(sleepDifference);
-                    }
-                    return getGenderFromApi(name);
+                    }*/
+                    //return getGenderFromApi(name);
+                    return null;
                 }
                 Debug.WriteLine("Error: " + webEx.Message);
                 throw;
@@ -194,6 +195,10 @@ namespace placeToBe.Services
             foreach (var name in preNameList)
             {
                 gender = await getGender(name);
+                if (gender == null) {
+                    undefined++;
+                    continue;
+                }
                 if (gender.gender == "male")
                 {
                     male++;

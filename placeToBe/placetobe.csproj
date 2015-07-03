@@ -273,6 +273,7 @@
     <Content Include="Frontend\app\assets\favicons\favicon-16x16.png" />
     <Content Include="Frontend\app\assets\favicons\favicon-32x32.png" />
     <Content Include="Frontend\app\assets\favicons\favicon-96x96.png" />
+    <Content Include="Frontend\app\assets\heatmap_cologne.png" />
     <Content Include="Frontend\app\assets\svg\avatar-1.svg" />
     <Content Include="Frontend\app\assets\svg\avatar-4.svg" />
     <Content Include="Frontend\app\assets\svg\avatars.svg" />
@@ -308,7 +309,6 @@
     <Content Include="Frontend\app\ms-icon-310x310.png" />
     <Content Include="Frontend\app\ms-icon-70x70.png" />
     <Content Include="Frontend\app\src\app.js" />
-    <Content Include="Frontend\app\src\filters\range.js" />
     <Content Include="Frontend\app\src\heatmap\heatmapController.js" />
     <Content Include="Frontend\app\src\heatmap\heatmapDirective.html" />
     <Content Include="Frontend\app\src\heatmap\heatmapDirective.js" />
@@ -319,13 +319,13 @@
     <Content Include="Frontend\app\src\landingpage\landingpageView.html" />
     <Content Include="Frontend\app\src\login\loginController.js" />
     <Content Include="Frontend\app\src\login\loginDirective.html" />
-    <Content Include="Frontend\app\src\login\loginDirective.js" />
     <Content Include="Frontend\app\src\login\loginLogoutButtonsDirectives.js" />
     <Content Include="Frontend\app\src\login\loginView.html" />
     <Content Include="Frontend\app\src\login\logoutDirective.html" />
     <Content Include="Frontend\app\src\mainController.js" />
     <Content Include="Frontend\app\src\profile\profileController.js" />
     <Content Include="Frontend\app\src\profile\profileView.html" />
+    <Content Include="Frontend\app\src\services\configService.js" />
     <Content Include="Frontend\app\src\services\gaussianservice.js" />
     <Content Include="Frontend\app\src\services\loginservice.js" />
     <Content Include="Frontend\app\src\util\directives\utilDirectives.js" />
@@ -369,6 +369,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Content Include="Properties\webjobs-list.json" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Icon.png" />
     <Content Include="Scripts\bootstrap.js" />
@@ -428,6 +429,7 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Import Project="..\packages\Microsoft.Web.WebJobs.Publish.1.0.2\tools\webjobs.targets" Condition="Exists('..\packages\Microsoft.Web.WebJobs.Publish.1.0.2\tools\webjobs.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

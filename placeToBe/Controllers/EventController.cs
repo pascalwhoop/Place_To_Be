@@ -26,8 +26,8 @@ namespace placeToBe.Controllers
             return await search.HeatSearch(id, time, time.AddHours(8));
         }
 
-        [Route("api/event/filter/{latitude}/{longitude}/{year}/{month}/{day}/{hour}")]
-        public async Task<List<Event>> getNearEventsByPointWithDescription(string latitude, string longitude,string year, string month, string day, string hour)
+        [Route("api/event/filter/{latitude}/{longitude}/{radius}/{year}/{month}/{day}/{hour}")]
+        public async Task<List<Event>> getNearEventsByPointWithDescription(string latitude, string longitude,string radius, string year, string month, string day, string hour)
         {
 
             DateTime time = new DateTime(int.Parse(year), int.Parse(month), int.Parse(day), int.Parse(hour), 0, 0);
@@ -36,7 +36,7 @@ namespace placeToBe.Controllers
             double longitudeDouble = double.Parse(longitude, System.Globalization.CultureInfo.InvariantCulture); 
             Debug.WriteLine(latitudeDouble);
             Debug.WriteLine(longitudeDouble);
-            return await search.findNearEventFromAPoint(latitudeDouble, longitudeDouble, time, time.AddHours(8));
+            return await search.findNearEventFromAPoint(latitudeDouble, longitudeDouble, int.Parse(radius), time, time.AddHours(8));
         }
 
         // GET api/event/5

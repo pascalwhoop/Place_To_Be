@@ -350,6 +350,7 @@ namespace placeToBe.Services {
                 //Get Event information
                 e = JsonConvert.DeserializeObject<Event>(graphApiGet(result.fbId, "searchEventData"));
                 e.Id = eventDbId;
+                e.attending = fetchAttendingList(e.fbId);
                 e = FillEmptyEventFields(e); //fill location
                 //use attending list to get the genderlist
                 e = await genderizeService.createGenderStat(e);
@@ -395,29 +396,7 @@ namespace placeToBe.Services {
         * @param callback
         */
 
-        public void handlePlace(String place, String condition, String id) {
-            if (place == null) return;
-            //Place
-            if (condition == "searchPlace") {
-                var _place = JObject.Parse(place);
-                try {
-                    var page = JsonConvert.DeserializeObject<Page>(place);
-                    //a place that is not community owned is == to a page in the facebook world
-                    //insert in db
-                    //pushPageToDb(page);
-                    functionsQueue.AddToDbQueue(() => pushPageToDb(page));
-                    fetchEventsOnPage(page.fbId);
-                }
-                catch (ArgumentNullException ex) {
-                    Console.WriteLine("Exception: " + ex);
-                }
-            }
-            //Event
-            else if (condition == "searchEvent") {
-                var eventNew = JsonConvert.DeserializeObject<Event>(place);
-                fetchAttendingList(eventNew.fbId);
-            }
-        }
+        
 
         //Insert page to Db
         public async void pushPageToDb(Page newPage) {

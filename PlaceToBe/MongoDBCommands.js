@@ -14,3 +14,5 @@ db.City.insert({_id:BinData(3,"CDMXcxn39djkfT2dwicJ3Q=="),formatted_address:"Dre
 db.City.insert({_id:BinData(3,"CDMXcxn39djkfdfascJ3dd=="),formatted_address:"Hannover, Germany"})
 db.City.insert({_id:BinData(3,"dadcasn39djkfT2dwicJa3=="),formatted_address:"Nuremberg, Germany"})
 db.City.insert({_id:BinData(3,"Sh58fnn39djkfT2dwicJ3Q=="),formatted_address:"Duisburg, Germany"})
+
+db.Event.find({lastUpdatedTimestamp: {$gt: new Date(new Date().getTime() - 600000)}})
