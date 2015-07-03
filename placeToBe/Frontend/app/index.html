@@ -30,15 +30,15 @@
   <meta name="theme-color" content="#ffffff">
 
   <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
-  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="./bower_components/font-awesome-bower/css/font-awesome.css">
   <link rel="stylesheet" href="./bower_components/angular-material/angular-material.css"/>
   <link rel="stylesheet" href="assets/app.css"/>
 </head>
 
-<body ng-app="placeToBe" layout="row">
+<body ng-app="placeToBe" layout="row" ng-controller="mainController">
 
 <!--side navigation pane-->
-<md-sidenav class="site-sidenav md-sidenav-left md-whiteframe-z2"
+<md-sidenav class="site-sidenav md-sidenav-left md-whiteframe-z2" layout="column"
             md-component-id="left"
             md-is-locked-open="$mdMedia('gt-sm')">
 
@@ -55,14 +55,27 @@
     </md-list-item>
 
     <md-list-item>
-      <md-button go-click="#preferences" class="md-button">Preferences</md-button>
+      <md-button go-click="heatmap" class="md-button" ng-disabled="!loggedIn">Heatmap Search</md-button>
     </md-list-item>
+
+    <md-list-item ng-show="loggedIn">
+      <md-button go-click="profile" >Profile</md-button>
+    </md-list-item>
+
+
 
     <md-list-item>
       <md-button ng-href="http://pascalbrokmeier.de/placetobe" target="_blank" class="md-button">About</md-button>
     </md-list-item>
 
   </md-list>
+
+  <div flex></div>
+  <div layout-margin style="padding: 25px">
+
+    <wait-bar show-event="serverCallStart" hide-event="serverCallEnd" message="Loading ...">
+    </wait-bar>
+  </div>
 
 </md-sidenav>
 
@@ -79,21 +92,22 @@
 <script src="./bower_components/angular-material/angular-material.js"></script>
 <script src="./bower_components/angular-messages/angular-messages.js"></script>
 <script src="./bower_components/ngmap/build/scripts/ng-map.js"></script>
-<script src="./bower_components/seedrandom/seedrandom.min.js"></script>
 <script src="./bower_components/ng-facebook/ngFacebook.js"></script>
 
 
 
 <script src="./src/app.js"></script>
+<script src="src/util/directives/utilDirectives.js"></script>
 <script src="./src/services/gaussianservice.js"></script>
 <script src="./src/services/loginservice.js"></script>
 <script src="./src/services/configService.js"></script>
 <script src="./src/util/filters/range.js"></script>
-<script src="./src/util/directives/goClick.js"></script>
-<script src="./src/util/directives/equals.js"></script>
+<script src="./src/mainController.js"></script>
 <script src="./src/heatmap/heatmapController.js"></script>
 <script src="./src/login/loginController.js"></script>
-<script src="./src/login/loginDirective.js"></script>
+<script src="./src/profile/profileController.js"></script>
+<script src="./src/landingpage/landingpageController.js"></script>
+<script src="src/login/loginLogoutButtonsDirectives.js"></script>
 <script src="./src/heatmap/heatmapDirective.js"></script>
 
 

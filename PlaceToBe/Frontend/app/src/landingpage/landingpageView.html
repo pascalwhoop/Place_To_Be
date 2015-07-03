@@ -1,0 +1,26 @@
+<md-toolbar layout="row" layout-align="end center">
+  <span flex></span>
+  <login-button login-service="loginService""></login-button>
+</md-toolbar>
+
+<div class="text-page-content" layout="row">
+
+  <div flex="50">
+    <h1 class="md-display-3">Welcome to placeToBe</h1>
+
+    <p>Through our sophisticated systems, we analyze facebook and many other sources on the web to create a forecast of
+      when people will be where.</p>
+
+    <p>And the best part: We even know what kind of people you'll run into if you follow our lead. So go ahead and
+      filter yourself or let us recommend places to you, that you might like.</p>
+
+    <h3 ng-hide="loginService.getLoginStateSync()" style="font-weight: 500">Login in the top right to get Started!</h3>
+
+  </div>
+
+  <div flex="50">
+    <img src="assets/heatmap_cologne.png" alt="heatmap cologne image" style="width: 100%;" id="heatmapImageLandingpage"/>
+  </div>
+
+
+</div>

@@ -8,11 +8,10 @@
  * Controller of the frontendApp
  */
 angular.module('placeToBe')
-  .controller('heatmapController', function ($scope, $http, $resource, loginService, configService) {
-
+  .controller('heatmapController', function ($rootScope, $scope, $location, $http, $resource, loginService, configService) {
+    //forbid users to see this page if they aren't logged in
+    if(loginService.getLoginType() != 'facebook' && loginService.getLoginType() != 'placeToBe') $location.path('/');
     $scope.loginService = loginService;
-
-    $scope.loggedIn = loginService.getLoginState();
 
     $scope.query = {
       place: {},
@@ -29,13 +28,15 @@ angular.module('placeToBe')
      * @param time
      */
     $scope.fetchEvents = function (query) {
-      if(!query.place || !query.place.place_id) return;
+      if(!query.place || !query.place.place_id || !query.startDate || !query.startHour) return;
+      $rootScope.$emit('serverCallStart');
 
       $http.get(buildEventQueryUrl(query.place, query.startDate, query.startHour))
         .success(function (data, status, headers, config) {
           //place the data from the server into a variable and make the heatmap visible
           $scope.heatmapData = data;
           localStorage.setItem("ptb_lastQuery", JSON.stringify(query));
+          $rootScope.$emit('serverCallEnd');
         });
     };
 

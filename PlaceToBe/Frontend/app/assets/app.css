@@ -28,12 +28,6 @@ md-toolbar h1 {
   margin: auto;
 }
 
-login-button{
-  box-sizing: border-box;
-  position: relative;
-  overflow: hidden;
-  line-height: 64px;
-}
 
 /* Sidenav area */
 
@@ -159,6 +153,10 @@ button.md-button.md-raised.fb-login-button > md-icon{
   padding: 0 9px 0 0;
 }
 
+md-toolbar login-button{
+  margin-right: 27px;
+}
+
 #content img {
   display: block;
   height: auto;
@@ -221,3 +219,12 @@ placetobe-heatmap #heatmapContainer{
 placetobe-heatmap #placetobe-map-settings{
 }
 
+.text-page-content {
+  margin: 10px 35px;
+}
+
+#heatmapImageLandingpage{
+  width: 100%;
+  margin: 0.67em 0;
+  font-size: 56px;
+}
