@@ -213,6 +213,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Model\Entities\BasicAuthenticationIdentity.cs" />
     <Compile Include="Model\Entities\City.cs" />
     <Compile Include="Model\Entities\FacebookPagingResult.cs" />
     <Compile Include="Model\Entities\FbUser.cs" />
@@ -237,6 +238,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Services\AccountService.cs" />
+    <Compile Include="Services\BasicAuthenticationFilter.cs" />
     <Compile Include="Services\FbCrawler.cs" />
     <Compile Include="Services\GenderizeService.cs" />
     <Compile Include="Services\SearchService.cs" />
