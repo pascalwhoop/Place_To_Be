@@ -78,7 +78,7 @@ namespace placeToBe.Model.Repositories
                 {"name", 1},
                 {"fbId", 1},
                 {"description",1},
-                {"coverPhoto",1},
+                {"cover",1},
                 {"place", 1},
                 {"start_time",1},
                 {"end_time",1},
