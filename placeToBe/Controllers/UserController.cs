@@ -13,6 +13,7 @@ using System.Web.Security;
 
 namespace placeToBe.Controllers
 {
+
     public class UserController : ApiController
     {
 
@@ -55,6 +56,7 @@ namespace placeToBe.Controllers
         /// <param name="userEmail"></param>
         /// <param name="userPassword"></param>
         /// <returns></returns>
+        [MyBasicAuthenticationFilter]
         public async Task<FormsAuthenticationTicket> Put([FromUri]string userEmail, [FromUri]string userPassword)
         {
             return await user.Login(userEmail, userPassword);
