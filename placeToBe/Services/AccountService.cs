@@ -54,7 +54,7 @@ namespace placeToBe.Services
                 if (insp.is_valid == true)
                 {
                     user.shortAccessToken = userAccessToken;
-                    await fbUserRepo.InsertAsync(user);
+                    await fbUserRepo.UpdateAsync(user);
                     return true;
                 }
                 else
