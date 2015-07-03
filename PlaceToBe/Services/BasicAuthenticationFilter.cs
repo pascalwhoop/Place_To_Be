@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Web.Http.Controllers;
 
+// Seht ihr die KlassE?
 /// <summary>
 /// Generic Basic Authentication filter that checks for basic authentication
 /// headers and challenges for authentication if no authentication is provided
