@@ -20,19 +20,9 @@ namespace placeToBe.Controllers
         AccountService user = new AccountService();
 
         /// <summary>
-        /// Save the FB Data in the database.
+        /// POST- Save the JSON-Object of a facebook-User
         /// </summary>
-        /// <param name="FB_ID"></param>
-        /// <param name="emailFB"></param>
-        /// <param name="firstName"></param>
-        /// <param name="lastName"></param>
-        /// <param name="nickname"></param>
-        /// <param name="gender"></param>
-        /// <param name="httpLink"></param>
-        /// <param name="country"></param>
-        /// <param name="timezone"></param>
-        /// <param name="updatedTimeFB"></param>
-        /// <param name="verified"></param>
+        /// <param name="fbuser"></param>
         /// <returns></returns>
         public async Task Post(FbUser fbuser)
         {
@@ -71,7 +61,7 @@ namespace placeToBe.Controllers
         }
 
         /// <summary>
-        /// Reset the old password and send a new one to the email.
+        /// PUT- Reset the old password and send a new one to the email.
         /// </summary>
         /// <param name="userEmail"></param>
         /// <returns></returns>
@@ -81,7 +71,7 @@ namespace placeToBe.Controllers
         }
 
         /// <summary>
-        /// Change the password from user
+        /// PUT- Change the password from user
         /// </summary>
         /// <param name="userEmail"></param>
         /// <param name="oldPassword"></param>

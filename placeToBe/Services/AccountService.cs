@@ -54,7 +54,7 @@ namespace placeToBe.Services
                 if (insp.is_valid == true)
                 {
                     user.shortAccessToken = userAccessToken;
-                    await fbUserRepo.InsertAsync(user);
+                    await fbUserRepo.UpdateAsync(user);
                     return true;
                 }
                 else
@@ -62,7 +62,16 @@ namespace placeToBe.Services
             }
         }
 
-
+        /// <summary>
+        /// SaveFBData to out database.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public async Task SaveFBData(FbUser user)
+        {
+            FbUser fbuser = new FbUser();
+            await fbUserRepo.InsertAsync(fbuser);
+        }
 
         /// <summary>
         /// Login the user with given email and correct password.
@@ -75,7 +84,7 @@ namespace placeToBe.Services
             try
             {
                 byte[] userPasswordInBytes = Encoding.UTF8.GetBytes(userPassword);
-                User user = await GetEmail(usersEmail);
+                User user = await GetUserByEmail(usersEmail);
                 byte[] salt = user.salt;
                 byte[] passwordSalt = GenerateSaltedHash(userPasswordInBytes, salt);
                 bool comparePasswords = CompareByteArrays(passwordSalt, user.passwordSalt);
@@ -126,63 +135,58 @@ namespace placeToBe.Services
         /// <param name="oldPassword"></param>
         /// <param name="newPassword"></param>
         /// <returns></returns>
-        public async Task ChangePasswort(string userEmail, string oldPassword, string newPassword)
+        public async Task<HttpStatusCode> ChangePasswort(string userEmail, string oldPassword, string newPassword)
         {
             try
             {
                 byte[] oldPasswordBytes = Encoding.UTF8.GetBytes(oldPassword);
-                User user = await GetEmail(userEmail);
-                byte[] oldSalt = user.salt;
-                byte[] oldPasswordSalt = GenerateSaltedHash(oldPasswordBytes, oldSalt);
-                bool comparePasswords = CompareByteArrays(oldPasswordSalt, user.passwordSalt);
-
-                //statement: when users password is correct and status is activated  -> true  
-                if (comparePasswords == true && user.status == true)
+                User user = await GetUserByEmail(userEmail);
+                if (user != null)
                 {
-                    byte[] newPasswordBytes = Encoding.UTF8.GetBytes(newPassword);
-                    byte[] newSalt = GenerateSalt(saltSize);
-                    byte[] newPasswordSalt = GenerateSaltedHash(newPasswordBytes, newSalt);
-                    user.passwordSalt = newPasswordSalt;
-                    user.salt = newSalt;
-                    await userRepo.UpdateAsync(user);
+                    //find out the old password and compare it
+                    byte[] oldSalt = user.salt;
+                    byte[] oldPasswordSalt = GenerateSaltedHash(oldPasswordBytes, oldSalt);
+                    bool comparePasswords = CompareByteArrays(oldPasswordSalt, user.passwordSalt);
 
+                    //statement: when users password is correct and status is activated  -> true  
+                    if (comparePasswords == true && user.status == true)
+                    {
+                        //set the new password now and insert into DB
+                        byte[] newPasswordBytes = Encoding.UTF8.GetBytes(newPassword);
+                        byte[] newSalt = GenerateSalt(saltSize);
+                        byte[] newPasswordSalt = GenerateSaltedHash(newPasswordBytes, newSalt);
+                        user.passwordSalt = newPasswordSalt;
+                        user.salt = newSalt;
+                        await userRepo.UpdateAsync(user);
+                        return HttpStatusCode.OK;
+                    }
+                    else
+                    {
+                        //Change password is not possible because password is false, status is not activated.
+                        return HttpStatusCode.BadRequest;
+                    }
                 }
                 else
                 {
-                    //ToDo: Change password not possible because password is false, status is not activated.
+                    //User is null - User with email do not exists in database.
+                    return HttpStatusCode.NotFound;
                 }
             }
-            catch (Exception e)
+            catch (TimeoutException e)
             {
-                //ToDo: Change password not possible because password is false, status is not activated.
-                Console.WriteLine("{0} Exception caught.", e);
+                //Database Error
+                Console.WriteLine("{0} Exception caught: Database-Timeout. ", e);
+                return HttpStatusCode.Conflict;
+            }catch(Exception e){
+                //Database Error
+                Console.WriteLine("{0} Exception caught. ", e);
+                return HttpStatusCode.Conflict;
             }
 
         }
 
         /// <summary>
-        /// When User log in with Facebook the User-Token will be saved in our database.
-        /// </summary>
-        /// <param name="FB_ID"></param>
-        /// <param name="emailFB"></param>
-        /// <param name="firstName"></param>
-        /// <param name="lastName"></param>
-        /// <param name="nickname"></param>
-        /// <param name="gender"></param>
-        /// <param name="httpLink"></param>
-        /// <param name="country"></param>
-        /// <param name="timezone"></param>
-        /// <param name="updatedTimeFB"></param>
-        /// <param name="verified"></param>
-        /// <returns></returns>
-        public async Task SaveFBData(FbUser user)
-        {
-            FbUser fbuser = new FbUser();
-            await fbUserRepo.InsertAsync(fbuser);
-        }
-
-        /// <summary>
-        /// Send a confirmation-email to the users email and activate the account.
+        /// Send a confirmation-email to the users email and activate the account (user-status==true).
         /// </summary>
         /// <param name="activationcode"></param>
         /// <returns></returns>
@@ -205,43 +209,61 @@ namespace placeToBe.Services
                     UseDefaultCredentials = false,
                     Credentials = new System.Net.NetworkCredential(fromAddress, mailPassword)
                 };
+
                 // Fill the mail form.
                 var sendMail = new MailMessage();
                 sendMail.IsBodyHtml = true;
                 //address from where mail will be sent.
                 sendMail.From = new MailAddress(fromAddress);
                 //address to which mail will be sent.           
-                User user = await GetUser(activationcode);
+                User user = await GetUserbyActivationCode(activationcode);
                 sendMail.To.Add(new MailAddress(user.email));
                 //subject of the mail.
                 sendMail.Subject = "Confirmation: PlaceToBe";
                 sendMail.Body = messageBody;
-
+                //Change user status to true, because user is now activated
                 await ChangeUserStatus(activationcode);
-
-                //Send the mail 
-                client.Send(sendMail);
+                
+                try
+                {
+                    //Send the mail 
+                    client.Send(sendMail);
+                }
+                catch (System.Net.Mail.SmtpException cantsend)
+                {
+                    //Email cannot be sent.
+                    Console.WriteLine("{0} Exception caught. Email cannot be sent.", cantsend);
+                }
+                catch (System.ArgumentNullException messagenull)
+                {
+                    //Email-message is null
+                    Console.WriteLine("{0} Exception caught. Email is null.", messagenull);
+                }
             }
             catch (Exception e)
             {
-                Console.WriteLine("{0} Exception caught.", e);
-                //ToDo: UI-Ausgabe: Cant send  confirmation mail
+                Console.WriteLine("{0} Exception caught. Confirmmail can not be done.", e);
             }
         }
 
 
         /// <summary>
-        /// Send an email to user, register with "inactive" status.
-        /// Mail id password from where mail will be sent -> At the moment from gmail
+        /// Send an email to user, register user with "inactive" status (if the user is 
+        /// not already in the DB) 
+        /// +Mail id password from where mail will be sent -> At the moment from gmail
         /// with "placetobecologne@gmail.com".
         /// </summary>
         /// <param name="userEmail"></param>
         /// <param name="userPassword"></param>
         /// <returns></returns>
-        public async Task SendActivationEmail(string userEmail, string userPassword)
+        public async Task<HttpStatusCode> SendActivationEmail(string userEmail, string userPassword)
         {
             try
             {
+                //check if user already exists. if the user is null, the user does not exists- so we can send a activationmail
+                if (await CheckIfUserExists(userEmail))
+                {
+                //activationcode to identify the user in the email.
                 string activationCode = Guid.NewGuid().ToString();
 
                 string messageBody = "Confirm the mail:";
@@ -271,36 +293,52 @@ namespace placeToBe.Services
                 sendMail.Subject = "Registration: PlaceToBe";
                 sendMail.Body = messageBody;
                 //Register the user with inactive status (status==false)
-                await Register(userEmail, userPassword, activationCode);
+                
+                //if user==null then he does not exists 
+                
+                byte[] plainText = Encoding.UTF8.GetBytes(userPassword);
+                byte[] salt = GenerateSalt(saltSize);
+                byte[] passwordSalt = GenerateSaltedHash(plainText, salt);
+
+                User user = new User(userEmail, passwordSalt, salt);
+                user.status = false;
+                user.activationcode = activationCode;
+                await InsertUserToDB(user);
+               
                 //Send the mail 
-                client.Send(sendMail);
-            }
-            catch (Exception e)
+                try
+                {
+                    client.Send(sendMail);
+                    return HttpStatusCode.OK; 
+                }
+                catch (System.Net.Mail.SmtpException cantsend)
+                {
+                    //email cannot be sent.
+                    Console.WriteLine("{0} Exception caught. Email cannot be sent.", cantsend);
+                    return HttpStatusCode.BadGateway;
+                }
+                catch (System.ArgumentNullException messagenull)
+                {
+                    //Email-message is null
+                    Console.WriteLine("{0} Exception caught. Email is null.", messagenull);
+                    return HttpStatusCode.BadRequest;
+                }
+                
+                }else {
+                //User already exists
+                return HttpStatusCode.Forbidden;
+                }
+              }
+            catch ( Exception e)
             {
-                Console.WriteLine("{0} Exception caught.", e);
-                //ToDo: UI-Ausgabe: Cant send Registration-email.
+                Console.WriteLine("{0} Exception caught. ", e);
+                return HttpStatusCode.Conflict;
             }
         }
 
-        /// <summary>
-        /// Registers a new User to DB
-        /// </summary>
-        /// <param name="userEmail"></param>
-        /// <param name="userPassword"></param>
-        public async Task<Guid> Register(string userEmail, string userPassword, string activationcode)
-        {
-            byte[] plainText = Encoding.UTF8.GetBytes(userPassword);
-            byte[] salt = GenerateSalt(saltSize);
-            byte[] passwordSalt = GenerateSaltedHash(plainText, salt);
-
-            User user = new User(userEmail, passwordSalt, salt);
-            user.status = false;
-            user.activationcode = activationcode;
-            return await userRepo.InsertAsync(user);
-        }
 
         /// <summary>
-        /// Reset the password from the users mail and then send a mail to user with a new password
+        /// Reset the password from the users mail and then send a mail to user with a new password. 
         /// </summary>
         /// <param name="userEmail"></param>
         /// <returns></returns>
@@ -320,7 +358,15 @@ namespace placeToBe.Services
             }
             catch (NullReferenceException usernull)
             {
-                Console.WriteLine("{0} User ist null", usernull);
+                Console.WriteLine("{0} ForgetPassword: User is null", usernull);
+            }
+            catch (TimeoutException e)
+            {
+                Console.WriteLine("{0} ForgetPassword: Cant update database ", e);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("{0} Exception caught. ", e);
             }
         }
 
@@ -358,7 +404,20 @@ namespace placeToBe.Services
             sendMail.Subject = "PlaceToBe: New password";
             sendMail.Body = messageBody;
             //Send the mail 
-            client.Send(sendMail);
+            try
+            {
+                client.Send(sendMail);
+            }
+            catch (System.Net.Mail.SmtpException cantsend)
+            {
+                //Email cannot be sent.
+                Console.WriteLine("{0} Exception caught. Email cannot be sent.", cantsend);
+            }
+            catch (System.ArgumentNullException messagenull)
+            {
+                //Email-message is null
+                Console.WriteLine("{0} Exception caught. Email is null.", messagenull);
+            }
         }
 
         #region Helper Methods
@@ -410,7 +469,7 @@ namespace placeToBe.Services
         public async Task ChangeUserStatus(string activationcode)
         {
 
-            User user = await GetUser(activationcode);
+            User user = await GetUserbyActivationCode(activationcode);
             user.status = true;
             await userRepo.UpdateAsync(user);
 
@@ -419,7 +478,7 @@ namespace placeToBe.Services
         ///<summary>Get User from DB </summary>
         /// <param name="activationcode" </ param>
         /// <returns>returns the users activationcode</returns>
-        public async Task<User> GetUser(string activationcode)
+        public async Task<User> GetUserbyActivationCode(string activationcode)
         {
 
             return await userRepo.GetByActivationCode(activationcode);
@@ -430,12 +489,25 @@ namespace placeToBe.Services
         /// </summary>
         /// <param name="email">email of the user</param>
         /// <returns>return the user saved in the db</returns>
-        public async Task<User> GetEmail(String email)
+        public async Task<User> GetUserByEmail(string email)
         {
             return await userRepo.GetByEmailAsync(email);
         }
 
+        private async Task<Guid> InsertUserToDB(User user)
+        {
+            return await userRepo.InsertAsync(user);
+        }
 
+        public async Task<Boolean> CheckIfUserExists(string userEmail)
+        {
+            if (await GetUserByEmail(userEmail) != null)
+            {
+                return true;
+            }
+            else { return false;
+            }
+        }
         /// <summary>
         /// Generate Salt
         /// </summary>
