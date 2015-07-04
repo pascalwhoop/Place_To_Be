@@ -10,7 +10,7 @@ using System.Web;
 
 namespace placeToBe.Filter
 {
-    public class Authorisation
+    public class FacebookUserVerification
     {
 
         /// <summary>
@@ -21,7 +21,6 @@ namespace placeToBe.Filter
         /// <param name="userAccessToken">The users access token which has to be validated</param>
         /// <param name="userPassword">The users Facebook-Id</param>
         /// <returns>true if access token is validated, otherwise false</returns>
-        /// 
 
         private readonly String fbAppSecret = "469300d9c3ed9fe6ff4144d025bc1148";
         private readonly String fbAppId = "857640940981214";

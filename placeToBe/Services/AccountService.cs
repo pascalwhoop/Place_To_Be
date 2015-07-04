@@ -448,7 +448,7 @@ namespace placeToBe.Services
         }
 
         /// <summary>
-        /// Get salt from db
+        /// Get User from datanase via his/her email.
         /// </summary>
         /// <param name="email">email of the user</param>
         /// <returns>return the user saved in the db</returns>
