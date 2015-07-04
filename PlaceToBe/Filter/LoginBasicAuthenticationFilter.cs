@@ -9,14 +9,12 @@ using System.Web.Http.Controllers;
 
 namespace placeToBe.Services
 {
-    public class MyBasicAuthenticationFilter : BasicAuthenticationFilter
+    public class LoginBasicAuthenticationFilter : BasicAuthenticationFilter
     {
-
-        UserController test;
-        public MyBasicAuthenticationFilter()
+        public LoginBasicAuthenticationFilter()
         { }
 
-        public MyBasicAuthenticationFilter(bool active)
+        public LoginBasicAuthenticationFilter(bool active)
             : base(active)
         { active = true; }
 
