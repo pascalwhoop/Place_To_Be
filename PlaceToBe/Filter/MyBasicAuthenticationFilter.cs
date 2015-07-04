@@ -21,12 +21,11 @@ namespace placeToBe.Services
         { active = true; }
 
 
-        protected async override Task<bool> OnAuthorizeUser(string username, string password, HttpActionContext actionContext)
+        protected override bool OnAuthorizeUser(string username, string password, HttpActionContext actionContext)
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password)){
                 return false;
         }else{
-                await test.Put(username, password);
                 return true;
             }
         }
