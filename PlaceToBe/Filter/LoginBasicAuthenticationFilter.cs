@@ -9,24 +9,21 @@ using System.Web.Http.Controllers;
 
 namespace placeToBe.Services
 {
-    public class MyBasicAuthenticationFilter : BasicAuthenticationFilter
+    public class LoginBasicAuthenticationFilter : BasicAuthenticationFilter
     {
-
-        UserController test;
-        public MyBasicAuthenticationFilter()
+        public LoginBasicAuthenticationFilter()
         { }
 
-        public MyBasicAuthenticationFilter(bool active)
+        public LoginBasicAuthenticationFilter(bool active)
             : base(active)
         { active = true; }
 
 
-        protected async override Task<bool> OnAuthorizeUser(string username, string password, HttpActionContext actionContext)
+        protected override bool OnAuthorizeUser(string username, string password, HttpActionContext actionContext)
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password)){
                 return false;
         }else{
-                await test.Put(username, password);
                 return true;
             }
         }

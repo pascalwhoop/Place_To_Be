@@ -28,11 +28,11 @@ namespace placeToBe.Services
         /// <summary>
         /// SaveFBData to out database.
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="fbuser"></param>
         /// <returns></returns>
-        public async Task SaveFBData(FbUser user)
+        public async Task SaveFBData(FbUser fbuser)
         {
-            FbUser fbuser = new FbUser();
+
             await fbUserRepo.InsertAsync(fbuser);
         }
 
@@ -42,40 +42,34 @@ namespace placeToBe.Services
         /// <param name="usersEmail"></param>
         /// <param name="userPassword"></param>
         /// <returns></returns>
-        public async Task<FormsAuthenticationTicket> Login(string usersEmail, string userPassword)
+        public async Task<Cookie> Login(string userEmail)
         {
             try
             {
-                byte[] userPasswordInBytes = Encoding.UTF8.GetBytes(userPassword);
-                User user = await GetUserByEmail(usersEmail);
-                byte[] salt = user.salt;
-                byte[] passwordSalt = GenerateSaltedHash(userPasswordInBytes, salt);
-                bool comparePasswords = CompareByteArrays(passwordSalt, user.passwordSalt);
-
-                //statement: if users password is correct and status is activated          
-                if (comparePasswords == true && user.status == true)
+                User user1 = await userRepo.GetByEmailAsync(userEmail);
+                if (user1.ticket == null)
                 {
-                    //Set a ticket for five minutes to stay logged in.
-                    FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(usersEmail, false, 5);
-
-                    if (ticket.Expired)
-                    {
-                        FormsAuthentication.SignOut();
-                        return ticket;
-                    }
-                    return ticket;
-                }
-                else if (comparePasswords == true && user.status == false)
-                {
-                    UnauthorizedAccessException e;
-                    //ToDo: UI-Message: e.Message..(user not found, password false, status not activated)..
-                    return null;
+                    //Set a ticket for five minutes to stay logged in. 
+                    Cookie ticket = new Cookie(userEmail, userEmail);
+                    ticket.Name = userEmail;
+                    ticket.Expires = DateTime.Now.AddSeconds(20);
+                    user1.ticket = ticket; ;
+                    await userRepo.UpdateAsync(user1);
+                    return user1.ticket;
                 }
                 else
                 {
-                    //ToDo: UI-Message: passwort is incorrect or not found
-                    return null;
+                    if (user1.ticket.Expired)
+                    {
+                        await Logout(userEmail);
+                        return null;
+                    }
+                    else
+                    {
+                        return user1.ticket;
+                    }
                 }
+                    
             }
             catch (CookieException)
             {
@@ -85,10 +79,13 @@ namespace placeToBe.Services
         }
 
         //Log out the user and redirect to login-page.
-        public void Logout()
+        public async Task<HttpStatusCode> Logout(string userEmail)
         {
-            FormsAuthentication.SignOut();
-            FormsAuthentication.RedirectToLoginPage();
+            User user1 = await userRepo.GetByEmailAsync(userEmail);
+            user1.ticket = null;
+            await userRepo.UpdateAsync(user1);
+            return HttpStatusCode.Unauthorized;
+            
         }
 
         /// <summary>
