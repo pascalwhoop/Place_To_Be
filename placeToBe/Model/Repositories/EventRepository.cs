@@ -82,7 +82,7 @@ namespace placeToBe.Model.Repositories
                 {"place", 1},
                 {"start_time",1},
                 {"end_time",1},
-                {"attendMale",1},
+                {"attendingMale",1},
                 {"attendingFemale",1}
             };
             ProjectionDefinition<Event, Event> projDefinition = new BsonDocument(projectionContent);
