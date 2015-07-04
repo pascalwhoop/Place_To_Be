@@ -36,7 +36,7 @@ namespace placeToBe.Controllers
         /// <param name="userEmail"></param>
         /// <param name="userPassword"></param>
         /// <returns></returns>
-        [RegisterBasicAuthenticationFilter]
+        //[RegisterBasicAuthenticationFilter]
         public async Task Post([FromUri]string userEmail, [FromUri] string userPassword)
         {
             await user.SendActivationEmail(userEmail, userPassword);
@@ -59,7 +59,7 @@ namespace placeToBe.Controllers
         /// <param name="userPassword"></param>
         /// <returns></returns>
         [LoginBasicAuthenticationFilter]
-        public async Task<Cookie> Put([FromUri]string userEmail)
+        public async Task<Cookie> Put([FromUri] string userEmail)
         {
             return await user.Login(userEmail);
         }
