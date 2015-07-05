@@ -20,30 +20,22 @@ namespace placeToBe.Controllers
 
         MongoDbRepository<User> repo = new MongoDbRepository<User>();
         AccountService user = new AccountService();
-
+        
         /// <summary>
-        /// POST- Save the JSON-Object of a facebook-User
-        /// </summary>
-        /// <param name="fbuser"></param>
-        /// <returns></returns>
-        public async Task Post(FbUser fbuser)
-        {
-            await user.SaveFBData(fbuser);
-        }
-        /// <summary>
-        /// PUT- Send an activationemail and register a user with email and passwort
+        /// PUT- Send an activationemail and register a user with email and password (with inactive status)
+        /// into the database.
         /// </summary>
         /// <param name="userEmail"></param>
         /// <param name="userPassword"></param>
         /// <returns></returns>
-        //[RegisterBasicAuthenticationFilter]
+        
         public async Task Post([FromUri]string userEmail, [FromUri] string userPassword)
         {
             await user.SendActivationEmail(userEmail, userPassword);
         }
 
         /// <summary>
-        /// GET- user by activationcode for confirm mail. 
+        /// GET- Confirm user by activationcode.
         /// </summary>
         /// <param name="activationcode"></param>
         /// <returns></returns>
@@ -53,7 +45,9 @@ namespace placeToBe.Controllers
         }
 
         /// <summary>
-        /// PUT- Login - Get AuthenticationTicket for 5 minutes
+        /// PUT- Login - After LoginBasicAuthentication 
+        /// send a cookie to the user to stay logged in 
+        /// or log out if the cookie is expired.
         /// </summary>
         /// <param name="resetPasswordByMail"></param>
         /// <param name="userPassword"></param>
@@ -75,7 +69,7 @@ namespace placeToBe.Controllers
         }
 
         /// <summary>
-        /// PUT- Change the password from user
+        /// PUT- Change the password from user from old password to the new one.
         /// </summary>
         /// <param name="userEmail"></param>
         /// <param name="oldPassword"></param>
@@ -85,6 +79,17 @@ namespace placeToBe.Controllers
         {
             await user.ChangePasswort(userEmail, oldPassword, newPassword);
         }
+
+        /// <summary>
+        /// POST- Save the JSON-object of a facebook-User in our database.
+        /// </summary>
+        /// <param name="fbuser"></param>
+        /// <returns></returns>
+        public async Task Post(FbUser fbuser)
+        {
+            await user.SaveFBData(fbuser);
+        }
+        
 
     }
 }
