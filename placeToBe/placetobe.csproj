@@ -210,9 +210,12 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
+    <Compile Include="Filter\FacebookUserVerification.cs" />
+    <Compile Include="Filter\RegisterBasicAuthenticationFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Filter\BasicAuthenticationIdentity.cs" />
     <Compile Include="Model\Entities\City.cs" />
     <Compile Include="Model\Entities\FacebookPagingResult.cs" />
     <Compile Include="Model\Entities\FbUser.cs" />
@@ -237,8 +240,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Services\AccountService.cs" />
+    <Compile Include="Filter\BasicAuthenticationFilter.cs" />
     <Compile Include="Services\FbCrawler.cs" />
     <Compile Include="Services\GenderizeService.cs" />
+    <Compile Include="Filter\LoginBasicAuthenticationFilter.cs" />
     <Compile Include="Services\SearchService.cs" />
     <Compile Include="Services\UtilService.cs" />
     <Compile Include="Startup.cs" />

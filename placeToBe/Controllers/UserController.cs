@@ -10,9 +10,11 @@ using System.Threading.Tasks;
 using placeToBe.Services;
 using System.Security.Cryptography;
 using System.Web.Security;
+using placeToBe.Filter;
 
 namespace placeToBe.Controllers
 {
+
     public class UserController : ApiController
     {
 
@@ -34,6 +36,7 @@ namespace placeToBe.Controllers
         /// <param name="userEmail"></param>
         /// <param name="userPassword"></param>
         /// <returns></returns>
+        //[RegisterBasicAuthenticationFilter]
         public async Task Post([FromUri]string userEmail, [FromUri] string userPassword)
         {
             await user.SendActivationEmail(userEmail, userPassword);
@@ -52,12 +55,13 @@ namespace placeToBe.Controllers
         /// <summary>
         /// PUT- Login - Get AuthenticationTicket for 5 minutes
         /// </summary>
-        /// <param name="userEmail"></param>
+        /// <param name="resetPasswordByMail"></param>
         /// <param name="userPassword"></param>
         /// <returns></returns>
-        public async Task<FormsAuthenticationTicket> Put([FromUri]string userEmail, [FromUri]string userPassword)
+        [LoginBasicAuthenticationFilter]
+        public async Task<Cookie> Put([FromUri] string userEmail)
         {
-            return await user.Login(userEmail, userPassword);
+            return await user.Login(userEmail);
         }
 
         /// <summary>
@@ -65,7 +69,7 @@ namespace placeToBe.Controllers
         /// </summary>
         /// <param name="userEmail"></param>
         /// <returns></returns>
-        public async Task Put([FromUri]string userEmail)
+        public async Task Put([FromUri]string userEmail, string ueberladung)
         {
             await user.ForgetPasswordReset(userEmail);
         }

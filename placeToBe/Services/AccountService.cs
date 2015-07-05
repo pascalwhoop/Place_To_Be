@@ -18,58 +18,20 @@ namespace placeToBe.Services
 {
     public class AccountService
     {
-        private readonly String fbAppSecret = "469300d9c3ed9fe6ff4144d025bc1148";
-        private readonly String fbAppId = "857640940981214";
+
         UserRepository userRepo = new UserRepository();
         FbUserRepository fbUserRepo = new FbUserRepository();
         int saltSize = 20;
         private string fromAddress = System.Configuration.ConfigurationManager.AppSettings["placeToBeEmail"];
         private string mailPassword = System.Configuration.ConfigurationManager.AppSettings["placeToBePasswordFromMail"];
 
-
-        /// <summary>
-        /// Checks if the users request is authorized by proofing users access token:
-        /// 1. Check if it equals the users access token in the Database.
-        /// 2. If not... inspecting access tokens (user and app access token) via Facebooks Graph API
-        /// </summary>
-        /// <param name="userAccessToken">The users access token which has to be validated</param>
-        /// <param name="userPassword">The users Facebook-Id</param>
-        /// <returns>true if access token is validated, otherwise false</returns>
-        public async Task<bool> authorizeRequest(String userAccessToken, String userFbId)
-        {
-            
-            FbUser user = await fbUserRepo.GetByFbIdAsync(userFbId);
-
-            if (userAccessToken == user.shortAccessToken)
-                return true;
-            else
-            {
-                String appAccessToken = UtilService.performGetRequest(new Uri("https://graph.facebook.com/oauth/access_token?client_id=" + fbAppId + "&client_secret=" +
-                              fbAppSecret + "&grant_type=client_credentials"));
-
-                String jsonResponse = UtilService.performGetRequest(new Uri("https://graph.facebook.com/v2.3/debug_token?input_token=" + userAccessToken + "&access_token=" + appAccessToken));
-
-                Inspection insp = JsonConvert.DeserializeObject<Inspection>(jsonResponse);
-
-                if (insp.is_valid == true)
-                {
-                    user.shortAccessToken = userAccessToken;
-                    await fbUserRepo.UpdateAsync(user);
-                    return true;
-                }
-                else
-                    return false;             
-            }
-        }
-
         /// <summary>
         /// SaveFBData to out database.
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="fbuser"></param>
         /// <returns></returns>
-        public async Task SaveFBData(FbUser user)
+        public async Task SaveFBData(FbUser fbuser)
         {
-            FbUser fbuser = new FbUser();
             await fbUserRepo.InsertAsync(fbuser);
         }
 
@@ -79,40 +41,36 @@ namespace placeToBe.Services
         /// <param name="usersEmail"></param>
         /// <param name="userPassword"></param>
         /// <returns></returns>
-        public async Task<FormsAuthenticationTicket> Login(string usersEmail, string userPassword)
+        public async Task<Cookie> Login(string userEmail)
         {
             try
             {
-                byte[] userPasswordInBytes = Encoding.UTF8.GetBytes(userPassword);
-                User user = await GetUserByEmail(usersEmail);
-                byte[] salt = user.salt;
-                byte[] passwordSalt = GenerateSaltedHash(userPasswordInBytes, salt);
-                bool comparePasswords = CompareByteArrays(passwordSalt, user.passwordSalt);
-
-                //statement: if users password is correct and status is activated          
-                if (comparePasswords == true && user.status == true)
+                User loginuser = await GetUserByEmail(userEmail);
+                if (loginuser.ticket == null)
                 {
-                    //Set a ticket for five minutes to stay logged in.
-                    FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(usersEmail, false, 5);
-
-                    if (ticket.Expired)
-                    {
-                        FormsAuthentication.SignOut();
-                        return ticket;
-                    }
-                    return ticket;
-                }
-                else if (comparePasswords == true && user.status == false)
-                {
-                    UnauthorizedAccessException e;
-                    //ToDo: UI-Message: e.Message..(user not found, password false, status not activated)..
-                    return null;
+                    //Set a ticket for five minutes to stay logged in. 
+                    Cookie ticket = new Cookie(userEmail, userEmail);
+                    ticket.Name = userEmail;
+                    //for testing : in seconds, but as a rule 5 minutes.
+                    //set the expire-date
+                    ticket.Expires = DateTime.Now.AddSeconds(20);
+                    loginuser.ticket = ticket; ;
+                    await userRepo.UpdateAsync(loginuser);
+                    return loginuser.ticket;
                 }
                 else
                 {
-                    //ToDo: UI-Message: passwort is incorrect or not found
-                    return null;
+                    if (loginuser.ticket.Expired)
+                    {
+                        await Logout(userEmail);
+                        return null;
+                    }
+                    else
+                    {
+                        return loginuser.ticket;
+                    }
                 }
+
             }
             catch (CookieException)
             {
@@ -121,11 +79,48 @@ namespace placeToBe.Services
             }
         }
 
+
+        //public async Task<bool> CheckPassword(string userEmail, string userPassword)
+        //{
+        //    try
+        //    {
+        //        byte[] userPasswordInBytes = Encoding.UTF8.GetBytes(userPassword);
+        //        User user = await userRepo.GetByEmailAsync(userEmail);
+        //        byte[] salt = user.salt;
+        //        byte[] passwordSalt = GenerateSaltedHash(userPasswordInBytes, salt);
+        //        bool comparePasswords = CompareByteArrays(passwordSalt, user.passwordSalt);
+
+        //        //statement: if users password is correct and status is activated          
+        //        if (comparePasswords == true && user.status == true)
+        //        {
+        //            return true;
+        //        }
+        //        else if (comparePasswords == true && user.status == false)
+        //        {
+        //            //Please activate your acc.
+        //            return false;
+        //        }
+        //        else
+        //        {
+        //            //Authentification failed.
+        //            return false;
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        //Something go wrong.
+        //        return false;
+        //    }
+        //}
+
         //Log out the user and redirect to login-page.
-        public void Logout()
+        public async Task<HttpStatusCode> Logout(string userEmail)
         {
-            FormsAuthentication.SignOut();
-            FormsAuthentication.RedirectToLoginPage();
+            User user1 = await userRepo.GetByEmailAsync(userEmail);
+            user1.ticket = null;
+            await userRepo.UpdateAsync(user1);
+            return HttpStatusCode.Unauthorized;
+
         }
 
         /// <summary>
@@ -177,7 +172,9 @@ namespace placeToBe.Services
                 //Database Error
                 Console.WriteLine("{0} Exception caught: Database-Timeout. ", e);
                 return HttpStatusCode.Conflict;
-            }catch(Exception e){
+            }
+            catch (Exception e)
+            {
                 //Database Error
                 Console.WriteLine("{0} Exception caught. ", e);
                 return HttpStatusCode.Conflict;
@@ -223,7 +220,7 @@ namespace placeToBe.Services
                 sendMail.Body = messageBody;
                 //Change user status to true, because user is now activated
                 await ChangeUserStatus(activationcode);
-                
+
                 try
                 {
                     //Send the mail 
@@ -263,73 +260,75 @@ namespace placeToBe.Services
                 //check if user already exists. if the user is null, the user does not exists- so we can send a activationmail
                 if (await CheckIfUserExists(userEmail))
                 {
-                //activationcode to identify the user in the email.
-                string activationCode = Guid.NewGuid().ToString();
+                    //activationcode to identify the user in the email.
+                    string activationCode = Guid.NewGuid().ToString();
 
-                string messageBody = "Confirm the mail:";
-                messageBody += "<br /><br />Please click the following link to activate your account";
-                messageBody += "<br /><a href = ' http://localhost:18172/api/user?activationcode=" + activationCode + "'>Click here to activate your account.</a>";
-                messageBody += "<br /><br />Thanks";
+                    string messageBody = "Confirm the mail:";
+                    messageBody += "<br /><br />Please click the following link to activate your account";
+                    messageBody += "<br /><a href = ' http://localhost:18172/api/user?activationcode=" + activationCode + "'>Click here to activate your account.</a>";
+                    messageBody += "<br /><br />Thanks";
 
-                //Create smtp connection.
-                SmtpClient client = new SmtpClient();
-                //outgoing port for the mail-server.
-                client.Port = 587;
-                client.Host = "smtp.gmail.com";
-                client.EnableSsl = true;
-                client.Timeout = 10000;
-                client.DeliveryMethod = SmtpDeliveryMethod.Network;
-                client.UseDefaultCredentials = false;
-                client.Credentials = new System.Net.NetworkCredential(fromAddress, mailPassword);
+                    //Create smtp connection.
+                    SmtpClient client = new SmtpClient();
+                    //outgoing port for the mail-server.
+                    client.Port = 587;
+                    client.Host = "smtp.gmail.com";
+                    client.EnableSsl = true;
+                    client.Timeout = 10000;
+                    client.DeliveryMethod = SmtpDeliveryMethod.Network;
+                    client.UseDefaultCredentials = false;
+                    client.Credentials = new System.Net.NetworkCredential(fromAddress, mailPassword);
 
-                // Fill the mail form.
-                var sendMail = new MailMessage();
-                sendMail.IsBodyHtml = true;
-                //address from where mail will be sent.
-                sendMail.From = new MailAddress(fromAddress);
-                //address to which mail will be sent.           
-                sendMail.To.Add(new MailAddress(userEmail));
-                //subject of the mail.
-                sendMail.Subject = "Registration: PlaceToBe";
-                sendMail.Body = messageBody;
-                //Register the user with inactive status (status==false)
-                
-                //if user==null then he does not exists 
-                
-                byte[] plainText = Encoding.UTF8.GetBytes(userPassword);
-                byte[] salt = GenerateSalt(saltSize);
-                byte[] passwordSalt = GenerateSaltedHash(plainText, salt);
+                    // Fill the mail form.
+                    var sendMail = new MailMessage();
+                    sendMail.IsBodyHtml = true;
+                    //address from where mail will be sent.
+                    sendMail.From = new MailAddress(fromAddress);
+                    //address to which mail will be sent.           
+                    sendMail.To.Add(new MailAddress(userEmail));
+                    //subject of the mail.
+                    sendMail.Subject = "Registration: PlaceToBe";
+                    sendMail.Body = messageBody;
+                    //Register the user with inactive status (status==false)
 
-                User user = new User(userEmail, passwordSalt, salt);
-                user.status = false;
-                user.activationcode = activationCode;
-                await InsertUserToDB(user);
-               
-                //Send the mail 
-                try
+                    //if user==null then he does not exists 
+
+                    byte[] plainText = Encoding.UTF8.GetBytes(userPassword);
+                    byte[] salt = GenerateSalt(saltSize);
+                    byte[] passwordSalt = GenerateSaltedHash(plainText, salt);
+
+                    User user = new User(userEmail, passwordSalt, salt);
+                    user.status = false;
+                    user.activationcode = activationCode;
+                    await InsertUserToDB(user);
+
+                    //Send the mail 
+                    try
+                    {
+                        client.Send(sendMail);
+                        return HttpStatusCode.OK;
+                    }
+                    catch (System.Net.Mail.SmtpException cantsend)
+                    {
+                        //email cannot be sent.
+                        Console.WriteLine("{0} Exception caught. Email cannot be sent.", cantsend);
+                        return HttpStatusCode.BadGateway;
+                    }
+                    catch (System.ArgumentNullException messagenull)
+                    {
+                        //Email-message is null
+                        Console.WriteLine("{0} Exception caught. Email is null.", messagenull);
+                        return HttpStatusCode.BadRequest;
+                    }
+
+                }
+                else
                 {
-                    client.Send(sendMail);
-                    return HttpStatusCode.OK; 
+                    //User already exists
+                    return HttpStatusCode.Forbidden;
                 }
-                catch (System.Net.Mail.SmtpException cantsend)
-                {
-                    //email cannot be sent.
-                    Console.WriteLine("{0} Exception caught. Email cannot be sent.", cantsend);
-                    return HttpStatusCode.BadGateway;
-                }
-                catch (System.ArgumentNullException messagenull)
-                {
-                    //Email-message is null
-                    Console.WriteLine("{0} Exception caught. Email is null.", messagenull);
-                    return HttpStatusCode.BadRequest;
-                }
-                
-                }else {
-                //User already exists
-                return HttpStatusCode.Forbidden;
-                }
-              }
-            catch ( Exception e)
+            }
+            catch (Exception e)
             {
                 Console.WriteLine("{0} Exception caught. ", e);
                 return HttpStatusCode.Conflict;
@@ -501,18 +500,20 @@ namespace placeToBe.Services
 
         public async Task<Boolean> CheckIfUserExists(string userEmail)
         {
-            if (await GetUserByEmail(userEmail) != null)
+            if (await GetUserByEmail(userEmail) == null)
             {
                 return true;
             }
-            else { return false;
+            else
+            {
+                return false;
             }
         }
         /// <summary>
         /// Generate Salt
         /// </summary>
         /// <returns>Salt</returns>
-        private byte[] GenerateSalt(int saltSize)
+        public byte[] GenerateSalt(int saltSize)
         {
             byte[] saltCrypt = new byte[saltSize];
             RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
@@ -526,7 +527,7 @@ namespace placeToBe.Services
         /// <param name="plainText">password text</param>
         /// <param name="salt">generated Salt</param>
         /// <returns>Value with plaintext+salt</returns>
-        private byte[] GenerateSaltedHash(byte[] plainText, byte[] salt)
+        public byte[] GenerateSaltedHash(byte[] plainText, byte[] salt)
         {
             HashAlgorithm algorithm = new SHA256Managed();
 
@@ -551,7 +552,7 @@ namespace placeToBe.Services
         /// <param name="array1"></param>
         /// <param name="array2"></param>
         /// <returns></returns>
-        public static bool CompareByteArrays(byte[] array1, byte[] array2)
+        public bool CompareByteArrays(byte[] array1, byte[] array2)
         {
             if (array1.Length != array2.Length)
             {
