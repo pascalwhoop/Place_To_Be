@@ -22,7 +22,6 @@ namespace placeToBe.Model.Entities
             this.email = email;
             this.passwordSalt = passwordSalt;
             this.salt = salt;
-        
         }
         [DataMember]
         public string email { get; set; }
@@ -30,17 +29,15 @@ namespace placeToBe.Model.Entities
         public byte[] passwordSalt { get; set; }
         [DataMember]
         public byte[] salt { get; set; }
-       [DataMember]
+        [DataMember]
         // if status == true then the user is activated/confirmed, else not activated/confirmed
         public bool status { get; set; }
-       [DataMember]
+        [DataMember]
         public string activationcode { get; set; }
-       [DataMember]
+        [DataMember]
         public string company { get; set; }
         [DataMember]
         public string city { get; set; }
-        [DataMember]
-        public Cookie ticket { get; set; }
 
     }
 }
