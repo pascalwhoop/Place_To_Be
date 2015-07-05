@@ -27,7 +27,6 @@ namespace placeToBe.Services
         /// </summary>
         private string fromAddress = System.Configuration.ConfigurationManager.AppSettings["placeToBeEmail"];
         private string mailPassword = System.Configuration.ConfigurationManager.AppSettings["placeToBePasswordFromMail"];
-
         /// <summary>
         /// SaveFBData to out database.
         /// </summary>
@@ -73,26 +72,26 @@ namespace placeToBe.Services
                     else
                     {
                         //Change password is not possible because password is false, status is not activated.
-                        return HttpStatusCode.BadRequest;
+                        return HttpStatusCode.Unauthorized;
                     }
                 }
                 else
                 {
                     //User is null - User with email do not exists in database.
-                    return HttpStatusCode.NotFound;
+                    return HttpStatusCode.InternalServerError;
                 }
             }
             catch (TimeoutException e)
             {
                 //Database Error
                 Console.WriteLine("{0} Exception caught: Database-Timeout. ", e);
-                return HttpStatusCode.Conflict;
+                return HttpStatusCode.GatewayTimeout;
             }
             catch (Exception e)
             {
                 //Database Error
                 Console.WriteLine("{0} Exception caught. ", e);
-                return HttpStatusCode.Conflict;
+                return HttpStatusCode.InternalServerError;
             }
 
         }
@@ -146,19 +145,19 @@ namespace placeToBe.Services
                 {
                     //Email cannot be sent.
                     Console.WriteLine("{0} Exception caught. Email cannot be sent.", cantsend);
-                    return HttpStatusCode.BadGateway;
+                    return HttpStatusCode.ServiceUnavailable;
                 }
                 catch (System.ArgumentNullException messagenull)
                 {
                     //Email-message is null
                     Console.WriteLine("{0} Exception caught. Email is null.", messagenull);
-                    return HttpStatusCode.NoContent;
+                    return HttpStatusCode.ServiceUnavailable;
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine("{0} Exception caught. Confirmmail can not be done.", e);
-                return HttpStatusCode.BadRequest;
+                return HttpStatusCode.InternalServerError;
             }
         }
 
@@ -227,26 +226,26 @@ namespace placeToBe.Services
                     {
                         //email cannot be sent.
                         Console.WriteLine("{0} Exception caught. Email cannot be sent.", cantsend);
-                        return HttpStatusCode.BadGateway;
+                        return HttpStatusCode.ServiceUnavailable;
                     }
                     catch (System.ArgumentNullException messagenull)
                     {
                         //Email-message is null
                         Console.WriteLine("{0} Exception caught. Email is null.", messagenull);
-                        return HttpStatusCode.BadRequest;
+                        return HttpStatusCode.ServiceUnavailable;
                     }
 
                 }
                 else
                 {
                     //User already exists
-                    return HttpStatusCode.Forbidden;
+                    return HttpStatusCode.Conflict;
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine("{0} Exception caught. ", e);
-                return HttpStatusCode.Conflict;
+                return HttpStatusCode.InternalServerError;
             }
         }
 
@@ -273,17 +272,17 @@ namespace placeToBe.Services
             catch (NullReferenceException usernull)
             {
                 Console.WriteLine("{0} ForgetPassword: User is null", usernull);
-                return HttpStatusCode.NotFound;
+                return HttpStatusCode.ServiceUnavailable;
             }
             catch (TimeoutException e)
             {
                 Console.WriteLine("{0} ForgetPassword: Cant update database ", e);
-                return HttpStatusCode.RequestTimeout;
+                return HttpStatusCode.GatewayTimeout;
             }
             catch (Exception e)
             {
                 Console.WriteLine("{0} Exception caught. ", e);
-                return HttpStatusCode.BadRequest;
+                return HttpStatusCode.InternalServerError;
             }
         }
 
