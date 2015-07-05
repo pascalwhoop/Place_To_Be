@@ -40,11 +40,6 @@ namespace placeToBe.Model.Entities
         public string id { get; set; }
     }
 
-    public class Paging
-    {
-        public string next { get; set; }
-    }
-
     public class Summary
     {
         public int total_count { get; set; }
