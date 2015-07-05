@@ -39,60 +39,6 @@ namespace placeToBe.Services
         }
 
         /// <summary>
-        /// Login the user with given email and correct password.
-        /// </summary>
-        /// <param name="usersEmail"></param>
-        /// <param name="userPassword"></param>
-        /// <returns></returns>
-        public async Task<Cookie> Login(string userEmail)
-        {
-            try
-            {
-                User loginuser = await GetUserByEmail(userEmail);
-                if (loginuser.ticket == null)
-                {
-                    //Set a ticket for five minutes to stay logged in. 
-                    Cookie ticket = new Cookie(userEmail, userEmail);
-                    ticket.Name = userEmail;
-                    //for testing : in seconds, but as a rule 5 minutes.
-                    //set the expire-date
-                    ticket.Expires = DateTime.Now.AddSeconds(20);
-                    loginuser.ticket = ticket; ;
-                    await userRepo.UpdateAsync(loginuser);
-                    return loginuser.ticket;
-                }
-                else
-                {
-                    if (loginuser.ticket.Expired)
-                    {
-                        await Logout(userEmail);
-                        return null;
-                    }
-                    else
-                    {
-                        return loginuser.ticket;
-                    }
-                }
-
-            }
-            catch (CookieException)
-            {
-                //ToDo: UI-Fehlermeldung : "Cant create Cookie"
-                return null;
-            }
-        }
-
-        //Log out the user and redirect to login-page.
-        public async Task<HttpStatusCode> Logout(string userEmail)
-        {
-            User user1 = await userRepo.GetByEmailAsync(userEmail);
-            user1.ticket = null;
-            await userRepo.UpdateAsync(user1);
-            return HttpStatusCode.Unauthorized;
-
-        }
-
-        /// <summary>
         /// Changes the password from user (with given email) from old password to new password.
         /// </summary>
         /// <param name="userEmail"></param>
@@ -156,7 +102,7 @@ namespace placeToBe.Services
         /// </summary>
         /// <param name="activationcode"></param>
         /// <returns></returns>
-        public async Task ConfirmEmail(string activationcode)
+        public async Task<HttpStatusCode> ConfirmEmail(string activationcode)
         {
             try
             {
@@ -194,21 +140,25 @@ namespace placeToBe.Services
                 {
                     //Send the mail 
                     client.Send(sendMail);
+                    return HttpStatusCode.OK;
                 }
                 catch (System.Net.Mail.SmtpException cantsend)
                 {
                     //Email cannot be sent.
                     Console.WriteLine("{0} Exception caught. Email cannot be sent.", cantsend);
+                    return HttpStatusCode.BadGateway;
                 }
                 catch (System.ArgumentNullException messagenull)
                 {
                     //Email-message is null
                     Console.WriteLine("{0} Exception caught. Email is null.", messagenull);
+                    return HttpStatusCode.NoContent;
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine("{0} Exception caught. Confirmmail can not be done.", e);
+                return HttpStatusCode.BadRequest;
             }
         }
 
@@ -306,7 +256,7 @@ namespace placeToBe.Services
         /// </summary>
         /// <param name="userEmail"></param>
         /// <returns></returns>
-        public async Task ForgetPasswordReset(string userEmail)
+        public async Task<HttpStatusCode> ForgetPasswordReset(string userEmail)
         {
             try
             {
@@ -318,18 +268,22 @@ namespace placeToBe.Services
                 forgetUserPassword.salt = salt;
                 await userRepo.UpdateAsync(forgetUserPassword);
                 SendForgetPassword(newPassword, userEmail);
+                return HttpStatusCode.OK;
             }
             catch (NullReferenceException usernull)
             {
                 Console.WriteLine("{0} ForgetPassword: User is null", usernull);
+                return HttpStatusCode.NotFound;
             }
             catch (TimeoutException e)
             {
                 Console.WriteLine("{0} ForgetPassword: Cant update database ", e);
+                return HttpStatusCode.RequestTimeout;
             }
             catch (Exception e)
             {
                 Console.WriteLine("{0} Exception caught. ", e);
+                return HttpStatusCode.BadRequest;
             }
         }
 
@@ -382,6 +336,61 @@ namespace placeToBe.Services
                 Console.WriteLine("{0} Exception caught. Email is null.", messagenull);
             }
         }
+
+        ////// Cookie-Logic (unused now)
+        ///// <summary>
+        ///// Login the user with given email and correct password.
+        ///// </summary>
+        ///// <param name="usersEmail"></param>
+        ///// <param name="userPassword"></param>
+        ///// <returns></returns>
+        //public async Task<Cookie> Login(string userEmail)
+        //{
+        //    try
+        //    {
+        //        User loginuser = await GetUserByEmail(userEmail);
+        //        if (loginuser.ticket == null)
+        //        {
+        //            //Set a ticket for five minutes to stay logged in. 
+        //            Cookie ticket = new Cookie(userEmail, userEmail);
+        //            ticket.Name = userEmail;
+        //            //for testing : in seconds, but as a rule 5 minutes.
+        //            //set the expire-date
+        //            ticket.Expires = DateTime.Now.AddSeconds(20);
+        //            loginuser.ticket = ticket; ;
+        //            await userRepo.UpdateAsync(loginuser);
+        //            return loginuser.ticket;
+        //        }
+        //        else
+        //        {
+        //            if (loginuser.ticket.Expired)
+        //            {
+        //                await Logout(userEmail);
+        //                return null;
+        //            }
+        //            else
+        //            {
+        //                return loginuser.ticket;
+        //            }
+        //        }
+
+        //    }
+        //    catch (CookieException)
+        //    {
+        //        //ToDo: UI-Fehlermeldung : "Cant create Cookie"
+        //        return null;
+        //    }
+        //}
+
+        ////Log out the user and redirect to login-page.
+        //public async Task<HttpStatusCode> Logout(string userEmail)
+        //{
+        //    User userToLogOut = await userRepo.GetByEmailAsync(userEmail);
+        //    userToLogOut.ticket = null;
+        //    await userRepo.UpdateAsync(userToLogOut);
+        //    return HttpStatusCode.Unauthorized;
+        //}
+
 
         #region Helper Methods
 
