@@ -18,6 +18,7 @@ angular.module('placeToBe')
       startDate: new Date(),
       startHour: 18
     };
+    $scope.eventData = [];
 
     var BASE_URL = configService.BASE_URL;
     //var BASE_URL = "http://192.168.125.136:18172/api";
@@ -40,8 +41,22 @@ angular.module('placeToBe')
         });
     };
 
+    $scope.mapClick = function(event){
+      $http.get(buildEventClickQueryUrl(event.latLng))
+        .success(function(data, status, headers, config){
+          console.log("fetched events for location");
+          $scope.eventData = data;
+        })
+    };
+
     var buildEventQueryUrl = function(city, startDate, hour){
       return BASE_URL + "/event/filter/" + city.place_id + "/" + startDate.getFullYear() + "/" + (startDate.getMonth()+1) + "/" + startDate.getDate() + "/" + hour
+    };
+
+    var buildEventClickQueryUrl = function(latLng){
+      //TODO fix Radius CONST value
+      var sd = $scope.query.startDate;
+      return BASE_URL + "/event/filter/" + latLng.lat() + "/" + latLng.lng() + "/" + 3000 + "/" + sd.getFullYear() + "/" + (sd.getMonth()+1) + "/" + sd.getDate() + "/" + $scope.query.startHour
     };
 
     var City = $resource(BASE_URL + '/city');

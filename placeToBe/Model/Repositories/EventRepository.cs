@@ -78,11 +78,11 @@ namespace placeToBe.Model.Repositories
                 {"name", 1},
                 {"fbId", 1},
                 {"description",1},
-                {"coverPhoto",1},
+                {"cover",1},
                 {"place", 1},
                 {"start_time",1},
                 {"end_time",1},
-                {"attendMale",1},
+                {"attendingMale",1},
                 {"attendingFemale",1}
             };
             ProjectionDefinition<Event, Event> projDefinition = new BsonDocument(projectionContent);

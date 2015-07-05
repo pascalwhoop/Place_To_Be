@@ -21,10 +21,12 @@
 </md-toolbar>
 
 <!--Content View-->
-<md-content flex id="content" >
-  <placetobe-heatmap query="query" data="heatmapData" ng-if="heatmapData"></placetobe-heatmap>
+<md-content id="content" layout="row" flex>
+  <div ng-if="heatmapData" layout="row" flex>
+    <placetobe-heatmap query="query" data="heatmapData" click-listener="mapClick" flex layout="column"></placetobe-heatmap>
+    <event-list layout="column" flex="33" event-data="eventData" ng-if="eventData.length > 0">
 
-  <div ng-if="!heatmapData">
+    <div ng-if="!heatmapData">
     <p>
       Select a city, time and date above and we'll show you our results!
     </p>

@@ -10,27 +10,19 @@
 
 html, body {
   font-family: 'Roboto', sans-serif;
-  font-size:14px;
-  height:100%;
+  font-size: 14px;
+  height: 100%;
   margin: 0;
   padding: 0;
 }
 
-/*md-list-item*/
-md-list-item:hover{
-
-}
-
 /* Toolbar area */
-
 
 md-toolbar h1 {
   margin: auto;
 }
 
-
 /* Sidenav area */
-
 
 md-sidenav,
 md-sidenav.md-locked-open,
@@ -38,24 +30,27 @@ md-sidenav.md-closed.md-locked-open-add-active {
   min-width: 200px !important;
   width: 20vw !important;
   max-width: 400px !important;
-  background-color: rgb(0,188,212);
+  background-color: rgb(0, 188, 212);
 }
 
-
-md-sidenav header{
+md-sidenav header {
   text-align: center;
 }
 
-md-sidenav, md-sidenav a{
+md-sidenav, md-sidenav a {
   text-decoration: none;
   color: white;
 }
 
-button.md-button:not([disabled]):hover, a.md-button:not([disabled]):hover{
-  background-color: grey !important;
+button.md-button:not([disabled]):hover, md-list > md-list-item > button.md-button:not([disabled]):hover, md-list > md-list-item > a.md-button:not([disabled]):hover, a.md-button:not([disabled]):hover {
+  background-color: grey;
 }
 
-md-sidenav header .main-logo{
+button.md-button.md-raised:not([disabled]):hover, a.dm-button.md-button.md-raised:not([disabled]):hover {
+  background-color: transparent;
+}
+
+md-sidenav header .main-logo {
   font-size: 10em;
 }
 
@@ -65,33 +60,33 @@ md-list .md-button {
   text-align: left;
   width: 100%;
 }
-  md-list .md-button.selected {
-    color: #03a9f4;
-  }
 
-  md-sidenav  md-list {
-    padding: 0px 0px 8px 0px;
-  }
+md-list .md-button.selected {
+  color: #03a9f4;
+}
 
+md-sidenav md-list {
+  padding: 0px 0px 8px 0px;
+}
 
-  /* md-toolbar */
-md-toolbar md-select, md-toolbar md-input-container{
+/* md-toolbar */
+md-toolbar md-select, md-toolbar md-input-container {
   padding-bottom: 2px;
 }
 
-md-toolbar md-select{
+md-toolbar md-select {
   padding-top: 2px;
 }
-md-toolbar div{
+
+md-toolbar div {
   line-height: 64px;
 }
 
-  /* Primary content area */
+/* Primary content area */
 
 #content {
   overflow: hidden;
 }
-
 
 #content .md-button.contact {
   background-color: transparent;
@@ -109,51 +104,50 @@ md-toolbar div{
 }
 
 #content .md-button.contact > md-icon {
-  fill:black;
-  width:36px;
-  height:36px;
+  fill: black;
+  width: 36px;
+  height: 36px;
 }
 
 md-button.menuBtn > md-icon {
-  fill:white;
-  width:24px;
-  height:24px;
+  fill: white;
+  width: 24px;
+  height: 24px;
 }
 
 #content .md-button.contact:active > md-icon {
   background-color: #dadada;
   border-radius: 75%;
-  padding:4px;
+  padding: 4px;
   transition: all 100ms ease-out 30ms;
 }
 
 /*FB Login Button*/
-button.md-button.md-raised.fb-login-button{
+button.md-button.md-raised.fb-login-button {
   background-color: #3b5998;
   color: white;
 }
 
-button.md-button.md-raised.fb-login-button:not([disabled]):hover{
+button.md-button.md-raised.fb-login-button:not([disabled]):hover {
   background-color: #8b9dc3 !important;
 }
 
-button.md-button.md-raised.fb-login-button:not([disabled]):active, button.md-button.md-raised.fb-login-button:not([disabled]).md-focused{
+button.md-button.md-raised.fb-login-button:not([disabled]):active, button.md-button.md-raised.fb-login-button:not([disabled]).md-focused {
   background-color: #dfe3ee !important;
   color: #3b5998 !important;
 }
 
-button.md-button.md-raised.fb-login-button:not([disabled]):active > md-icon{
+button.md-button.md-raised.fb-login-button:not([disabled]):active > md-icon {
   color: #3b5998 !important;
 }
 
-
-button.md-button.md-raised.fb-login-button > md-icon{
+button.md-button.md-raised.fb-login-button > md-icon {
   color: white;
   height: 16px;
   padding: 0 9px 0 0;
 }
 
-md-toolbar login-button{
+md-toolbar login-button {
   margin-right: 27px;
 }
 
@@ -176,8 +170,6 @@ md-toolbar h1 {
   font-weight: 400;
 }
 
-
-
 .avatar {
   position: relative;
   width: 128px;
@@ -188,25 +180,24 @@ md-toolbar h1 {
   overflow: hidden;
   margin: 0px;
   vertical-align: middle;
-  zoom:0.70;
+  zoom: 0.70;
   transform: translateZ(0);
   -webkit-transform: scale(0.70);
-  -moz-transform:scale(0.70);
+  -moz-transform: scale(0.70);
 }
 
-
-md-bottom-sheet  md-icon {
-  margin-right:20px;
+md-bottom-sheet md-icon {
+  margin-right: 20px;
 }
 
 span.name {
   font-weight: bold;
-  font-size:1.1em;
-  padding-left:5px;
+  font-size: 1.1em;
+  padding-left: 5px;
 }
 
 /*Heatmap Directive*/
-placetobe-heatmap{
+/*placetobe-heatmap{
   position: absolute;
   height: 100%;
   width: 100%;
@@ -217,14 +208,41 @@ placetobe-heatmap #heatmapContainer{
 }
 
 placetobe-heatmap #placetobe-map-settings{
-}
+}*/
 
 .text-page-content {
   margin: 10px 35px;
 }
 
-#heatmapImageLandingpage{
+#heatmapImageLandingpage {
   width: 100%;
   margin: 0.67em 0;
   font-size: 56px;
+}
+
+.map_container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.map_canvas {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+placetobe-heatmap {
+  position: relative;
+}
+
+.event-list-toolbar {
+  background-color: white;
+  color: rgba(0, 0, 0, 0.870588);
+  box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.14), 0 0 2px 0 rgba(0, 0, 0, 0.098), 0 0 5px 0 rgba(0, 0, 0, 0.084);
+}
+
+.event-list-toolbar md-icon{
+  color: rgba(0, 0, 0, 0.870588);
 }
