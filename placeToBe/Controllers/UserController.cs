@@ -29,9 +29,9 @@ namespace placeToBe.Controllers
         /// <param name="userPassword"></param>
         /// <returns></returns>
         
-        public async Task Post([FromUri]string userEmail, [FromUri] string userPassword)
+        public async Task<HttpStatusCode> Post([FromUri]string userEmail, [FromUri] string userPassword)
         {
-            await user.SendActivationEmail(userEmail, userPassword);
+            return await user.SendActivationEmail(userEmail, userPassword);
         }
 
         /// <summary>
@@ -39,23 +39,9 @@ namespace placeToBe.Controllers
         /// </summary>
         /// <param name="activationcode"></param>
         /// <returns></returns>
-        public async Task Get([FromUri] string activationcode)
+        public async Task<HttpStatusCode> Get([FromUri] string activationcode)
         {
-            await user.ConfirmEmail(activationcode);
-        }
-
-        /// <summary>
-        /// PUT- Login - After LoginBasicAuthentication 
-        /// send a cookie to the user to stay logged in 
-        /// or log out if the cookie is expired.
-        /// </summary>
-        /// <param name="resetPasswordByMail"></param>
-        /// <param name="userPassword"></param>
-        /// <returns></returns>
-        [LoginBasicAuthenticationFilter]
-        public async Task<Cookie> Put([FromUri] string userEmail)
-        {
-            return await user.Login(userEmail);
+           return await user.ConfirmEmail(activationcode);
         }
 
         /// <summary>
@@ -63,9 +49,9 @@ namespace placeToBe.Controllers
         /// </summary>
         /// <param name="userEmail"></param>
         /// <returns></returns>
-        public async Task Put([FromUri]string userEmail, string ueberladung)
+        public async Task<HttpStatusCode> Put([FromUri]string userEmail)
         {
-            await user.ForgetPasswordReset(userEmail);
+           return await user.ForgetPasswordReset(userEmail);
         }
 
         /// <summary>
@@ -75,9 +61,10 @@ namespace placeToBe.Controllers
         /// <param name="oldPassword"></param>
         /// <param name="newPassword"></param>
         /// <returns></returns>
-        public async Task Put([FromUri]string userEmail, [FromUri] string oldPassword, [FromUri] string newPassword)
+        [LoginBasicAuthenticationFilter]
+        public async Task<HttpStatusCode> Put([FromUri]string userEmail, [FromUri] string oldPassword, [FromUri] string newPassword)
         {
-            await user.ChangePasswort(userEmail, oldPassword, newPassword);
+           return await user.ChangePasswort(userEmail, oldPassword, newPassword);
         }
 
         /// <summary>
@@ -88,6 +75,13 @@ namespace placeToBe.Controllers
         public async Task Post(FbUser fbuser)
         {
             await user.SaveFBData(fbuser);
+        }
+
+        // Methode dient nur zum Testen von Filtern.
+        [LoginBasicAuthenticationFilter]
+        public HttpStatusCode Put()
+        {
+            return HttpStatusCode.OK;
         }
         
 
