@@ -244,6 +244,7 @@
     <Compile Include="Services\FbCrawler.cs" />
     <Compile Include="Services\GenderizeService.cs" />
     <Compile Include="Filter\LoginBasicAuthenticationFilter.cs" />
+    <Compile Include="Services\ProvideFbUserService.cs" />
     <Compile Include="Services\SearchService.cs" />
     <Compile Include="Services\UtilService.cs" />
     <Compile Include="Startup.cs" />
