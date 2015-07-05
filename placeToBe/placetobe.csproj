@@ -170,7 +170,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\User\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -207,11 +206,8 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\CityController.cs" />
     <Compile Include="Controllers\EventController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Filter\FacebookUserVerification.cs" />
-    <Compile Include="Filter\RegisterBasicAuthenticationFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -315,6 +311,8 @@
     <Content Include="Frontend\app\ms-icon-310x310.png" />
     <Content Include="Frontend\app\ms-icon-70x70.png" />
     <Content Include="Frontend\app\src\app.js" />
+    <Content Include="Frontend\app\src\eventlist\EventListDirective.js" />
+    <Content Include="Frontend\app\src\eventlist\EventListDirectiveTemplate.html" />
     <Content Include="Frontend\app\src\heatmap\heatmapController.js" />
     <Content Include="Frontend\app\src\heatmap\heatmapDirective.html" />
     <Content Include="Frontend\app\src\heatmap\heatmapDirective.js" />
@@ -335,7 +333,7 @@
     <Content Include="Frontend\app\src\services\gaussianservice.js" />
     <Content Include="Frontend\app\src\services\loginservice.js" />
     <Content Include="Frontend\app\src\util\directives\utilDirectives.js" />
-    <Content Include="Frontend\app\src\util\filters\range.js" />
+    <Content Include="Frontend\app\src\util\filters\utilFilters.js" />
     <Content Include="Global.asax" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

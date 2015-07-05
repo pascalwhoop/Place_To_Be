@@ -1,0 +1,61 @@
+<md-toolbar>
+    <div class="md-toolbar-tools event-list-toolbar">
+      <h2 flex>Events nearby</h2>
+      <md-button class="md-icon-button" aria-label="Settings" ng-click="eventData.length = 0;">
+        <md-icon md-font-icon="fa-times" class="fa" style="margin-top: -4px; font-size: 1.5em;"></md-icon>
+      </md-button>
+    </div>
+</md-toolbar>
+
+<md-content class="md-padding">
+    <md-card ng-repeat="event in eventData">
+        <img ng-src="{{event.cover.source}}" class="md-card-image" alt="Washed Out">
+        <md-card-content>
+            <h2 class="md-title">{{event.name}}</h2>
+
+            <div layout="row">
+                <p flex="50"><i class="fa fa-calendar-o"></i> {{event.start_time | date:"dd. MMM HH:mm"}}</p>
+                <p flex="50"><i class="fa fa-map-marker"></i> {{event.place.name}}</p>
+            </div>
+            <!--a relation between male / female-->
+            <div layout="row">
+                <p flex="33"><i class="fa fa-users"></i> {{event.attending_count}}</p>
+                <p flex="33" ng-if="event.attendingMale > 0"><i class="fa fa-mars"></i> {{event.attendingMale}}</p>
+                <p flex="33" ng-if="event.attendingFemale > 0"><i class="fa fa-venus"></i> {{event.attendingFemale}}</p>
+            </div>
+
+
+
+
+
+            <p>
+                {{event.description |cut:true:200:' ...'}}
+            </p>
+        </md-card-content>
+        <div class="md-actions md-padding" layout="row" layout-align="center center">
+            <md-button>Details</md-button>
+            <md-button class="md-raised fb-login-button">Join</md-button>
+        </div>
+    </md-card>
+</md-content>
+
+
+<md-subheader class="md-primary"></md-subheader>
+
+<style type="text/css">
+    event-list {
+        overflow: hidden;
+
+    }
+
+    event-list p {
+        word-break: normal;
+        overflow: hidden;
+    }
+
+    event-list md-content {
+        overflow-y: scroll;
+    }
+
+
+</style>

@@ -14,10 +14,15 @@ namespace placeToBe.Controllers
         readonly SearchService search = new SearchService();
         readonly MongoDbRepository<Event> repo = new MongoDbRepository<Event>();
        
-        /**
-         * Diese Methode soll ein JSON Array von Events zurückgeben, welche für die Heatmap genutzt werden. 
-         */
-
+        /// <summary>
+        /// Return a list of events. The method needs the id, year, month, day and hour.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="year"></param>
+        /// <param name="month"></param>
+        /// <param name="day"></param>
+        /// <param name="hour"></param>
+        /// <returns></returns>
         [Route("api/event/filter/{id}/{year}/{month}/{day}/{hour}")]
         public async Task<List<LightEvent>> getEventsByTimeAndCity(string id, string year, string month, string day, string hour)
         {
@@ -26,6 +31,17 @@ namespace placeToBe.Controllers
             return await search.HeatSearch(id, time, time.AddHours(8));
         }
 
+        /// <summary>
+        /// Returns a list of the events (from the starting point you zoom in the map) plus the description of event.
+        /// </summary>
+        /// <param name="latitude"></param>
+        /// <param name="longitude"></param>
+        /// <param name="radius"></param>
+        /// <param name="year"></param>
+        /// <param name="month"></param>
+        /// <param name="day"></param>
+        /// <param name="hour"></param>
+        /// <returns></returns>
         [Route("api/event/filter/{latitude}/{longitude}/{radius}/{year}/{month}/{day}/{hour}")]
         public async Task<List<Event>> getNearEventsByPointWithDescription(string latitude, string longitude,string radius, string year, string month, string day, string hour)
         {
@@ -39,19 +55,17 @@ namespace placeToBe.Controllers
             return await search.findNearEventFromAPoint(latitudeDouble, longitudeDouble, int.Parse(radius), time, time.AddHours(8));
         }
 
-        // GET api/event/5
-        // Gibt ein bestimmtes Event zurück
+        /// <summary>
+        /// Return a certain event with a specific id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<Event> GetEvent(Guid id)
         {
             
             Event setEvent = await search.EventSearch(id);
             return setEvent;
-           
-            /*
-             * Pascal Code - direkter MongoDb Zugriff
-             * Event Event = await repo.GetByIdAsync(id);
-            return Event;
-             * */
+          
         }
     }
 }

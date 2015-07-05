@@ -42,7 +42,16 @@ angular.module('placeToBe')
         //once map is initialized (google maps internal) we fetch our first set of data
         scope.$on('mapInitialized', function (event, map) {
           mapObj = map;
-          google.maps.event.addListener(mapObj, 'zoom_changed', function () {
+
+          addMapListeners(map);
+
+          setMapLocation(scope.query.place.formatted_address,refreshHeatmapLayer); //set locatin then pass the refreshHeatmapLayer as a callback
+
+        });
+
+
+        var addMapListeners = function(map){
+          google.maps.event.addListener(map, 'zoom_changed', function () {
             if(heatmapLayer){
               setTimeout(function(){
                 heatmapLayer.setOptions({radius: getNewRadius()});
@@ -50,9 +59,12 @@ angular.module('placeToBe')
             }
           });
 
-          setMapLocation(scope.query.place.formatted_address,refreshHeatmapLayer); //set locatin then pass the refreshHeatmapLayer as a callback
-
-        });
+          //a listener is added to the map. whenever the user clicks the map, this listener is executed.
+          google.maps.event.addListener(map, 'click', function(event) {
+            //we bind the clickListener function from the parent scope to this listener. the controller can take the click and perform an action based on it
+            scope.clickListener(event);
+          });
+        };
 
         var setMapLocation = function (locationString, callback) {
           geocoder.geocode({
@@ -217,7 +229,8 @@ angular.module('placeToBe')
       //linking the attribute "city" value to the scope.city variable (maybe others too)
       scope: {
         data: "=",
-        query: "="
+        query: "=",
+        clickListener:"="
       }
     };
   });
