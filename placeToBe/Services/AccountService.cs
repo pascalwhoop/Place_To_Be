@@ -22,6 +22,9 @@ namespace placeToBe.Services
         UserRepository userRepo = new UserRepository();
         FbUserRepository fbUserRepo = new FbUserRepository();
         int saltSize = 20;
+        /// <summary>
+        /// Get the email data from the ConfigurationManager.
+        /// </summary>
         private string fromAddress = System.Configuration.ConfigurationManager.AppSettings["placeToBeEmail"];
         private string mailPassword = System.Configuration.ConfigurationManager.AppSettings["placeToBePasswordFromMail"];
 
@@ -79,40 +82,6 @@ namespace placeToBe.Services
             }
         }
 
-
-        //public async Task<bool> CheckPassword(string userEmail, string userPassword)
-        //{
-        //    try
-        //    {
-        //        byte[] userPasswordInBytes = Encoding.UTF8.GetBytes(userPassword);
-        //        User user = await userRepo.GetByEmailAsync(userEmail);
-        //        byte[] salt = user.salt;
-        //        byte[] passwordSalt = GenerateSaltedHash(userPasswordInBytes, salt);
-        //        bool comparePasswords = CompareByteArrays(passwordSalt, user.passwordSalt);
-
-        //        //statement: if users password is correct and status is activated          
-        //        if (comparePasswords == true && user.status == true)
-        //        {
-        //            return true;
-        //        }
-        //        else if (comparePasswords == true && user.status == false)
-        //        {
-        //            //Please activate your acc.
-        //            return false;
-        //        }
-        //        else
-        //        {
-        //            //Authentification failed.
-        //            return false;
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        //Something go wrong.
-        //        return false;
-        //    }
-        //}
-
         //Log out the user and redirect to login-page.
         public async Task<HttpStatusCode> Logout(string userEmail)
         {
@@ -138,15 +107,15 @@ namespace placeToBe.Services
                 User user = await GetUserByEmail(userEmail);
                 if (user != null)
                 {
-                    //find out the old password and compare it
+                    /*find out the old password from user and compare it.*/
                     byte[] oldSalt = user.salt;
                     byte[] oldPasswordSalt = GenerateSaltedHash(oldPasswordBytes, oldSalt);
                     bool comparePasswords = CompareByteArrays(oldPasswordSalt, user.passwordSalt);
 
-                    //statement: when users password is correct and status is activated  -> true  
+                    /*statement: when users password is correct and status is activated  -> true */
                     if (comparePasswords == true && user.status == true)
                     {
-                        //set the new password now and insert into DB
+                        /*set the new password now and insert into DB*/
                         byte[] newPasswordBytes = Encoding.UTF8.GetBytes(newPassword);
                         byte[] newSalt = GenerateSalt(saltSize);
                         byte[] newPasswordSalt = GenerateSaltedHash(newPasswordBytes, newSalt);
@@ -183,7 +152,7 @@ namespace placeToBe.Services
         }
 
         /// <summary>
-        /// Send a confirmation-email to the users email and activate the account (user-status==true).
+        /// Send a confirmation-email to the users email and activate the account, by setting (user.status==true).
         /// </summary>
         /// <param name="activationcode"></param>
         /// <returns></returns>
@@ -197,10 +166,10 @@ namespace placeToBe.Services
                 //Create smtp connection.
                 SmtpClient client = new SmtpClient
                 {
-                    //outgoing port for the mail-server.
-                    Port = 587,
-                    Host = "smtp.gmail.com",
-                    EnableSsl = true,
+
+                    Port = 587, //outgoing port for the mail-server.
+                    Host = "smtp.gmail.com", //smtp host from gmail.
+                    EnableSsl = true, //EnabledSsl, because Email-Server need it.
                     Timeout = 10000,
                     DeliveryMethod = SmtpDeliveryMethod.Network,
                     UseDefaultCredentials = false,
@@ -243,16 +212,13 @@ namespace placeToBe.Services
             }
         }
 
-
         /// <summary>
-        /// Send an email to user, register user with "inactive" status (if the user is 
-        /// not already in the DB) 
-        /// +Mail id password from where mail will be sent -> At the moment from gmail
-        /// with "placetobecologne@gmail.com".
+        /// Send an email to user, register user with inactive status (means user.status==false).
+        /// Moreover it will check, wether the user exists in the database.
         /// </summary>
         /// <param name="userEmail"></param>
         /// <param name="userPassword"></param>
-        /// <returns></returns>
+        /// <returns>HttpStatusCode.OK if the user can be written in the database. Otherwise it returns refusal HttpStatusCode</returns>
         public async Task<HttpStatusCode> SendActivationEmail(string userEmail, string userPassword)
         {
             try
@@ -267,6 +233,7 @@ namespace placeToBe.Services
                     messageBody += "<br /><br />Please click the following link to activate your account";
                     messageBody += "<br /><a href = ' http://localhost:18172/api/user?activationcode=" + activationCode + "'>Click here to activate your account.</a>";
                     messageBody += "<br /><br />Thanks";
+                    messageBody += "<br /><br />Notice: If your browser does not allow linking in your emails go and type this:  http://localhost:18172/api/user?activationcode=" +activationCode + "in your adress bar.";
 
                     //Create smtp connection.
                     SmtpClient client = new SmtpClient();
@@ -289,10 +256,8 @@ namespace placeToBe.Services
                     //subject of the mail.
                     sendMail.Subject = "Registration: PlaceToBe";
                     sendMail.Body = messageBody;
+
                     //Register the user with inactive status (status==false)
-
-                    //if user==null then he does not exists 
-
                     byte[] plainText = Encoding.UTF8.GetBytes(userPassword);
                     byte[] salt = GenerateSalt(saltSize);
                     byte[] passwordSalt = GenerateSaltedHash(plainText, salt);
@@ -353,7 +318,6 @@ namespace placeToBe.Services
                 forgetUserPassword.salt = salt;
                 await userRepo.UpdateAsync(forgetUserPassword);
                 SendForgetPassword(newPassword, userEmail);
-
             }
             catch (NullReferenceException usernull)
             {
@@ -437,29 +401,6 @@ namespace placeToBe.Services
         }
 
         /// <summary>
-        /// Return bytes from a given string
-        /// </summary>
-        /// <param name="str"></param>
-        /// <returns>byte[]</returns>
-        static byte[] GetBytes(string str)
-        {
-            byte[] bytes = new byte[str.Length];
-            //System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
-            return bytes;
-        }
-        /// <summary>
-        /// Convert a byte-array to a string
-        /// </summary>
-        /// <param name="bytes"></param>
-        /// <returns>string</returns>
-        static string GetString(byte[] bytes)
-        {
-            char[] chars = new char[bytes.Length / sizeof(char)];
-            System.Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
-            return new string(chars);
-        }
-
-        /// <summary>
         /// Change User status from false to true to activate the account.
         /// </summary>
         /// <param name="activationcode"></param>
@@ -474,9 +415,9 @@ namespace placeToBe.Services
 
         }
 
-        ///<summary>Get User from DB </summary>
+        ///<summary>Get user from DB by the given activationcode</summary>
         /// <param name="activationcode" </ param>
-        /// <returns>returns the users activationcode</returns>
+        /// <returns>User</returns>
         public async Task<User> GetUserbyActivationCode(string activationcode)
         {
 
@@ -484,20 +425,30 @@ namespace placeToBe.Services
         }
 
         /// <summary>
-        /// Get salt from db
+        /// Get the user by the email of the user.
         /// </summary>
         /// <param name="email">email of the user</param>
-        /// <returns>return the user saved in the db</returns>
+        /// <returns>User</returns>
         public async Task<User> GetUserByEmail(string email)
         {
             return await userRepo.GetByEmailAsync(email);
         }
 
+        /// <summary>
+        /// Insert a user into DB.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         private async Task<Guid> InsertUserToDB(User user)
         {
             return await userRepo.InsertAsync(user);
         }
 
+        /// <summary>
+        /// Check if the user already exists in the database.
+        /// </summary>
+        /// <param name="userEmail"></param>
+        /// <returns>true, if user exists, else false.</returns>
         public async Task<Boolean> CheckIfUserExists(string userEmail)
         {
             if (await GetUserByEmail(userEmail) == null)
