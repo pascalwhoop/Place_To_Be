@@ -10,7 +10,11 @@ namespace placeToBe.Controllers
     {
 
         readonly CityRepository cityRepo = new CityRepository();
-
+        
+        /// <summary>
+        /// Return a list of the cities in the database.
+        /// </summary>
+        /// <returns></returns>
         public async Task<IList<City>> Get() {
                     return await cityRepo.GetAllAsync();
                 } 
