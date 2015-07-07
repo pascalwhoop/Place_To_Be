@@ -120,7 +120,7 @@ namespace placeToBe.Services {
         /// Shuffles an array
         /// </summary>
         /// <typeparam name="T">the object type of the objects in the array</typeparam>
-        /// <param name="o"></param>
+        /// <param name="o">the array to shuffle</param>
         /// <returns></returns>
         public T[] shuffle<T>(T[] o) {
             var random = new Random();
@@ -136,13 +136,14 @@ namespace placeToBe.Services {
             return o;
         }
 
-        /**
-        * queriing FB API in a grid like fashion to find all pages within a city. this is very intense on the API which is why
-        * we shouldn't do this often TODO right now we query 50x50 grid (2500 * (query*paging/query)) queries. So if we have
-        * to do paging 3x per query its 7500 calls to the API.. yeah might be obvious what we intend
-        * @param city
-        */
+       
 
+        /// <summary>
+        /// Querying FB API in a grid like fashion to find all pages within a city. this is very intense on the API which is why
+        /// we shouldn't do this often (or too fast).
+        ///
+        /// </summary>
+        /// <param name="city">the city to crawl over</param>
         public async void performCrawlingForCity(City city) {
             var distance = "2000";
             var limit = "2000";
@@ -176,18 +177,13 @@ namespace placeToBe.Services {
             }
         }
 
-        /**
-         * we now have a list of {id: ..., is_community_page: true/false} .. we process this list. all community pages dont get called, for the others we fetch the details and the events
-         */
-
-        public async Task handlePagesList(List<FacebookPagingResult> pages) {
-            /*Parallel.ForEach(pages, page => {
-                if (!page.is_community_page) {
-                    Task<Guid> t = fetchAndStorePage(page); //TODO check if page is known to host events
-                    Guid guid = t.Result;
-                    fetchEventsOnPage(page.fbId).Wait();
-                }
-            });*/
+        
+        /// <summary>
+        ///  we now have a list of {id: ..., is_community_page: true/false} .. we process this list. all community pages dont get called, for the others we fetch the details and the events
+        /// </summary>
+        /// <param name="pages">a list of FacebookPagingResult objects that describe the FBPages that we want to crawl</param>
+        /// <returns>nothing. but it's async.</returns>
+        public async Task handlePagesList(List<FacebookPagingResult> pages) {            
             foreach (var page in pages) {
                 if (!page.is_community_page) {
                     try {
@@ -195,7 +191,6 @@ namespace placeToBe.Services {
                         var p = t.Result;
                         if (determineIfEventsShouldBeFetched(p))
                             fetchEventsOnPage(p.fbId).Wait();
-                        //TODO check if events have been fetched within the last 24 h
                     }
                     catch (Exception exception) {
                         Debug.WriteLine(exception); // TODO VERY DIRTY FIX ASAP
