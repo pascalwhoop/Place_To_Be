@@ -6,6 +6,9 @@ using placeToBe.Model;
 using placeToBe.Model.Entities;
 using placeToBe.Model.Repositories;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+
+
 
 
 namespace placeToBe.Tests.Service
@@ -155,24 +158,43 @@ namespace placeToBe.Tests.Service
         [TestMethod]
         public void GetGenderStat()
         {
-            //TODO Test funktioniert nicht, da auf die InsertAsync Methode nicht gewartet wird
+            //TODO fixen
+            /*
             //Arrange 
             GenderizeService service = new GenderizeService();
             Event test = new Event();
-            test.fbId = "123877171";
-            test.attendingFemale = 150;
-            test.attendingMale = 140;
+            Rsvp n = new Rsvp();
+            List<Rsvp> rsvp= new List<Rsvp>();
+
+            rsvp.Add(new Rsvp() { name= "Laura" }); ;
+           /*test.attending.Add(new Rsvp() {i=> i.name = "Max", id = "a0123232", rsvp_status = "true" });
+            test.attending.Add(new Rsvp() { name = "Jasmin", id = "a0123233", rsvp_status = "true" });
+            test.attending.Add(new Rsvp() { name = "Thomas", id = "a123234", rsvp_status = "true" });
+            test.attending.Add(new Rsvp() { name = "Kim", id = "a123235", rsvp_status = "true" });
+            test.attending.Add(new Rsvp() { name = "Dominik", id = "a123236", rsvp_status = "true" });
+            test.attending.Add(new Rsvp() { name = "Lisa", id = "a123237", rsvp_status = "true" });
 
             MongoDbRepository<Event> model = new MongoDbRepository<Event>();
             var task = model.InsertAsync(test);
 
 
             //Act
-            //TODO Merve Fix
-            //Task<int[]> stat = service.createGenderStat(test);
-            //int[] genderstat = stat.Result;
+            Task<Event> stat = service.createGenderStat(test);
+            Event genderstat = stat.Result;
+            int attendingfemale = genderstat.attendingFemale;
+            int attendingmale = genderstat.attendingMale;
+            int attendingUndefined = genderstat.attendingUndefined;
+            int attendingcount = genderstat.attendingCount;*/
 
-            //Fragen was result ist, wie das aussieht 
+
+            //Assert
+            /*Assert.AreEqual(test.attendingFemale, attendingfemale);
+            Assert.AreEqual(test.attendingMale, attendingmale);
+            Assert.AreEqual(test.attendingUndefined, attendingUndefined);
+             */
+
+
+
 
         }
     }

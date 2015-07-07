@@ -133,11 +133,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\EventControllerTest.cs" />
+    <Compile Include="Controllers\UserControllerTest.cs" />
     <Compile Include="Model\MongoDbRepositoryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\GenderizeServiceTest.cs" />
     <Compile Include="Service\FbCrawlerTest.cs" />
     <Compile Include="Service\AccountServiceTest.cs" />
+    <Compile Include="Service\SearchServiceTest.cs" />
     <Compile Include="Service\UtilServiceTest.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -149,6 +151,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FbCrawlerWebjob\FbCrawlerWebjob.csproj">
+      <Project>{f6115f1c-dd32-4c64-8e7d-8b8842d5c03a}</Project>
+      <Name>FbCrawlerWebjob</Name>
+    </ProjectReference>
     <ProjectReference Include="..\placeToBe\placeToBe.csproj">
       <Project>{D2F7D9DF-920A-440F-B30B-10679B5CC6DA}</Project>
       <Name>placeToBe</Name>
