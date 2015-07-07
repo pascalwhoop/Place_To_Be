@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
@@ -39,7 +40,7 @@ public class BasicAuthenticationFilter : AuthorizationFilterAttribute
     /// Override to Web API filter method to handle Basic Auth check
     /// </summary>
     /// <param name="actionContext"></param>
-    public override void OnAuthorization(HttpActionContext actionContext)
+    public async override void OnAuthorization(HttpActionContext actionContext)
     {
         if (Active)
         {
@@ -54,7 +55,7 @@ public class BasicAuthenticationFilter : AuthorizationFilterAttribute
             }
 
 
-            if (!OnAuthorizeUser(identity.Name, identity.password, actionContext))
+            if (! await OnAuthorizeUser(identity.Name, identity.password, actionContext))
             {
                 Challenge(actionContext);
                 return;
@@ -83,12 +84,9 @@ public class BasicAuthenticationFilter : AuthorizationFilterAttribute
     /// <param name="password"></param>
     /// <param name="actionContext"></param>
     /// <returns></returns>
-    protected virtual bool OnAuthorizeUser(string username, string password, HttpActionContext actionContext)
+    protected virtual Task<bool> OnAuthorizeUser(string username, string password, HttpActionContext actionContext)
     {
-        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-            return false;
-
-        return true;
+       return null;
     }
 
     /// <summary>
