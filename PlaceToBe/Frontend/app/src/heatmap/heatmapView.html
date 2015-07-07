@@ -23,7 +23,7 @@
 <!--Content View-->
 <md-content id="content" layout="row" flex>
   <div ng-if="heatmapData" layout="row" flex>
-    <placetobe-heatmap query="query" data="heatmapData" click-listener="mapClick" flex layout="column"></placetobe-heatmap>
+    <placetobe-heatmap query="query" data="heatmapData" click-listener="mapClick" flex layout="column" map-styles="mapStyles"></placetobe-heatmap>
     <event-list layout="column" flex="33" event-data="eventData" ng-if="eventData.length > 0">
 
     <div ng-if="!heatmapData">

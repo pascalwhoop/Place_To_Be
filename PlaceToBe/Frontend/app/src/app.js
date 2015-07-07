@@ -1,14 +1,21 @@
-//main app entry point
+/**
+ * This is our main entry point to our app. we declare our dependencies, ...
+ */
 angular.module('placeToBe', ['ngMaterial', 'ngRoute', 'ngMap', 'ngResource', 'ngFacebook', 'ngMessages'])
 
-  //setting the theme of our app
+  /**
+   *  our style config,
+   */
   .config(function($mdThemingProvider){
     $mdThemingProvider.theme('default')
       .primaryPalette('cyan')
       .accentPalette('deep-orange');
 
   })
-  //our apps routes
+
+/**
+ * our navigation routes
+ */
   .config(function ($routeProvider) {
     $routeProvider
 
@@ -28,12 +35,18 @@ angular.module('placeToBe', ['ngMaterial', 'ngRoute', 'ngMap', 'ngResource', 'ng
         redirectTo: '/'
       });
   })
-  //configuring facebook plugin with AppID and permissions
+
+/**
+ * our facebook module
+ */
   .config(function($facebookProvider){
     $facebookProvider.setAppId('857640940981214');
     $facebookProvider.setPermissions("email,user_likes,user_friends,user_events,user_actions.music,user_actions.news,user_actions.books,rsvp_event,");
   })
-  //downloading facebook Javascript
+
+/**
+ * and download the fb javascript library once angular is ready
+ */
   .run(function(loginService){
     (function(d, s, id){
       var js, fjs = d.getElementsByTagName(s)[0];

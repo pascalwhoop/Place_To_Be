@@ -230,7 +230,8 @@ angular.module('placeToBe')
       scope: {
         data: "=",
         query: "=",
-        clickListener:"="
+        clickListener:"=",
+        mapStyles:"="
       }
     };
   });

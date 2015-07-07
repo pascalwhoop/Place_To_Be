@@ -10,8 +10,10 @@
 angular.module('placeToBe')
   .controller('heatmapController', function ($rootScope, $scope, $location, $http, $resource, loginService, configService) {
     //forbid users to see this page if they aren't logged in
-    if(loginService.getLoginType() != 'facebook' && loginService.getLoginType() != 'placeToBe') $location.path('/');
+    if(!loginService.getLoginStateSync()) $location.path('/');
     $scope.loginService = loginService;
+
+    $scope.mapStyles = configService.MAPS_STYLE_ARRAY;
 
     $scope.query = {
       place: {},

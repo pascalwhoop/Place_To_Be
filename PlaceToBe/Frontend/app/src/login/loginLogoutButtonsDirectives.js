@@ -12,6 +12,7 @@ angular.module('placeToBe')
       //here we place the logic of the directive (link function)
       link: function (scope, element, attr) {
 
+
         scope.showLoginDialog = function (event) {
           $mdDialog.show({
             controller: LoginDialogController,

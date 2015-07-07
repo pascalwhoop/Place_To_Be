@@ -22,8 +22,10 @@ angular.module('placeToBe')
     };
 
 
-
-    var checkFacebookLogin = function(){
+    /**
+     * we check wether we're currently logged into facebook. if yes, we can proceed with our app, if not, we let the user login first
+     */
+    var checkFacebookLogin = function () {
       //checking for fb login state
       loggedIn.fb = "pending";                                //setting status to pending. we're checking right now
       $rootScope.$emit('serverCallStart');                    //creating an event to inform e.g. UI Elements about the process
@@ -40,29 +42,34 @@ angular.module('placeToBe')
         });
     };
 
+
     /**
      * takes the Fb login success response and performs a few tasks. E.g. we set the loggedIn & userInfo fields and emit a login success event
      * @param response
      */
-    var handleFbLoginResponse = function(response){
+    var handleFbLoginResponse = function (response) {
       loggedIn.fb = response.status;
       userInfo.fb.authResponse = response.authResponse;
-      if(response.status == 'connected') $rootScope.$emit('loginSuccessful');
+      if (response.status == 'connected') {
+        $rootScope.$emit('loginSuccessful');
+        setAuthHeader(response.authResponse.userID, response.authResponse.accessToken);
+      }
+
     };
 
     //register the above function to be called once the DOM is loaded
     angular.element(document).ready(checkFacebookLogin);
 
-    var fetchFbUserDetails = function(){
-      $facebook.api('/me').then(function(response){
+    var fetchFbUserDetails = function () {
+      $facebook.api('/me').then(function (response) {
         console.log(response);
       })
     };
 
 
-    var getLoginType = function(){
+    var getLoginType = function () {
       if (loggedIn.fb == 'connected') return 'facebook';
-      else if(loggedIn.ptp == 'connected') return 'placeToBe';
+      else if (loggedIn.ptp == 'connected') return 'placeToBe';
 
     };
 
@@ -70,8 +77,8 @@ angular.module('placeToBe')
     var getLoginState = function (callback) {
       if (loggedIn.fb == 'connected' || loggedIn.ptb == 'connected') callback(true);
       //none of the two are connected. so we check if it's pending. if so, a call to a server is in progress and we wait for the call to finish
-      else if(loggedIn.fb == 'pending' || loggedIn.ptb == 'pending') {
-        var unregister = $rootScope.$on('serverCallEnd', function(){
+      else if (loggedIn.fb == 'pending' || loggedIn.ptb == 'pending') {
+        var unregister = $rootScope.$on('serverCallEnd', function () {
           //call has ended. if it's now connected we set it to true otherwise we give up and set it to false
           if (loggedIn.fb == 'connected' || loggedIn.ptb == 'connected') callback(true);
           else callback(false);
@@ -82,16 +89,27 @@ angular.module('placeToBe')
       else callback(false);
     };
 
-    var getLoginStateSync = function(){
-      if(loggedIn.fb == 'connected' || loggedIn.ptb == 'connected') return true;
+    var getLoginStateSync = function () {
+      if (loggedIn.fb == 'connected' || loggedIn.ptb == 'connected') return true;
       return false;
-    }
+    };
 
+    /**
+     * set the auth header for $http requests for this session. saves code
+     * @param id the email of the user or the fbId
+     * @param pass the password of the user or the fbToken (short one)
+     */
+
+    var setAuthHeader = function(id, pass){
+      $http.defaults.headers.common['Authorization'] = 'Basic ' + btoa(id + ':' + pass);
+    };
+
+    //================================== PTB LOGIN STUFF  ====================================
 
     /**
      * we register a user with the backend here.
      * @param user
-     * @returns {*}
+     * @returns {*}a promise of the http post response
      */
     var registerUser = function (user) {
       $rootScope.$emit('serverCallStart');
@@ -103,38 +121,52 @@ angular.module('placeToBe')
       };
       var url = configService.BASE_URL + '/user';
 
-      return $http.post(url, u).then(function(response){
+      return $http.post(url, u).then(function (response) {
         $rootScope.$emit('serverCallEnd');
-      }, function(err){
+      }, function (err) {
         $rootScope.$emit('serverCallEnd');
       });
     };
 
+    /**
+     * login user with ptb credentials
+     * @param user a user object containing an email and a password
+     * @returns {*}
+     */
     var loginUser = function (user) {
       $rootScope.$emit('serverCallStart');
-      var url = configService.BASE_URL + '/user?userEmail=' + user.email + '&userPassword=' + user.password;
-      return $http.put(url, {}).then(function(response){
-        $rootScope.$emit('serverCallEnd');
-      }, function(err){
-        $rootScope.$emit('serverCallEnd');
-      });
+
+      var req = {
+        method: 'GET',
+        url: configService.BASE_URL + '/user/authorize',
+        headers: {
+          'Authorization': 'Basic ' + btoa(user.email + ":" + user.password)
+        }
+      };
+      return $http(req)
+        .success(function (data, status) {
+          $rootScope.$emit('serverCallEnd');
+          if (status == 200) {
+            $rootScope.$emit('loginSuccessful');
+            //set our state to connected
+            loggedIn.ptb = 'connected';
+            // add the email:pass to the userInfo. might need it
+            userInfo.ptb = user;
+            //set auth header for future calls
+            setAuthHeader(user.email, user.password);
+          }
+        })
+        .error(function (data, status) {
+          $rootScope.$emit('serverCallEnd');
+          $rootScope.$emit('loginError');
+        });
     };
 
-    //check for logged in state during start
-
-
-    /*$facebook.login().then(fbLoginSuccess)*/
-
-    /*var fbLoginSuccess = function(response){
-     $facebook.api("/me").then(function(response){
-     $scope.welcomeMsg = "Welcome " + response.name;
-     })
-     }*/
 
     return {
       checkFacebookLogin: checkFacebookLogin,
-      getLoginType:getLoginType,
-      fetchFbUserDetails:fetchFbUserDetails,
+      getLoginType: getLoginType,
+      fetchFbUserDetails: fetchFbUserDetails,
       getLoginState: getLoginState,
       getLoginStateSync: getLoginStateSync,
       registerUser: registerUser,
