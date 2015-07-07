@@ -2,6 +2,7 @@
 using placeToBe.Model.Entities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -17,10 +18,16 @@ namespace placeToBe.Model.Repositories
             
         }
 
-            public async Task<User> GetByEmailAsync(string email)
+            public User GetByEmailAsync(string email)
             {
-                var filter = Builders<User>.Filter.Eq("email", email);
-                return await _collection.Find(filter).FirstOrDefaultAsync();
+                try {
+                    var filter = Builders<User>.Filter.Eq("email", email);
+                    return  _collection.Find(filter).FirstOrDefaultAsync().Result;
+                }
+                catch (Exception e) {
+                    Debug.WriteLine(e);
+                    return null;
+                }
             }
             public async Task<User> GetByActivationCode(string activationcode)
             {

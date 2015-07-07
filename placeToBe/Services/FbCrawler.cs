@@ -199,7 +199,11 @@ namespace placeToBe.Services {
             }
         }
 
-        //check if we should check the pages Events (only if page update is over 1 day ago or under 5 seconds ago)
+        /// <summary>
+        /// check if we should check the pages Events (only if page update is over 1 day ago or under 5 seconds ago)
+        /// </summary>
+        /// <param name="p">the page in question</param>
+        /// <returns>a boolean telling us to fetch data from the page or not</returns>
         private static bool determineIfEventsShouldBeFetched(Page p) {
             bool shouldFetchEvents;
             var pLastChecked = p.lastUpdatedTimestamp;
@@ -210,7 +214,11 @@ namespace placeToBe.Services {
             return shouldFetchEvents;
         }
 
-        //find events on every page in db
+       /// <summary>
+       /// fetch all events on a page. We first fetch a list of events, then get all the details for every page
+       /// </summary>
+       /// <param name="pageId">the fbid for the page to fetch the events for</param>
+       /// <returns>a task that can be awaited</returns>
         public async Task fetchEventsOnPage(String pageId) {
             var response = graphApiGet(pageId, "searchEvent");
             var results =
@@ -227,7 +235,11 @@ namespace placeToBe.Services {
             }
         }
 
-        //GEt attending List of an event
+        /// <summary>
+        /// GEt attending List of an event
+        /// </summary>
+        /// <param name="eventId"></param>
+        /// <returns></returns>
         public List<Rsvp> fetchAttendingList(String eventId) {
             var response = graphApiGet(eventId, "attendingList");
 

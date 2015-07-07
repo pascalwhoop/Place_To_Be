@@ -186,7 +186,7 @@ namespace placeToBe.Services {
 
         public async Task<User> createUser(User usr) {
             //check if user already exists. if the user is null, the user does not exists- so we can send a activationmail
-            if (await userRepo.GetByEmailAsync(usr.email) != null) throw new DuplicateNameException();
+            if (userRepo.GetByEmailAsync(usr.email) != null) throw new DuplicateNameException();
             //Register the user with inactive status (status==false)
             var plainText = Encoding.UTF8.GetBytes(usr.password);
             var salt = GenerateSalt(saltSize);
@@ -271,7 +271,7 @@ namespace placeToBe.Services {
         /// <returns></returns>
         public async Task ForgetPasswordReset(string userEmail) {
             try {
-                var forgetUserPassword = await userRepo.GetByEmailAsync(userEmail);
+                var forgetUserPassword = userRepo.GetByEmailAsync(userEmail);
                 var newPassword = Encoding.UTF8.GetBytes(CreateRandomString(8));
                 var salt = GenerateSalt(saltSize);
                 var passwordSalt = GenerateSaltedHash(newPassword, salt);
@@ -380,7 +380,7 @@ namespace placeToBe.Services {
         /// <param name="email">email of the user</param>
         /// <returns>User</returns>
         public async Task<User> GetUserByEmail(string email) {
-            return await userRepo.GetByEmailAsync(email);
+            return userRepo.GetByEmailAsync(email);
         }
 
         /// <summary>

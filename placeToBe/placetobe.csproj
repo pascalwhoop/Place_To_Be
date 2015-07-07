@@ -187,6 +187,7 @@
     <Compile Include="Filter\BasicAuthenticationIdentity.cs" />
     <Compile Include="Model\Entities\City.cs" />
     <Compile Include="Model\Entities\FacebookPagingResult.cs" />
+    <Compile Include="Model\Entities\FbTokenInspection.cs" />
     <Compile Include="Model\Entities\FbUser.cs" />
     <Compile Include="Model\Entities\Gender.cs" />
     <Compile Include="Model\Entities\EntityBase.cs" />
@@ -210,10 +211,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Services\AccountService.cs" />
-    <Compile Include="Filter\BasicAuthenticationFilter.cs" />
+    <Compile Include="Filter\PlaceToBeAuthenticationFilter.cs" />
     <Compile Include="Services\FbCrawler.cs" />
     <Compile Include="Services\GenderizeService.cs" />
-    <Compile Include="Filter\PlaceToBeAuthenticationFilter.cs" />
     <Compile Include="Services\SearchService.cs" />
     <Compile Include="Services\UtilService.cs" />
     <Compile Include="Startup.cs" />

@@ -29,7 +29,12 @@ namespace placeToBe.Filter
         public async Task<bool> authorizeRequest(String userFbId, String shortAccessToken)
         {
 
-            FbUser user = await fbUserRepo.GetByFbIdAsync(userFbId);
+            FbUser user = fbUserRepo.GetByFbIdSync(userFbId);
+
+            //fetch user from FB if not yet in DB
+            if (user == null) {
+                await fetchAndStoreUserDetails(shortAccessToken);
+            }
 
             if (user != null && shortAccessToken == user.shortAccessToken)
                 return true;
@@ -38,19 +43,30 @@ namespace placeToBe.Filter
                 String appAccessToken = UtilService.performGetRequest(new Uri("https://graph.facebook.com/oauth/access_token?client_id=" + fbAppId + "&client_secret=" +
                               fbAppSecret + "&grant_type=client_credentials"));
 
-                String jsonResponse = UtilService.performGetRequest(new Uri("https://graph.facebook.com/v2.3/debug_token?input_token=" + shortAccessToken + "&access_token=" + appAccessToken));
+                String jsonResponse = UtilService.performGetRequest(new Uri("https://graph.facebook.com/v2.3/debug_token?input_token=" + shortAccessToken + "&" + appAccessToken));
 
-                Inspection insp = JsonConvert.DeserializeObject<Inspection>(jsonResponse);
+                FbTokenInspection insp = JsonConvert.DeserializeObject<FbTokenInspection>(jsonResponse);
 
-                if (insp.is_valid == true)
+                if (insp.data.is_valid == true)
                 {
-                    user.shortAccessToken = shortAccessToken;
-                    await fbUserRepo.UpdateAsync(user);
+                    if (user != null) {
+                        user.shortAccessToken = shortAccessToken;
+                        await fbUserRepo.UpdateAsync(user);
+                    }
                     return true;
                 }
                 else
                     return false;
             }
+        }
+
+        private async Task fetchAndStoreUserDetails(string shortAccessToken) {
+            String jsonResponse = UtilService.performGetRequest(
+                new Uri(
+                    "https://graph.facebook.com/v2.3/me?fields=id,email,first_name,last_name,gender,link,updated_time,verified,friends&access_token=" +
+                    shortAccessToken));
+            var user = JsonConvert.DeserializeObject<FbUser>(jsonResponse);
+            await fbUserRepo.InsertAsync(user);
         }
     }
 }

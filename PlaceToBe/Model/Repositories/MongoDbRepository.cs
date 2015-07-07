@@ -79,22 +79,28 @@ namespace placeToBe.Model.Repositories {
             return await _collection.Find(new BsonDocument()).ToListAsync();
         }
 
-        public async Task<TEntity> GetByIdAsync(Guid id)
+        public  Task<TEntity> GetByIdAsync(Guid id)
         {
             var filter = Builders<TEntity>.Filter.Eq("_id", id);
-            return await _collection.Find(filter).FirstOrDefaultAsync();
+            return  _collection.Find(filter).FirstOrDefaultAsync();
         }
 
-        public async Task<TEntity> GetByNameAsync(String name)
+        public Task<TEntity> GetByNameAsync(String name)
         {
             var filter = Builders<TEntity>.Filter.Eq("name", name);
-            return await _collection.Find(filter).FirstOrDefaultAsync();
+            return _collection.Find(filter).FirstOrDefaultAsync();
         }
 
-        public async Task<TEntity> GetByFbIdAsync(String fbId)
+        public  Task<TEntity> GetByFbIdAsync(String fbId)
         {
             var filter = Builders<TEntity>.Filter.Eq("fbId", fbId);
-            return await _collection.Find(filter).FirstOrDefaultAsync();
+            return  _collection.Find(filter).FirstOrDefaultAsync();
+        }
+
+        public TEntity GetByFbIdSync(String fbId)
+        {
+            var filter = Builders<TEntity>.Filter.Eq("fbId", fbId);
+            return _collection.Find(filter).FirstOrDefaultAsync().Result;
         }
 
         #region Private Helper Methods

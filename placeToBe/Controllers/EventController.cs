@@ -24,6 +24,7 @@ namespace placeToBe.Controllers
         /// <param name="hour"></param>
         /// <returns></returns>
         [Route("api/event/filter/{id}/{year}/{month}/{day}/{hour}")]
+        [PlaceToBeAuthenticationFilter]
         public async Task<List<LightEvent>> getEventsByTimeAndCity(string id, string year, string month, string day, string hour)
         {
 
@@ -43,6 +44,7 @@ namespace placeToBe.Controllers
         /// <param name="hour"></param>
         /// <returns></returns>
         [Route("api/event/filter/{latitude}/{longitude}/{radius}/{year}/{month}/{day}/{hour}")]
+        [PlaceToBeAuthenticationFilter]
         public async Task<List<Event>> getNearEventsByPointWithDescription(string latitude, string longitude,string radius, string year, string month, string day, string hour)
         {
 
@@ -60,6 +62,7 @@ namespace placeToBe.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [PlaceToBeAuthenticationFilter]
         public async Task<Event> GetEvent(Guid id)
         {
             

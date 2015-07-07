@@ -43,29 +43,7 @@ namespace placeToBe.Model.Entities
             public Paging paging { get; set; }
         }
 
-        public class Metadata
-        {
-            [JsonProperty("sso")]
-            public string sso { get; set; }
-        }
+        
 
-        public class Inspection
-        {
-            [JsonProperty("app_id")]
-            public long app_id { get; set; }
-            [JsonProperty("application")]
-            public string application { get; set; }
-            [JsonProperty("expires_at")]
-            public int expires_at { get; set; }
-            [JsonProperty("is_valid")]
-            public bool is_valid { get; set; }
-            [JsonProperty("issued_at")]
-            public int issued_at { get; set; }
-            [JsonProperty("metadata")]
-            public Metadata metadata { get; set; }
-            [JsonProperty("scopes")]
-            public List<string> scopes { get; set; }
-            [JsonProperty("user_id")]
-            public int user_id { get; set; }
-        } 
+     
 }

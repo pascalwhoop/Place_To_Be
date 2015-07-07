@@ -12,22 +12,11 @@ namespace placeToBe.Controllers {
         private readonly AccountService accountService = new AccountService();
 
         /// <summary>
-        ///     POST- Save the JSON-Object of a facebook-User
-        /// </summary>
-        /// <param name="fbuser"></param>
-        /// <returns></returns>
-        [System.Web.Http.Route("api/user/fb/")]
-        public async Task<FbUser> Post(FbUser fbuser) {
-            return await accountService.SaveFBData(fbuser);
-        }
-
-        /// <summary>
         ///     PUT- Send an activationemail and register a accountService with email and passwort
         /// </summary>
         /// <param name="userEmail"></param>
         /// <param name="userPassword"></param>
         /// <returns></returns>
-        //[RegisterBasicAuthenticationFilter]
         [System.Web.Http.Route("api/user/")]
         public async Task<User> Post(User user) {
             return await accountService.createUser(user);
@@ -77,6 +66,12 @@ namespace placeToBe.Controllers {
 
             var code = await accountService.ChangePasswort(pcp.email, pcp.oldPassword, pcp.newPassword);
             return new HttpStatusCodeResult(code);
+        }
+
+        [PlaceToBeAuthenticationFilter]
+        [System.Web.Http.Route("api/user/authorize")]
+        public async Task<ActionResult> Get() {
+            return new HttpStatusCodeResult(HttpStatusCode.Accepted);
         }
     }
 }
