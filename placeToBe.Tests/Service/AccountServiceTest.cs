@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using placeToBe.Services;
 using placeToBe.Model.Repositories;
+using placeToBe.Model.Entities;
 
 namespace placeToBe.Tests.Service
 {
@@ -12,6 +13,33 @@ namespace placeToBe.Tests.Service
         //There are no Asserts (yet)
         //Methods are goint to be tested also by BlackBox tests
         //to check for correct and incorrect inputs
+
+        [TestMethod]
+        public void SaveFbData()
+        {
+            //Arrange
+            AccountService account = new AccountService();
+            UserRepository userrepo = new UserRepository();
+
+            FbUser usertest = new FbUser();
+            usertest.fbId = 1231241235;
+            usertest.firstName = "Merve";
+            usertest.lastName = "Nur";
+            usertest.emailFB = "examplemailfbmerve@googlemail.com";
+
+            //Act
+            var task = account.SaveFBData(usertest);
+
+           /* var result = userrepo.GetByEmailAsync(usertest.emailFB);
+            User user = result.Result;
+            String expected = user.email;
+
+            //Assert
+            Assert.AreEqual(usertest.emailFB, expected);*/
+
+
+        }
+
 
         [TestMethod]
         public void SendActivationEmail()
@@ -25,7 +53,7 @@ namespace placeToBe.Tests.Service
 
         }
 
-
+        /*
         [TestMethod]
         public void Register()
         {
@@ -44,7 +72,7 @@ namespace placeToBe.Tests.Service
             //Assert
             //Frage, ob hier eine Asser Anweisung zugehoert
            
-        }
+        }*/
 
         [TestMethod]
         public void ConfirmEmail()
@@ -57,6 +85,7 @@ namespace placeToBe.Tests.Service
             account.ConfirmEmail(activationcode);
         }
 
+        /*
         [TestMethod]
         public void Login()
         {
@@ -91,8 +120,9 @@ namespace placeToBe.Tests.Service
             //Act 
 
             account.Login(email, password);
-             */
+             
         }
+    */
 
         [TestMethod]
         public void ChangePassword()

@@ -66,6 +66,7 @@ namespace placeToBe.Tests.Service
             
         }
 
+        /*
         [TestMethod]
         public void HandlePlace() {
             FbCrawler crawler = new FbCrawler();
@@ -78,6 +79,7 @@ namespace placeToBe.Tests.Service
 
             crawler.handlePlace(place, condition, id);
         }
+         */
 
         [TestMethod]
         public void FindEventsOnPageTest() {

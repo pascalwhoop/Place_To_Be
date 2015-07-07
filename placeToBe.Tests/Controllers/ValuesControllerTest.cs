@@ -9,7 +9,7 @@ using placeToBe;
 using placeToBe.Controllers;
 
 namespace placeToBe.Tests.Controllers
-{
+{/*
     [TestClass]
     public class ValuesControllerTest
     {
@@ -76,6 +76,7 @@ namespace placeToBe.Tests.Controllers
             controller.Delete(5);
 
             // Assert
-        }
+        }*/
     }
-}
+       
+

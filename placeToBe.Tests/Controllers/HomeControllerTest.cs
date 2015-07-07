@@ -5,7 +5,7 @@ using placeToBe.Controllers;
 
 namespace placeToBe.Tests.Controllers
 {
-    [TestClass]
+   /* [TestClass]
     public class HomeControllerTest
     {
         [TestMethod]
@@ -21,5 +21,5 @@ namespace placeToBe.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.AreEqual("Home Page", result.ViewBag.Title);
         }
-    }
+    }*/
 }
