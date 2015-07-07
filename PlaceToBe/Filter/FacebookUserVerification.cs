@@ -26,25 +26,25 @@ namespace placeToBe.Filter
         private readonly String fbAppId = "857640940981214";
         FbUserRepository fbUserRepo = new FbUserRepository();
 
-        public async Task<bool> authorizeRequest(String userAccessToken, String userFbId)
+        public async Task<bool> authorizeRequest(String userFbId, String shortAccessToken)
         {
 
             FbUser user = await fbUserRepo.GetByFbIdAsync(userFbId);
 
-            if (userAccessToken == user.shortAccessToken)
+            if (user != null && shortAccessToken == user.shortAccessToken)
                 return true;
             else
             {
                 String appAccessToken = UtilService.performGetRequest(new Uri("https://graph.facebook.com/oauth/access_token?client_id=" + fbAppId + "&client_secret=" +
                               fbAppSecret + "&grant_type=client_credentials"));
 
-                String jsonResponse = UtilService.performGetRequest(new Uri("https://graph.facebook.com/v2.3/debug_token?input_token=" + userAccessToken + "&access_token=" + appAccessToken));
+                String jsonResponse = UtilService.performGetRequest(new Uri("https://graph.facebook.com/v2.3/debug_token?input_token=" + shortAccessToken + "&access_token=" + appAccessToken));
 
                 Inspection insp = JsonConvert.DeserializeObject<Inspection>(jsonResponse);
 
                 if (insp.is_valid == true)
                 {
-                    user.shortAccessToken = userAccessToken;
+                    user.shortAccessToken = shortAccessToken;
                     await fbUserRepo.UpdateAsync(user);
                     return true;
                 }

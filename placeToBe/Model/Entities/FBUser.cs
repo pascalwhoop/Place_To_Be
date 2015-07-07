@@ -9,7 +9,7 @@ namespace placeToBe.Model.Entities
     public class FbUser : EntityBase
     {
         [JsonProperty("id")]
-        public int fbId { get; set; }
+        public string fbId { get; set; }
         [JsonProperty("email")]
         public string emailFB { get; set; }
         [JsonProperty("first_name")]
@@ -34,11 +34,6 @@ namespace placeToBe.Model.Entities
         public string shortAccessToken { get; set; }
         public string longAccessToken { get; set; }
     }
-    public class Datum
-    {
-        public string name { get; set; }
-        public string id { get; set; }
-    }
 
     public class Summary
     {
@@ -47,8 +42,7 @@ namespace placeToBe.Model.Entities
 
     public class Friends
     {
-        public List<Datum> data { get; set; }
-        public Paging paging { get; set; }
+        public List<object> data { get; set; }
         public Summary summary { get; set; }
     }
 }

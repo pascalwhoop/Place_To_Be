@@ -27,10 +27,10 @@ namespace placeToBe.Services {
         private readonly int maxWorkerThreads = 25;
         private readonly int maxAsyncThreads = 2000;
 
-        /**
-         * constructor. get the fb acces token to use the fb api and store it. in case it doesnt work we retry 20 times
-         */
-
+    
+        ///
+        /// <summary>constructor. get the fb acces token to use the fb api and store it. in case it doesnt work we retry 20 times</summary>
+        /// 
         public FbCrawler() {
             accessToken = graphApiGet("", "FBAppToken");
             if (accessToken == "") {
@@ -53,7 +53,7 @@ namespace placeToBe.Services {
             functionsQueue = new QueueManager();
         }
 
-        ////Get the accesToken for the given AppSecret and AppId
+        //Get the accesToken for the given AppSecret and AppId
         //public void AuthenticateWithFb(String fbAppId, String fbAppSecret)
         //{
         //    String _response=GraphApiGet("oauth/access_token?client_id="+fbAppId+"&client_secret="+fbAppSecret+"&grant_type=client_credentials");
@@ -61,7 +61,14 @@ namespace placeToBe.Services {
         //    accessToken = _response;
         //}
 
-        //GET Request to the WEB APIs we use. the parameter condition 
+        //GET 
+        
+        /// <summary>
+        /// Helper method to send GET requests to the WEB APIs we use.
+        /// </summary>
+        /// <param name="getData">a string that contains the parameters for the specified request</param>
+        /// <param name="requestToPerform">a string describing the request to perform. e.g. GOOGLE for google maps geocode,...</param>
+        /// <returns></returns>
         public String graphApiGet(String getData, String requestToPerform) //synchrone Operation
         {
             if (requestToPerform == "GOOGLE")
@@ -84,7 +91,7 @@ namespace placeToBe.Services {
                         break;
                     case "searchEvent":
                         url = "https://graph.facebook.com/v2.3/" + getData +
-                              "/events?limit=2000&fields=id,attending_count&" + accessToken;
+                              "/events?limit=2000&fields=id,attending_count,start_time&" + accessToken;
                         break;
                     case "searchEventData":
                         url = "https://graph.facebook.com/v2.3/" + getData +
@@ -107,14 +114,14 @@ namespace placeToBe.Services {
             return UtilService.performGetRequest(uri);
         }
 
-        /**
-         * Perform an actual GET Request to the specified URL. just a simple one, a synchronous operation that returns the response as a string 
-         */
 
-        /*
-         * Shuffles an array
-         * */
 
+        /// <summary>
+        /// Shuffles an array
+        /// </summary>
+        /// <typeparam name="T">the object type of the objects in the array</typeparam>
+        /// <param name="o"></param>
+        /// <returns></returns>
         public T[] shuffle<T>(T[] o) {
             var random = new Random();
             var n = o.Length;
@@ -214,7 +221,7 @@ namespace placeToBe.Services {
             var results =
                 completePaging(JsonConvert.DeserializeObject<FacebookPageResults>(response));
             foreach (var e in results) {
-                if (e.attending_count > 5) {
+                if (e.attending_count > 5 && DateTime.Now < UtilService.getDateTimeFromISOString(e.start_time)) {
                     try {
                         await fetchAndStoreEvent(e);
                     }

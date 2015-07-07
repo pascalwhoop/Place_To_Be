@@ -43,11 +43,14 @@ public class BasicAuthenticationFilter : AuthorizationFilterAttribute
     {
         if (Active)
         {
+            
+            
             var identity = ParseAuthorizationHeader(actionContext);
             if (identity == null)
             {
+                //changed since we also want to listen to FB auth headers
+                identity = new BasicAuthenticationIdentity("", "");
                 Challenge(actionContext);
-                return;
             }
 
 

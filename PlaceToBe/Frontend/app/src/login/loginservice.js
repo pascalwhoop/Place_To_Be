@@ -95,8 +95,15 @@ angular.module('placeToBe')
      */
     var registerUser = function (user) {
       $rootScope.$emit('serverCallStart');
-      var url = configService.BASE_URL + '/user?userEmail=' + user.email + '&userPassword=' + user.password;
-      return $http.post(url, {}).then(function(response){
+
+      //create "clean" user variable
+      var u = {
+        email: user.email,
+        password: user.password
+      };
+      var url = configService.BASE_URL + '/user';
+
+      return $http.post(url, u).then(function(response){
         $rootScope.$emit('serverCallEnd');
       }, function(err){
         $rootScope.$emit('serverCallEnd');

@@ -26,6 +26,8 @@ namespace placeToBe.Services
         public int xRateLimitRemaining;
         // Represents the time after we got blocked, until we can do the next request
         public int xRateReset;
+        //represents the next point in time when we can try again
+        public DateTime xRateNextTry;
         public string url { get; set; }
 
         /// <summary>
@@ -74,14 +76,14 @@ namespace placeToBe.Services
             {
                 //request to genderize.io
                 gender = getGenderFromApi(name);
-                Debug.WriteLine("######## Got it from Api");
+                //Debug.WriteLine("######## Got it from Api");
                 //store new name and gender to database
                 if (gender != null) pushGenderToDb(gender);
 
             }
             else
             {
-                Debug.WriteLine("######### Already in DB");
+                //Debug.WriteLine("######### Already in DB");
             }
 
             return gender;
@@ -92,8 +94,9 @@ namespace placeToBe.Services
         /// </summary>
         /// <param name="name">prename of a person</param>
         /// <returns>gender of the prename</returns>
-        public Gender getGenderFromApi(string name)
-        {
+        public Gender getGenderFromApi(string name) {
+            //if we still have to wait for our limit to go away just return null, we cant make any api calls at the moment anyways!
+            if (DateTime.Now < xRateNextTry) return null;
             string result;
             Gender gender = null;
 
@@ -122,6 +125,8 @@ namespace placeToBe.Services
                             xRateLimitRemaining = int.Parse(response.Headers["X-Rate-Limit-Remaining"]);
                             //get the time at which we can do the next request after we got blocked
                             xRateReset = int.Parse(response.Headers["X-Rate-Reset"]);
+                            //we set a timer for 25 hours. subsequent calls to this method will be ignored until the timer has elapsed
+                            if (xRateLimitRemaining < 2) xRateNextTry = DateTime.Now.AddHours(25);
                             lastRequest = DateTime.Now;
 
                             //String of the json from genderize.io
@@ -141,8 +146,8 @@ namespace placeToBe.Services
             }
             catch (WebException webEx)
             {
-                if (xRateLimitRemaining == 0)
-                {
+                if (xRateLimitRemaining < 2) {
+                    xRateNextTry = DateTime.Now.AddHours(25);
                     /*if (xRateReset == 0)
                     {
                         var difference = (DateTime.Now.AddDays(1) - DateTime.Now).TotalSeconds;
@@ -246,7 +251,7 @@ namespace placeToBe.Services
             }
             catch (MongoWriteException e)
             {
-                Console.Write(e.Message);
+                //Console.Write(e.Message);
             }
             catch (MongoWaitQueueFullException ex)
             {

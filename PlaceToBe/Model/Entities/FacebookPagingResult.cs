@@ -21,6 +21,8 @@ namespace placeToBe.Model.Entities
         public String name { get; set; }
         [JsonProperty("rsvp_status")]
         public String rsvp_status { get; set; }
+        [JsonProperty("start_time")]
+        public String start_time { get; set; }
 
         }
 
