@@ -361,9 +361,9 @@ namespace placeToBe.Services {
         /// <returns></returns>
         public async Task<bool> isUserActivated(string activationcode) {
             var user = await GetUserbyActivationCode(activationcode);
-            return user.status;
             user.status = true;
             await userRepo.UpdateAsync(user);
+            return user.status;
         }
 
         /// <summary>Get user from DB by the given activationcode</summary>
