@@ -76,16 +76,10 @@ namespace placeToBe.Services
             {
                 //request to genderize.io
                 gender = getGenderFromApi(name);
-                //Debug.WriteLine("######## Got it from Api");
                 //store new name and gender to database
                 if (gender != null) pushGenderToDb(gender);
 
             }
-            else
-            {
-                //Debug.WriteLine("######### Already in DB");
-            }
-
             return gender;
         }
 
@@ -148,25 +142,6 @@ namespace placeToBe.Services
             {
                 if (xRateLimitRemaining < 2) {
                     xRateNextTry = DateTime.Now.AddHours(25);
-                    /*if (xRateReset == 0)
-                    {
-                        var difference = (DateTime.Now.AddDays(1) - DateTime.Now).TotalSeconds;
-                        //round and seconds to milliseconds
-                        var differenceInt = (Convert.ToInt32(Math.Floor(difference)))*1000;
-                        Debug.WriteLine("####### Waiting " + differenceInt);
-                        Thread.Sleep(differenceInt);
-                    }
-                    else
-                    {
-                        var difference = (DateTime.Now - lastRequest).TotalSeconds;
-                        //round and seconds to milliseconds
-                        var differenceInt = (Convert.ToInt32(Math.Floor(difference)));
-
-                        var sleepDifference = (xRateReset - differenceInt)*1000;
-                        Debug.WriteLine("####### Waiting " + sleepDifference);
-                        Thread.Sleep(sleepDifference);
-                    }*/
-                    //return getGenderFromApi(name);
                     return null;
                 }
                 Debug.WriteLine("Error: " + webEx.Message);

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-    using placeToBe.Model.Entities;
+using placeToBe.Model.Entities;
 using placeToBe.Model.Repositories;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;

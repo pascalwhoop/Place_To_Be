@@ -7,34 +7,34 @@ using System.Web;
 
 namespace placeToBe.Services
 {
-    /**
-     * a class that contains some static utility stuff
-     * 
-     * http://stackoverflow.com/questions/9453101/how-do-i-get-epoch-time-in-c
-     * http://stackoverflow.com/questions/3556144/how-to-create-a-net-datetime-from-iso-8601-format
-     */
+    /// <summary>
+    /// UtilService provides static helper methods that are often used by other methods
+    /// (providing redundancy).
+    /// </summary>
     public class UtilService
     {
-
-        /**
-         * parses a ISO Date String into a DateTime Object. 
-         */
+        /// <summary>
+        /// parses a ISO Date String into a DateTime Object. 
+        /// </summary>
+        /// <param name="isoDate">Date in ISO format</param>
+        /// <returns>returns a DateTime Object</returns>
         public static DateTime getDateTimeFromISOString(String isoDate) {
             var date = DateTime.Parse(isoDate, null,
                 System.Globalization.DateTimeStyles.RoundtripKind);
             return date;
         }
-
-        /**
-         * Performs a Simple Web GET Request to the specified URL and returns the result as a string
-         */
-        public static string performGetRequest(Uri URI)
+        /// <summary>
+        /// Performs a Simple Web GET Request to the specified URL.
+        /// </summary>
+        /// <param name="uri">Uniform Resource Identifier</param>
+        /// <returns>returns the web response result as a string</returns>
+        public static string performGetRequest(Uri uri)
         {
             String response = null;
             try
             {
                 WebClient webClient = new WebClient();
-                Stream stream = webClient.OpenRead(URI);
+                Stream stream = webClient.OpenRead(uri);
                 if (stream != null)
                 {
                     StreamReader reader = new StreamReader(stream);
@@ -54,12 +54,9 @@ namespace placeToBe.Services
                         default:
                             throw ex;
                     }
-
                 }
             }
             return response;
-
         }
-
     }
 }
