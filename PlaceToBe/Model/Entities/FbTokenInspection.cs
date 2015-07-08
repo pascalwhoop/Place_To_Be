@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 
 namespace placeToBe.Model.Entities {
+    /// <summary>
+    /// FacebookUserVerification helper class to deserialise Facebooks JSON objects to C# objects.
+    /// </summary>
     public class FbTokenInspection {
         public FbInspectionData data { get; set; }
 

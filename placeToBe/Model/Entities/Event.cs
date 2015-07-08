@@ -8,10 +8,15 @@ using System.Web;
 namespace placeToBe.Model.Entities
 
 {
+    /// <summary>
+    /// Facebook Event class which contains the same fields as the 
+    /// Facebook Event JSON objects that we retrieve from Facebooks Graph API.
+    /// </summary>
     [DataContract]
     public class Event : EntityBase
     {
-
+        //mapping between different fieldnames we have to make a DataContract to deal with the objects 
+        //which are retrieved by placeToBes REST API.
         [DataMember(Name = "id")]
         public string fbId { get; set; }
         [DataMember]
@@ -39,11 +44,14 @@ namespace placeToBe.Model.Entities
         public List<Rsvp> attending { get; set; }
         [DataMember]
         public List<Rsvp> maybe { get; set; }
+        //Analysed by GenderizeService
         [DataMember]
         public int attendingMale { get; set; }
+        //Analysed by GenderizeService
         [DataMember]
         public int attendingFemale { get; set; }
         [DataMember]
+        //Analysed by GenderizeService
         public int attendingUndefined { get; set; }
         [DataMember]
         public CoverPhoto cover { get; set; }
@@ -58,7 +66,10 @@ namespace placeToBe.Model.Entities
         public GeoLocation geoLocationCoordinates { get; set; }
 
     }
-    //starting v2.3 this is the necessary (and we have to ask for it specifically) part of an Event that describes the location (and therefore latLng information)
+    /// <summary>
+    /// starting v2.3 this is the necessary (and we have to ask for it specifically) 
+    /// part of an Event that describes the location (and therefore latLng information)
+    /// </summary>
     [DataContract]
     public class Place
     {
@@ -78,11 +89,12 @@ namespace placeToBe.Model.Entities
         public string street { get; set; }
         public string zip { get; set; }
     }
-
+    /// <summary>
+    /// GeoLocation point where we can put an index on later (MongoDB Geo2DSphere)
+    /// </summary>
     [DataContract]
     public class GeoLocation
-    {
-        
+    {  
         public GeoLocation(double lat, double lng) {
             this.coordinates = new double[2]{lat, lng};
             type = "Point";

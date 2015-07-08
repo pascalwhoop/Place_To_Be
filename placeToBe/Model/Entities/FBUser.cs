@@ -6,6 +6,10 @@ using System.Web;
 
 namespace placeToBe.Model.Entities
 {
+    /// <summary>
+    /// Facebook user class which contains the same fields as the 
+    /// Facebook user JSON objects that we retrieve from Facebooks Graph API.
+    /// </summary>
     public class FbUser : EntityBase
     {
         [JsonProperty("id")]
@@ -45,6 +49,9 @@ namespace placeToBe.Model.Entities
         public int total_count { get; set; }
     }
 
+    /// <summary>
+    /// Friends of Facebook User who also use placeToBe.
+    /// </summary>
     public class Friends
     {
         public List<Datum> data { get; set; }

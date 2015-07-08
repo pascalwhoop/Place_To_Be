@@ -8,6 +8,9 @@ using System.Web.Security;
 
 namespace placeToBe.Model.Entities
 {
+    /// <summary>
+    /// User class containing all information for a users verfication.
+    /// </summary>
     [DataContract]
     public class User : EntityBase
     {

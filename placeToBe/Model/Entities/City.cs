@@ -24,10 +24,10 @@ namespace placeToBe.Model.Entities {
         [DataMember]
         public List<string> types { get; set; }
 
-        //to have a way of checking the oldest cities first
+        //to have a way of checking the oldest cities first.
         public DateTime lastCheckedTime { get; set; }
 
-        //builds a polygon array as needed by mongodb
+        //builds a polygon array as needed by MongoDb.
         public double[,] getPolygon() {
             var a = new double[5, 2];
             //northwest
@@ -58,8 +58,6 @@ namespace placeToBe.Model.Entities {
         public double latitude { get; set; }
         public double longitude { get; set; }
     }
-
-    // ==========================================================00
 
     [DataContract]
     public class AddressComponent {

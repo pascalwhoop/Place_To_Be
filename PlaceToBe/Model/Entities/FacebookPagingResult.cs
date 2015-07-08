@@ -6,9 +6,11 @@ using System.Web;
 
 namespace placeToBe.Model.Entities
 {
+    /// <summary>
+    /// ´FbCrawler helper class to deserialise Facebooks JSON objects to C# objects.
+    /// </summary>
     public class FacebookPagingResult
-    {
-          
+    {         
         [JsonProperty("id")]
         public string fbId { get; set; }
             
@@ -23,27 +25,20 @@ namespace placeToBe.Model.Entities
         public String rsvp_status { get; set; }
         [JsonProperty("start_time")]
         public String start_time { get; set; }
-
         }
 
         public class Paging
         {
-
             [JsonProperty("next")]
             public string next { get; set; }
         }
 
         public class FacebookPageResults
         {
-
             [JsonProperty("data")]
             public FacebookPagingResult[] data { get; set; }
 
             [JsonProperty("paging")]
             public Paging paging { get; set; }
-        }
-
-        
-
-     
+        }    
 }
