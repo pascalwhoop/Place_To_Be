@@ -34,6 +34,11 @@ namespace placeToBe.Model.Entities
         public string shortAccessToken { get; set; }
         public string longAccessToken { get; set; }
     }
+    public class Datum
+    {
+        public string name { get; set; }
+        public string id { get; set; }
+    }
 
     public class Summary
     {
@@ -42,7 +47,8 @@ namespace placeToBe.Model.Entities
 
     public class Friends
     {
-        public List<object> data { get; set; }
+        public List<Datum> data { get; set; }
+        public Paging paging { get; set; }
         public Summary summary { get; set; }
     }
 }
