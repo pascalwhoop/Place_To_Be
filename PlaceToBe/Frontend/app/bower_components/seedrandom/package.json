@@ -1,9 +1,8 @@
 {
   "name": "seedrandom",
-  "version": "2.4.0",
+  "version": "2.4.2",
   "description": "Seeded random number generator for Javascript.",
   "main": "index.js",
-
   "keywords": [
     "random",
     "seed",
@@ -26,6 +25,7 @@
     "blanket": {
       "pattern": [
         "seedrandom.js",
+        "lib/alea.js",
         "lib/xor128.js",
         "lib/xorwow.js",
         "lib/xorshift7.js",

@@ -212,7 +212,7 @@ namespace placeToBe.Services {
 
                 var messageBody = "Confirm the mail:";
                 messageBody += "<br /><br />Please click the following link to activate your account";
-                messageBody += "<br /><a href = ' http://localhost:18172/api/user?activationcode=" + activationCode +
+                messageBody += "<br /><a href = ' https://placetobe-koeln.azurewebsites.net/api/user?activationcode=" + activationCode +
                                "'>Click here to activate your account.</a>";
                 messageBody += "<br /><br />Thanks";
                 messageBody +=

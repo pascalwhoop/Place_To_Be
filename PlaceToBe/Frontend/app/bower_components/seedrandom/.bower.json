@@ -14,15 +14,14 @@
     "requirejs": "latest"
   },
   "homepage": "https://github.com/davidbau/seedrandom",
-  "version": "2.4.0",
-  "_release": "2.4.0",
+  "version": "2.4.2",
+  "_release": "2.4.2",
   "_resolution": {
     "type": "version",
-    "tag": "2.4.0",
-    "commit": "81adc014a0852727a861cff518ad30bbb36d1923"
+    "tag": "2.4.2",
+    "commit": "85d23db19290ed57b966bad62404cdf431db24ee"
   },
   "_source": "git://github.com/davidbau/seedrandom.git",
   "_target": "~2.4.0",
-  "_originalSource": "seedrandom",
-  "_direct": true
+  "_originalSource": "seedrandom"
 }
