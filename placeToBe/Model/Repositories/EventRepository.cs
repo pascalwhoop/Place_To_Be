@@ -11,10 +11,15 @@ using MongoDB.Driver.GeoJsonObjectModel;
 
 namespace placeToBe.Model.Repositories
 {
+    /// <summary>
+    /// A repository to get access to all the saved events in the MongoDb and therefore be able to modify them.
+    /// </summary>
     public class EventRepository: MongoDbRepository<Event>
     {
-
-        //a constructor that makes sure we have a geospherical index over our event list. 
+        /// <summary>
+        /// a constructor that makes sure we have a geospherical index over our event list aswell 
+        /// as an index on the Facebook id and the starting time of an event. 
+        /// </summary>
         public EventRepository() {
             //unique index on fb events
             CreateIndexOptions options = new CreateIndexOptions {Unique = true};
@@ -23,50 +28,41 @@ namespace placeToBe.Model.Repositories
             _collection.Indexes.CreateOneAsync(Builders<Event>.IndexKeys.Descending(_ => _.startDateTime)); //an index on the startTime attribute
         }
 
-       /* public async Task<List<LightEvent>> GetCityMapEvents(double [,]polygon, string time)
-        {
-            
-            //filter request by location and time
-            var filter = Builders<Event>.Filter.GeoWithinPolygon("geoLocationCoordinates", polygon) & Builders<Event>.Filter.And(Builders<Event>.Filter.Gte("startDateTime",new DateTime() ),
-                Builders<Event>.Filter.Lte("end_time", time));
-            //search in db with filter
-            IList<Event> eventList=await _collection.Find(filter).ToListAsync();
-
-            List<LightEvent> lightList = new List<LightEvent>();
-            //Convert Event to Lightevent
-            foreach (Event _event in eventList)
-            {
-                lightList.Add(eventToLightEvent(_event));
-            }
-            return lightList;
-        }*/
-
-        //help: http://mongodb.github.io/mongo-csharp-driver/2.0/reference/driver/definitions/#projections
+        /// <summary>
+        /// Retrieving events from the database which are within a polygon (representing for example a specified part of a city)
+        /// and between a defined time range.
+        /// </summary>
         public async Task<List<LightEvent>> getEventsByTimeAndPolygon(double[,] polygon, DateTime startTime,
             DateTime endTime) {
 
-            
+            //creating a filter for the mongoDB event search
             var builder = Builders<Event>.Filter;
             var filter = builder.GeoWithinPolygon("geoLocationCoordinates", polygon) &
                          builder.Gte("startDateTime", startTime.AddHours(-4)) & builder.Lt("startDateTime", endTime);
             
+            //small version of an Event (Light Event) containing just a few important data fields.
             Dictionary<String, Object> projectionContent = new Dictionary<string, object>() {
                 {"attendingCount", 1},
                 {"geoLocationCoordinates", 1},
                 {"name", 1},
                 {"fbId", 1}
             };
+
+            //Search in event collection with the specified filter.
             ProjectionDefinition<Event,LightEvent > projDefinition = new BsonDocument(projectionContent);
             var task =  _collection.Find(filter).Project(projDefinition).ToListAsync();
             var events = task.Result;
             return events;
-
         }
-
+        /// <summary>
+        /// Retrieving a list of events which takes place within a specified radius around a coordinate (latitude/longitude)
+        /// and between a defined time range.
+        /// </summary>
         public async Task<List<Event>> getFullEventListByPointInRadius(double latitude, double longitude, int radius, DateTime startTime, DateTime endTime) {
-            double maxDistance = radius;
-            //muss eine GeoJson point sein, wenn einfach latitude und longitude uebergeben werden dann sucht er im umkreis des lat und lng jeweils
-            var point = GeoJson.Point(GeoJson.Geographic(latitude, longitude));
+            double maxDistance = radius; //Geolocation search requires double value.
+
+            //Creating a GeoJson point which represents the center of the search circle.
+            var point = GeoJson.Point(GeoJson.Geographic(latitude, longitude)); 
             var builder = Builders<Event>.Filter;
             var filter = builder.NearSphere("geoLocationCoordinates", point, maxDistance)
                 & builder.Gte("startDateTime", startTime.AddHours(-4)) & builder.Lt("startDateTime", endTime);
@@ -89,23 +85,10 @@ namespace placeToBe.Model.Repositories
             var task = _collection.Find(filter).Project(projDefinition).ToListAsync();
             var events = task.Result;
             return events;
-        } 
-
-        /*//TODO delete, only for testing purposes
-        public async Task<List<LightEvent>> getSoonEvents(string time) {
-            var max = Double.Parse(time);
-            var filter = Builders<Event>.Filter.Gte("startDateTime", new DateTime());
-            List<LightEvent> list = new List<LightEvent>();
-            var dataList = await _collection.Find(filter).ToListAsync();
-                   
-                        foreach (Event e in dataList) {
-                            list.Add(eventToLightEvent(e));
-                        }
-                    
-                return list;
-            }*/
-        
-
+        }
+        /// <summary>
+        /// Smaller version of the event class
+        /// </summary>
         private LightEvent eventToLightEvent(Event e)
         {
                 LightEvent light = new LightEvent();
