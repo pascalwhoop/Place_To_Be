@@ -248,16 +248,6 @@
     <Content Include="Frontend\app\assets\favicons\favicon-32x32.png" />
     <Content Include="Frontend\app\assets\favicons\favicon-96x96.png" />
     <Content Include="Frontend\app\assets\heatmap_cologne.png" />
-    <Content Include="Frontend\app\assets\svg\avatar-1.svg" />
-    <Content Include="Frontend\app\assets\svg\avatar-4.svg" />
-    <Content Include="Frontend\app\assets\svg\avatars.svg" />
-    <Content Include="Frontend\app\assets\svg\google_plus.svg" />
-    <Content Include="Frontend\app\assets\svg\hangouts.svg" />
-    <Content Include="Frontend\app\assets\svg\mail.svg" />
-    <Content Include="Frontend\app\assets\svg\menu.svg" />
-    <Content Include="Frontend\app\assets\svg\phone.svg" />
-    <Content Include="Frontend\app\assets\svg\share.svg" />
-    <Content Include="Frontend\app\assets\svg\twitter.svg" />
     <Content Include="Frontend\app\bower_components\angular-material\angular-material.min.css" />
     <Content Include="Frontend\app\bower_components\angular-material\angular-material.min.js" />
     <Content Include="Frontend\app\bower_components\angular-messages\angular-messages.js" />
@@ -296,6 +286,7 @@
     <Content Include="Frontend\app\src\login\loginController.js" />
     <Content Include="Frontend\app\src\login\loginDirective.html" />
     <Content Include="Frontend\app\src\login\loginLogoutButtonsDirectives.js" />
+    <Content Include="Frontend\app\src\login\loginservice.js" />
     <Content Include="Frontend\app\src\login\loginView.html" />
     <Content Include="Frontend\app\src\login\logoutDirective.html" />
     <Content Include="Frontend\app\src\mainController.js" />
@@ -303,7 +294,6 @@
     <Content Include="Frontend\app\src\profile\profileView.html" />
     <Content Include="Frontend\app\src\services\configService.js" />
     <Content Include="Frontend\app\src\services\gaussianservice.js" />
-    <Content Include="Frontend\app\src\services\loginservice.js" />
     <Content Include="Frontend\app\src\util\directives\utilDirectives.js" />
     <Content Include="Frontend\app\src\util\filters\utilFilters.js" />
     <Content Include="Global.asax" />

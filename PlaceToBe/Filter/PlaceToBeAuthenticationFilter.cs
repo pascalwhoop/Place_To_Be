@@ -53,7 +53,8 @@ public class PlaceToBeAuthenticationFilter : AuthorizationFilterAttribute
     /// Override to Web API filter method to handle Basic Auth check
     /// </summary>
     /// <param name="actionContext"></param>
-    public override void OnAuthorization(HttpActionContext actionContext)
+    /// 
+    public override async Task OnAuthorizationAsync(HttpActionContext actionContext, CancellationToken cancellationToken)
     {
         if (Active)
         {
@@ -65,7 +66,7 @@ public class PlaceToBeAuthenticationFilter : AuthorizationFilterAttribute
             }
 
 
-            if (!OnAuthorizeUser(identity.Name, identity.password, actionContext))
+            if (! await OnAuthorizeUser(identity.Name, identity.password, actionContext))
             {
                 denyAccess(actionContext);
                 return;
@@ -98,23 +99,19 @@ public class PlaceToBeAuthenticationFilter : AuthorizationFilterAttribute
     /// <param name="password"></param>
     /// <param name="actionContext"></param>
     /// <returns></returns>
-    protected virtual bool OnAuthorizeUser(string usrEmailOrId, string usrTknOrPass, HttpActionContext actionContext)
+    protected virtual Task<bool> OnAuthorizeUser(string usrEmailOrId, string usrTknOrPass, HttpActionContext actionContext)
     {
-        if (string.IsNullOrEmpty(usrEmailOrId) || string.IsNullOrEmpty(usrTknOrPass))
-            return false;
+        //if (string.IsNullOrEmpty(usrEmailOrId) || string.IsNullOrEmpty(usrTknOrPass)) return false;
 
         //if usrEmailOrId is only numbers --> fbID
         string regx = @"^[0-9]*$";
         if (Regex.IsMatch(usrEmailOrId, regx)) {
-            var t = fbVerification.authorizeRequest(usrEmailOrId, usrTknOrPass);
-            t.Wait();
-            return t.Result;
+           return  fbVerification.authorizeRequest(usrEmailOrId, usrTknOrPass);
         }
 
         //contains Authorization header --> perform checkPassword
-        var ptbT = checkPtbPassword(usrEmailOrId, usrTknOrPass);
-        ptbT.Wait();
-        return ptbT.Result;
+        return checkPtbPassword(usrEmailOrId, usrTknOrPass);
+        
     }
 
 

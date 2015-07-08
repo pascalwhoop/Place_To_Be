@@ -94,14 +94,9 @@ namespace placeToBe.Model.Repositories {
         public  Task<TEntity> GetByFbIdAsync(String fbId)
         {
             var filter = Builders<TEntity>.Filter.Eq("fbId", fbId);
-            return  _collection.Find(filter).FirstOrDefaultAsync();
+            return _collection.Find(filter).FirstOrDefaultAsync();
         }
 
-        public TEntity GetByFbIdSync(String fbId)
-        {
-            var filter = Builders<TEntity>.Filter.Eq("fbId", fbId);
-            return _collection.Find(filter).FirstOrDefaultAsync().Result;
-        }
 
         #region Private Helper Methods
 

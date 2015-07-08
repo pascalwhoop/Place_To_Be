@@ -29,7 +29,7 @@ namespace placeToBe.Filter
         public async Task<bool> authorizeRequest(String userFbId, String shortAccessToken)
         {
 
-            FbUser user = fbUserRepo.GetByFbIdSync(userFbId);
+            FbUser user = await fbUserRepo.GetByFbIdAsync(userFbId);
 
             //fetch user from FB if not yet in DB
             if (user == null) {
@@ -51,7 +51,7 @@ namespace placeToBe.Filter
                 {
                     if (user != null) {
                         user.shortAccessToken = shortAccessToken;
-                        await fbUserRepo.UpdateAsync(user);
+                        fbUserRepo.UpdateAsync(user);
                     }
                     return true;
                 }
