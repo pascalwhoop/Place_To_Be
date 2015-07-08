@@ -1,88 +1,38 @@
 <md-toolbar layout="row" layout-align="end center">
   <span flex></span>
   <login-button login-service="loginService" style="margin-right: 27px;"></login-button>
+  <logout-button login-service="loginService"></logout-button>
 </md-toolbar>
 
-<div class="text-page-content" layout="row">
 
-  <div layout="column" flex="50">
-    <h3 class="md-display-1">Edit user Profile</h3>
+<md-content layout="row" class="md-padding">
+  <md-card ng-show="loginType == 'facebook'" flex="50" style="max-width: 300px">
+    <!--max width due to pixel density of FB pic-->
+    <img ng-src="{{fbProfilePicUrl}}" alt=""/>
+    <md-card-content layout="column">
+      <h2 class="md-title">Facebook Profile</h2>
 
-    <div>
+      <p>
+        <span style="font-weight: bold">Email: </span>{{fbMe.email}}
+      </p>
 
-    </div>
+      <p>
+        <span style="font-weight: bold">Name: </span>{{fbMe.name}}
+      </p>
 
-    <md-fab-speed-dial md-open="menu.isOpen" md-direction="down"
-                       class="md-fling">
-      <md-fab-trigger>
-        <md-button aria-label="menu" class="md-raised md-warn">
-          <md-icon md-font-icon="fa-user" class="fa"></md-icon>
-          Edit User profile
-        </md-button>
-      </md-fab-trigger>
-      <md-fab-actions>
-        <md-button class="md-raised">
-          <md-icon md-font-icon="fa-envelope-o" class="fa"></md-icon>
-          <span>Change Email</span>
-        </md-button>
-        <md-button class="md-raised">
-          <md-icon md-font-icon="fa-key" class="fa"></md-icon>
-          Change Password
-        </md-button>
-        <md-button class="md-raised md-warn">
-          <md-icon md-font-icon="fa-facebook-official" class="fa"></md-icon>
-          Unlink from Facebook
-        </md-button>
-
-
-        </md-button>
-      </md-fab-actions>
-    </md-fab-speed-dial>
-
-  </div>
-
-
-  <div>
-
-
-    <!--REGISTER USER FORM-->
-    <form name="dummyForm">
-    </form>
-    <!--TODO i dont know why i need a dummy form here... it just won't work if I don't have it.-->
-    <form name="dummy"></form>
-
-    <form name="userProfileForm">
-
-      <p>Change Email</p>
-      <md-input-container>
-        <label>Email</label>
-        <input ng-model="user.email" type="email" name="email" required>
-
-        <div ng-messages="userProfileForm.email.$error">
-          <div ng-message="required">This is required.</div>
-        </div>
-      </md-input-container>
-
-      <md-input-container>
-        <label>Password</label>
-        <input ng-model="user.password" type="password" required equals="{{user.password2}}" name="password">
-      </md-input-container>
-      <md-input-container>
-        <label>repeat Password</label>
-        <input ng-model="user.password2" type="password" equals="{{user.password}}" name="password2">
-
-        <div ng-messages="userProfileForm.password2.$error">
-          <div ng-message="equals">Both passwords must match!</div>
-        </div>
-      </md-input-container>
-      <md-button class="md-raised" ng-click="registerUser(user)"
-                 ng-disabled="user.password != user.password2 || !user.email">Register now
+      <md-button ng-click="disconnectFb()" class="md-warn md-raised">Disconnect from FB
+        <md-tooltip>
+          You can disconnect your FB profile here. However once you do, you cannot use the app anymore until you reconnect
+          with us!
+        </md-tooltip>
       </md-button>
-    </form>
-    <md-progress-linear md-mode="indeterminate" ng-show="serverWait"></md-progress-linear>
+    </md-card-content>
+
+  </md-card>
+
+  <!--a short facebook profile view-->
 
 
   </div>
+</md-content>
 
-
-</div>

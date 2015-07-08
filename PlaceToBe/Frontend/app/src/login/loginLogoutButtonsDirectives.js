@@ -23,7 +23,7 @@ angular.module('placeToBe')
         };
 
 
-        function LoginDialogController($scope, $mdDialog, loginService) {
+        function LoginDialogController($scope, $mdDialog, loginService, toastNotifyService) {
           $scope.cancel = function () {
             $mdDialog.cancel();
           };
@@ -38,9 +38,11 @@ angular.module('placeToBe')
           $scope.registerUser = function (user) {
             $scope.serverWait = true;
             loginService.registerUser(user).then(function (successRes) {
+              toastNotifyService.showNotifyToast('Registration successful. Check your email!');
+              $mdDialog.hide();
 
             }, function (errResponse) {
-
+              uNotify.showNotifyToast('We had a problem with the registration. Try a different email or come back later!');
             })
           };
 
@@ -59,6 +61,7 @@ angular.module('placeToBe')
               if (response.status == 'connected') $mdDialog.hide();
             });
           };
+
 
 
         }
@@ -96,14 +99,10 @@ angular.module('placeToBe')
             $mdDialog.cancel();
           };
 
-          $scope.ptbLogout = function(){
-            //TODO logout ptb
+          $scope.logout = function(){
+            loginService.logout();
+            $mdDialog.hide();
           }
-
-          $scope.fbLogout = function(){
-            //TODO logout fb
-          }
-
 
         }
 

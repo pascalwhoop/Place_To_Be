@@ -89,10 +89,10 @@
               <div ng-message="equals">Both passwords must match!</div>
             </div>
           </md-input-container>
-          <md-button class="md-raised" ng-click="registerUser(user)"
-                     ng-disabled="user.password != user.password2 || !user.email">Register now
-          </md-button>
         </form>
+        <md-button class="md-raised" ng-click="registerUser(user)"
+                   ng-disabled="user.password != user.password2 || !user.email || !user.password">Register now
+        </md-button>
         <wait-bar show-event="serverCallStart" hide-event="serverCallEnd" message="Logging in...">
         </wait-bar>
       </div>
