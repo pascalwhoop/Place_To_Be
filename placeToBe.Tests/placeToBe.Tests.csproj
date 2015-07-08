@@ -133,9 +133,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\EventControllerTest.cs" />
+    <Compile Include="Controllers\CityControllerTest.cs" />
     <Compile Include="Controllers\UserControllerTest.cs" />
     <Compile Include="Model\MongoDbRepositoryTest.cs" />
     <Compile Include="Model\MongoDbTest.cs" />
+    <Compile Include="Model\CityRepositoryTest.cs" />
+    <Compile Include="Model\EventRepositoryTest.cs" />
+    <Compile Include="Model\UserRepositoryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\GenderizeServiceTest.cs" />
     <Compile Include="Service\FbCrawlerTest.cs" />

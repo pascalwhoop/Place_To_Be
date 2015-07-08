@@ -53,7 +53,7 @@ namespace placeToBe.Tests.Controllers
             //Act
             controller.GetEvent(id);
 
-         
+
         }
     }
 }
