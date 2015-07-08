@@ -4,6 +4,8 @@ using placeToBe;
 using placeToBe.Controllers;
 using System.Threading.Tasks;
 using System.Net;
+using placeToBe.Model.Entities;
+using System.Web.Mvc;
 
 namespace placeToBe.Tests.Controllers
 {
@@ -11,58 +13,56 @@ namespace placeToBe.Tests.Controllers
     public class UserControllerTest
     {
         [TestMethod]
-        public void PostServerError()
+        public void PostSaveFbData()
         {
             //Arrange 
             UserController controller = new UserController();
-            String userEmail = "exampleplacetobe123@gmail.com";
-            String userPassword = "example123";
-            HttpStatusCode expected = HttpStatusCode.InternalServerError;
-
-            //doesnt work with ServiceUnavailable
+            User user= new User();
 
             //Act
-            Task<HttpStatusCode> status = controller.Post(userEmail, userPassword);
-            HttpStatusCode result = status.Result;
+            Task<User> status = controller.Post(user);
 
-            //Assert
-            Assert.AreEqual(result, expected);
         }
 
         [TestMethod]
-        public void PostOk()
-        {   //espects an email + password which arent registred yet
-            //Arrange 
-            UserController controller = new UserController();
-            String userEmail = "";
-            String userPassword = "";
-            HttpStatusCode expected = HttpStatusCode.OK;
-
-            //Act
-            Task<HttpStatusCode> status = controller.Post(userEmail, userPassword);
-            HttpStatusCode result = status.Result;
-
-            //Assert
-            Assert.AreEqual(result, expected);
-        }
-
-        [TestMethod]
-        public void GetServerError()
+        public void PutPasswordChangePairBasRequest()
         {
             //Arrange 
             UserController controller = new UserController();
-            String activationcode = "aeh76";
-            HttpStatusCode expected = HttpStatusCode.InternalServerError;
-
-            //doesnt work with ServiceUnavailable
+            PasswordChangePair pair = new PasswordChangePair();
+            pair.email = "placetobecologne";
+            pair.oldPassword = "falsePassword";
+            pair.newPassword = "something";
 
             //Act
-            Task<HttpStatusCode> status = controller.Get(activationcode);
-            HttpStatusCode result = status.Result;
+            var task = controller.Put(pair);
+
+            HttpStatusCodeResult result = (HttpStatusCodeResult)task.Result;
+
+
 
             //Assert
-            Assert.AreEqual(result, expected);
+            Assert.IsNotNull(result);
         }
-        
+
+        [TestMethod]
+        public void PutPasswordChangeNotFound()
+        {
+            //Arrange 
+            UserController controller = new UserController();
+            PasswordChangePair pair = new PasswordChangePair();
+            pair.email = "";
+            pair.oldPassword = "falsePassword";
+            pair.newPassword = "something";
+
+            //Act
+            var task = controller.Put(pair);
+
+            HttpStatusCodeResult result = (HttpStatusCodeResult)task.Result;
+
+            //Assert
+            Assert.IsNotNull(result);
+        }
+
     }
 }

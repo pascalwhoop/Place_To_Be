@@ -3,17 +3,17 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using placeToBe.Services;
 using placeToBe.Model.Repositories;
 using placeToBe.Model.Entities;
+using System.Threading.Tasks;
+using System.Net;
 
 namespace placeToBe.Tests.Service
 {
     [TestClass]
     public class AccountServiceTest
     {
-        //Tests just check whether methods are working, or not
-        //There are no Asserts (yet)
+
         //Methods are goint to be tested also by BlackBox tests
         //to check for correct and incorrect inputs
-
         [TestMethod]
         public void SaveFbData()
         {
@@ -22,7 +22,6 @@ namespace placeToBe.Tests.Service
             UserRepository userrepo = new UserRepository();
 
             FbUser usertest = new FbUser();
-            usertest.fbId = 1231241235;
             usertest.firstName = "Merve";
             usertest.lastName = "Nur";
             usertest.emailFB = "examplemailfbmerve@googlemail.com";
@@ -30,128 +29,163 @@ namespace placeToBe.Tests.Service
             //Act
             var task = account.SaveFBData(usertest);
 
-           /* var result = userrepo.GetByEmailAsync(usertest.emailFB);
-            User user = result.Result;
-            String expected = user.email;
 
             //Assert
-            Assert.AreEqual(usertest.emailFB, expected);*/
+            Assert.IsNotNull(task);
+
 
 
         }
 
 
+
         [TestMethod]
-        public void SendActivationEmail()
+        public void SendActivationEmailInternalServerError()
         {   //Arrange
             AccountService account = new AccountService();
-            String userEmail = "exampleplacetobe@hotmail.de";
-            String userPassword = "exampleplacetobe123";
+
+            String userEmail = "placetobecologne@gmail.com";
+            String userPassword = "placetobecologne";
+
 
             //Act
-            account.SendActivationEmail(userEmail, userPassword);
+            Task<String> status = account.SendActivationEmail(userEmail, userPassword);
+            String result = status.Result;
+
+            //Assert
+            //result ist the activationcode for the user 
+            //the activationcode is changin everytime this methode is used
+            Assert.IsNotNull(result);
 
         }
 
-        /*
-        [TestMethod]
-        public void Register()
-        {
-            //Arrange
-
-            AccountService account = new AccountService();
-            String userEmail = "exampleplacetobe@hotmail.de";
-            String userPassword = "exampleplacetobe123";
-            String activationcode = "12a3abcv";
 
 
-            //Act
-
-            account.Register(userEmail, userPassword, activationcode);
-
-            //Assert
-            //Frage, ob hier eine Asser Anweisung zugehoert
-           
-        }*/
-
-        [TestMethod]
-        public void ConfirmEmail()
-        {
-            //Arrange 
-            AccountService account = new AccountService();
-            String activationcode = "12a3abcv";
-
-            //Act
-            account.ConfirmEmail(activationcode);
-        }
 
         /*
-        [TestMethod]
-        public void Login()
-        {
-           //Arrange
 
-            AccountService account = new AccountService();
-            String usersEmail = "exampleplacetobe@hotmail.de";
-            String userpassword = "exampleplacetobe123";
+            //[TestMethod]
+            //public void ConfirmEmailOk()
+            //{
+            //    //Arrange 
+            //    AccountService account = new AccountService();
+            //    String activationcode = "8cde706f-ca79-4a66-9fa9-f04a86b4129a";
+            //    bool expected = true;
 
-            //Act 
+            //    //Act
+            //    Task<bool> status = account.ConfirmEmail(activationcode);
+            //    bool result = status.Result;
 
-            account.Login(usersEmail, userpassword);
 
-            //Assert
+            //    //Assert
+            //    Assert.AreEqual(result, expected);
+            //}
 
-           
-            
+            //[TestMethod]
+            //public void ConfirmEmailServerError()
+            //{
+            //    //Arrange 
+            //    AccountService account = new AccountService();
+            //    String activationcode = "2187316c-71a3-4118-";
+            //    HttpStatusCode expected = HttpStatusCode.InternalServerError;
+
+            //    //Act
+            //    Task<HttpStatusCode> status = account.ConfirmEmail(activationcode);
+            //    HttpStatusCode result = status.Result;
+
+            //    //Assert
+            //    Assert.AreEqual(result, expected);
+            //}
 
             /*
+            [TestMethod]
+            public void Login()
+            {
+               //Arrange
+
+                AccountService account = new AccountService();
+                String usersEmail = "exampleplacetobe@hotmail.de";
+                String userpassword = "exampleplacetobe123";
+
+                //Act 
+
+                account.Login(usersEmail, userpassword);
+
+                //Assert
+
+           
             
-            //versuch mit nicht registrierter mail adresse oder passwort
-            //Test funktioniert auch mit nicht registrierten Informationen 
-            //wird wahrscheinlich abgefangen durch try catch 
 
-            //Arrange
+                /*
+            
+                //versuch mit nicht registrierter mail adresse oder passwort
+                //Test funktioniert auch mit nicht registrierten Informationen 
+                //wird wahrscheinlich abgefangen durch try catch 
 
-            AccountService account = new AccountService();
-            string email = "exampleplacetobenicht@hotmail.de";
-            string password = "exampleplacetobe123678";
+                //Arrange
+
+                AccountService account = new AccountService();
+                string email = "exampleplacetobenicht@hotmail.de";
+                string password = "exampleplacetobe123678";
 
 
-            //Act 
+                //Act 
 
-            account.Login(email, password);
+                account.Login(email, password);
              
-        }
-    */
+            }
+        */
 
         [TestMethod]
-        public void ChangePassword()
+        public void ChangePasswordNotFound()
         {
             //Arrange
             AccountService account = new AccountService();
-            String userEmail = "exampleplacetobe@hotmail.de";
-            String oldPassword = "exampleplacetobe123";
-            String newPassword = "exampleplacetobe123new";
+            String userEmail = "";
+            String oldPassword = "something";
+            String newPassword = "something";
+            HttpStatusCode expected = HttpStatusCode.NotFound;
 
             //Act
-            account.ChangePasswort(userEmail, oldPassword, newPassword); 
+            Task<HttpStatusCode> status = account.ChangePasswort(userEmail, oldPassword, newPassword);
+            HttpStatusCode result = status.Result;
+
+            //Assert
+            Assert.AreEqual(result, expected);
 
         }
 
         [TestMethod]
-        public void ForgetResetPassword()
+        public void ChangePasswordBasRequest()
         {
             //Arrange
             AccountService account = new AccountService();
-            String userEmail = "exampleplacetobe@hotmail.de";
+            String userEmail = "placetobecologne@gmail.com";
+            String oldPassword = "falsepassword";
+            String newPassword = "something";
+            HttpStatusCode expected = HttpStatusCode.BadRequest;
 
             //Act
-            account.ForgetPasswordReset(userEmail);
+            Task<HttpStatusCode> status = account.ChangePasswort(userEmail, oldPassword, newPassword);
+            HttpStatusCode result = status.Result;
 
-            //SendForgetPassword is called by ForgetResetPassword
+            //Assert
+            Assert.AreEqual(result, expected);
 
         }
+        [TestMethod]
+        public void createUser()
+        {
+            //Arrange
+            AccountService account = new AccountService();
+            User usr = new User();
+            usr.status = true;
+            usr.city = "cologne";
 
+            //Act
+            Task<User> task = account.createUser(usr);
+
+        }
 
     }
 }
