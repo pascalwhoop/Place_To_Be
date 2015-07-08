@@ -61,11 +61,11 @@ namespace placeToBe.Tests.Service
             Assert.AreEqual(resultmale, expectedmale);
         }
 
-         [TestMethod]
+        [TestMethod]
         public void GetGenderUni()
         {
-             //Test doenst work with unisex names
-             //Test expects for "Kim" the gender female
+            //Test doenst work with unisex names
+            //Test expects for "Kim" the gender female
 
             //Arrange
             GenderizeService service = new GenderizeService();

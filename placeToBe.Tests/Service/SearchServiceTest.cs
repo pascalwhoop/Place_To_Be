@@ -1,18 +1,22 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using placeToBe.Services;
+using placeToBe.Model.Repositories;
+using placeToBe.Model.Entities;
 
 namespace placeToBe.Tests.Service
 {
     [TestClass]
     public class SearchServiceTest
     {
+
+
         [TestMethod]
         public void HeatSearch()
         {
             //Arrange
             SearchService search = new SearchService();
-            String id = "1231242";
+            String id = "1234133a";
             DateTime startime = new DateTime(2015, 5, 3, 20, 0, 0);
             DateTime endtime = new DateTime(2015, 5, 3, 23, 0, 0);
 
@@ -30,9 +34,9 @@ namespace placeToBe.Tests.Service
             //Act
             search.TextSearch(filter);
         }
-    
+
         [TestMethod]
-        public void  EventSearch()
+        public void EventSearch()
         {
             //Arrange
             SearchService search = new SearchService();
@@ -40,7 +44,7 @@ namespace placeToBe.Tests.Service
 
             //Act
             search.EventSearch(id);
-        } 
+        }
 
         [TestMethod]
         public void findNearEventFromAPoint()

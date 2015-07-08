@@ -1,121 +1,29 @@
-<md-dialog aria-label="Login">
+<md-dialog aria-label="Logout">
   <form>
     <md-toolbar>
       <div class="md-toolbar-tools">
-        <h2>Login</h2>
+        <h2>Logout</h2>
       </div>
     </md-toolbar>
     <md-dialog-content>
 
-      <!--LOGIN USER FORM-->
-      <div layout="column" ng-if="!registerDialog">
-        <!--<md-content layout-padding layout="row" layout-sm="column">
-          <md-input-container>
-            <label>Username</label>
-            <input ng-model="user.username">
-          </md-input-container>
-          <md-input-container>
-            <label>Password</label>
-            <input ng-model="user.password" type="password">
-          </md-input-container>
-        </md-content>
-        <md-content layout-padding layout="row" layout-sm="column">
-          <md-button class="md-raised fb-login-button" flex="50" ng-click="fbLogin()">
-            <md-icon md-font-icon="fa-facebook-official" class="fa"></md-icon>
-            <span>Use FB Login</span>
-          </md-button>
-          <md-button class="md-raised" flex ng-click="toggleRegister()">Register now</md-button>
-        </md-content>-->
-
-        <form name="loginForm">
-          <md-input-container>
-            <label>Email</label>
-            <input ng-model="user.email" type="email" name="email">
-
-            <div ng-messages="loginForm.email.$error">
-              <div ng-message="required">This is required.</div>
-            </div>
-          </md-input-container>
-
-          <md-input-container>
-            <label>Password</label>
-            <input ng-model="user.password" type="password" required name="password">
-
-            <div ng-messages="loginForm.password.$error">
-              <div ng-message="required">This is required.</div>
-            </div>
-          </md-input-container>
-
-          <md-button class="md-raised" ng-click="ptbLogin(user)"
-                     ng-disabled="!user.password || !user.email">Login
-          </md-button>
-        </form>
-
-        <md-button class="md-raised fb-login-button" ng-click="fbLogin()">
-          <md-icon md-font-icon="fa-facebook-official" class="fa">
-            <span style="padding-left: 5px;">Login with facebook</span>
-          </md-icon>
-        </md-button>
+      <div layout="column">
+        <p>Are you sure you want to log out?</p>
+        <md-button ng-class="" ng-click="logout()">Yes, log me out</md-button>
+        <!--Logout USER FORM-->
 
         <wait-bar show-event="serverCallStart" hide-event="serverCallEnd" message="Logging in...">
         </wait-bar>
       </div>
 
 
-      <!--REGISTER USER FORM-->
-      <div layout="column" ng-if="registerDialog">
-        <form name="dummyForm">
-        </form>
-        <!--TODO i dont know why i need a dummy form here... it just won't work if I don't have it.-->
-
-        <form name="registerForm">
-          <!-- <md-input-container>
-             <label>Username</label>
-             <input ng-model="user.username" required name="username">
-
-             <div ng-messages="registerForm.username.$error">
-               <div ng-message="required">This is required.</div>
-             </div>
-           </md-input-container>-->
-
-          <md-input-container>
-            <label>Email</label>
-            <input ng-model="user.email" type="email" name="email">
-
-            <div ng-messages="registerForm.email.$error">
-              <div ng-message="required">This is required.</div>
-            </div>
-          </md-input-container>
-
-          <md-input-container>
-            <label>Password</label>
-            <input ng-model="user.password" type="password" required equals="{{user.password2}}" name="password">
-          </md-input-container>
-          <md-input-container>
-            <label>repeat Password</label>
-            <input ng-model="user.password2" type="password" equals="{{user.password}}" name="password2">
-
-            <div ng-messages="registerForm.password2.$error">
-              <div ng-message="equals">Both passwords must match!</div>
-            </div>
-          </md-input-container>
-          <md-button class="md-raised" ng-click="registerUser(user)"
-                     ng-disabled="user.password != user.password2 || !user.email">Register now
-          </md-button>
-        </form>
-        <wait-bar show-event="serverCallStart" hide-event="serverCallEnd" message="Logging in...">
-        </wait-bar>
-      </div>
     </md-dialog-content>
 
     <!--the bottom rows-->
     <div class="md-actions" layout="row">
       <span flex></span>
-      <md-button ng-click="answer('Cancel')" class="md-primary">
+      <md-button ng-click="cancel()" class="md-primary">
         Cancel
-      </md-button>
-      <md-button ng-click="toggleRegister()" class="md-primary">
-        Register
       </md-button>
     </div>
   </form>

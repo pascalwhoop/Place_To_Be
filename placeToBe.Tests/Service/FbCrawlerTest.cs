@@ -20,21 +20,21 @@ namespace placeToBe.Tests.Service
             FbCrawler crawler = new FbCrawler();
 
 
-            Coordinates test1 = new Coordinates(23,25);
+            Coordinates test1 = new Coordinates(23, 25);
             Coordinates test2 = new Coordinates(0, 25);
             Coordinates test3 = new Coordinates(3, 25);
-            
 
-            
-            Coordinates[] testor =    { test1, test2, test3 };
+
+
+            Coordinates[] testor = { test1, test2, test3 };
             Coordinates[] expected1 = { test1, test2, test3 };
-            Coordinates[] expected2 = { test1, test3, test2 }; 
+            Coordinates[] expected2 = { test1, test3, test2 };
             Coordinates[] expected3 = { test2, test1, test3 };
-            Coordinates[] expected4 = { test2, test3, test1 }; 
+            Coordinates[] expected4 = { test2, test3, test1 };
             Coordinates[] expected5 = { test3, test1, test2 };
-            Coordinates[] expected6 = { test3, test2, test1 }; 
+            Coordinates[] expected6 = { test3, test2, test1 };
 
-            
+
             //Act
             Coordinates[] result = crawler.shuffle(testor);
 
@@ -63,7 +63,7 @@ namespace placeToBe.Tests.Service
             {
                 Assert.AreEqual(result, expected6);
             }
-            
+
         }
 
         /*
@@ -82,7 +82,8 @@ namespace placeToBe.Tests.Service
          */
 
         [TestMethod]
-        public void FindEventsOnPageTest() {
+        public void FindEventsOnPageTest()
+        {
             FbCrawler crawler = new FbCrawler();
             var placeID = "346376098748775";    //Reinecke Fuchs. Gibt aktuell noch Probleme (können irgendwie nicht auf dessen Events zugreifen
             placeID = "252874629056";           //Bootshaus. Da kommen wir irgendwie drauf... Altersbegrenzung??
@@ -90,7 +91,8 @@ namespace placeToBe.Tests.Service
         }
 
         [TestMethod]
-        public void FillEmptyEventFieldsTest() {
+        public void FillEmptyEventFieldsTest()
+        {
             FbCrawler crawler = new FbCrawler();
             Place place = new Place();
             Event fbEvent = new Event();

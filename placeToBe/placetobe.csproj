@@ -295,6 +295,9 @@
     <Content Include="Frontend\app\src\profile\profileView.html" />
     <Content Include="Frontend\app\src\services\configService.js" />
     <Content Include="Frontend\app\src\services\gaussianservice.js" />
+    <Content Include="Frontend\app\src\statistic\statDetailsTemplate.html" />
+    <Content Include="Frontend\app\src\statistic\statisticDirective.js" />
+    <Content Include="Frontend\app\src\statistic\statisticDirectiveTemplate.html" />
     <Content Include="Frontend\app\src\util\directives\utilDirectives.js" />
     <Content Include="Frontend\app\src\util\filters\utilFilters.js" />
     <Content Include="Global.asax" />
