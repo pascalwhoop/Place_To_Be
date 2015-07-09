@@ -257,6 +257,8 @@
     <Content Include="Frontend\app\bower_components\font-awesome-bower\css\font-awesome.css" />
     <Content Include="Frontend\app\bower_components\font-awesome-bower\fonts\fontawesome-webfont.svg" />
     <Content Include="Frontend\app\bower_components\ng-facebook\ngFacebook.js" />
+    <Content Include="Frontend\app\bower_components\ng-table\dist\ng-table.css" />
+    <Content Include="Frontend\app\bower_components\ng-table\dist\ng-table.js" />
     <Content Include="Frontend\app\bower_components\seedrandom\seedrandom.js" />
     <Content Include="Frontend\app\bower_components\seedrandom\seedrandom.min.js" />
     <Content Include="Frontend\app\favicon.ico" />
@@ -275,7 +277,7 @@
     <Content Include="Frontend\app\src\app.js" />
     <Content Include="Frontend\app\src\eventlist\EventListDirective.js" />
     <Content Include="Frontend\app\src\eventlist\EventListDirectiveTemplate.html" />
-    <Content Include="Frontend\app\src\heatmap\heatmapController.js" />
+    <Content Include="Frontend\app\src\heatmap\heatmap.js" />
     <Content Include="Frontend\app\src\heatmap\heatmapDirective.html" />
     <Content Include="Frontend\app\src\heatmap\heatmapDirective.js" />
     <Content Include="Frontend\app\src\heatmap\heatmapDirective.js" />
@@ -295,8 +297,8 @@
     <Content Include="Frontend\app\src\services\configService.js" />
     <Content Include="Frontend\app\src\services\gaussianservice.js" />
     <Content Include="Frontend\app\src\statistic\statDetailsTemplate.html" />
-    <Content Include="Frontend\app\src\statistic\statisticDirective.js" />
-    <Content Include="Frontend\app\src\statistic\statisticDirectiveTemplate.html" />
+    <Content Include="Frontend\app\src\statistic\statistic.js" />
+    <Content Include="Frontend\app\src\statistic\statisticView.html" />
     <Content Include="Frontend\app\src\util\utilDirectives.js" />
     <Content Include="Frontend\app\src\util\utilFilters.js" />
     <Content Include="Frontend\app\src\util\utilServices.js" />
