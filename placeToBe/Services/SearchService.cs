@@ -93,10 +93,10 @@ namespace placeToBe.Services
         {
             List<FbUser> eventAttendingFriends = new List<FbUser>();
             List<Rsvp> eventAttendingPeople = currentEvent.attending;
+            List<Datum> fbUserFriends = fbUser.friends.data;
 
-            var fbUserFriends = fbUser.friends.data;
-
-            if (eventAttendingPeople == null)
+ 
+            if (eventAttendingPeople == null || fbUserFriends==null)
             {
                 return currentEvent;
             }
