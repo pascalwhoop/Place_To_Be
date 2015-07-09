@@ -31,9 +31,5 @@ namespace placeToBe.Services
                 return eventAttendingFriends;
         }
 
-        public void setFbUserFriends(String fbUserId, String accessUserToken)
-        {
-            //ToDoIfNeeded server side call of fbUser friends who also use placeToBe
-        }
     }
 }

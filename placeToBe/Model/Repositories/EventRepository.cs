@@ -79,7 +79,8 @@ namespace placeToBe.Model.Repositories
                 {"start_time",1},
                 {"end_time",1},
                 {"attendingMale",1},
-                {"attendingFemale",1}
+                {"attendingFemale",1},
+                {"attending",1}
             };
             ProjectionDefinition<Event, Event> projDefinition = new BsonDocument(projectionContent);
             var task = _collection.Find(filter).Project(projDefinition).ToListAsync();

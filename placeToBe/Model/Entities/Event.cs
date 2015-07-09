@@ -1,12 +1,12 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Web;
 
 namespace placeToBe.Model.Entities
-
 {
     /// <summary>
     /// Facebook Event class which contains the same fields as the 
@@ -36,7 +36,7 @@ namespace placeToBe.Model.Entities
         [DataMember]
         public string timezone { get; set; }
         [DataMember]
-        public string updated_time { get; set; }      
+        public string updated_time { get; set; }
 
         [DataMember]
         public int invitedCount { get; set; }
@@ -57,13 +57,15 @@ namespace placeToBe.Model.Entities
         public CoverPhoto cover { get; set; }
         [DataMember]
         public Place place { get; set; }
-        public Category[] categoryList { get; set;  }
+        public Category[] categoryList { get; set; }
         [DataMember]
         public string name { get; set; }
         [DataMember(Name = "attending_count")]
         public int attendingCount { get; set; }
         [DataMember]
         public GeoLocation geoLocationCoordinates { get; set; }
+        [DataMember]
+        public List<FbUser> attendingFriends { get; set; }
 
     }
     /// <summary>
@@ -81,7 +83,8 @@ namespace placeToBe.Model.Entities
         public string id { get; set; }
     }
 
-    public class FbLocation {
+    public class FbLocation
+    {
         public string city { get; set; }
         public string country { get; set; }
         public double latitude { get; set; }
@@ -94,9 +97,10 @@ namespace placeToBe.Model.Entities
     /// </summary>
     [DataContract]
     public class GeoLocation
-    {  
-        public GeoLocation(double lat, double lng) {
-            this.coordinates = new double[2]{lat, lng};
+    {
+        public GeoLocation(double lat, double lng)
+        {
+            this.coordinates = new double[2] { lat, lng };
             type = "Point";
         }
         public string type { get; set; }
