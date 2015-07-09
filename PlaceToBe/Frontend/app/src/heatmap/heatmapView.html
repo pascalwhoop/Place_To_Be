@@ -1,19 +1,18 @@
-
-<!--Header-->
 <md-toolbar layout="row" layout-align="end center">
   <span flex="5"></span>
   <md-select placeholder="City" ng-model="ctrl.userState" flex="20" ng-change="fetchEvents(query)">
     <md-option ng-repeat="city in cities |orderBy: 'formatted_address'" ng-click="query.place = city">{{city.formatted_address}}</md-option>
   </md-select>
-  <span flex="5"></span>
+  <span flex></span>
   <md-input-container flex="20">
     <label>Date</label>
     <input type="date" ng-model="query.startDate" ng-change="fetchEvents(query)">
   </md-input-container>
-  <span flex="5"></span>
-  <md-select placeholder="Time" ng-model="query.startHour" flex="20" ng-change="fetchEvents(query)">
+  <span flex></span>
+  <md-select placeholder="Time" ng-model="query.startHour" ng-change="fetchEvents(query)">
     <md-option ng-repeat="n in [] | range:0:23" value="{{n}}">{{n}}:00</md-option>
   </md-select>
+  <md-button ng-show="heatmapData">Show Data</md-button>
   <!--<div><md-button ng-click="fetchEvents(query)" class="md-raised">FetchEvents</md-button></div>-->
   <!--to login with FB or our own accounts-->
   <span flex></span>
@@ -25,7 +24,7 @@
 <md-content id="content" layout="row" flex>
   <div ng-if="heatmapData" layout="row" flex>
     <placetobe-heatmap query="query" data="heatmapData" click-listener="mapClick" flex layout="column" map-styles="mapStyles"></placetobe-heatmap>
-    <event-list layout="column" flex="33" event-data="eventData" ng-if="eventData.length > 0">
+    <event-list layout="column" flex="33" event-data="eventData" ng-if="eventData.length > 0" class="md-whiteframe-z3">
 
     <div ng-if="!heatmapData">
     <p>

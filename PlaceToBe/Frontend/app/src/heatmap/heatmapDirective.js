@@ -33,7 +33,7 @@ angular.module('placeToBe')
         scope.$watch('query', function (newValue, oldValue) {
           if (newValue && mapObj) //if value has changed and we have a map object already initialized
           {
-            if(newValue.place.place_id != oldValue.place.place_id){
+            if (newValue.place.place_id != oldValue.place.place_id) {
               setMapLocation(newValue.place.formatted_address);
             }
           }
@@ -45,22 +45,69 @@ angular.module('placeToBe')
 
           addMapListeners(map);
 
-          setMapLocation(scope.query.place.formatted_address,refreshHeatmapLayer); //set locatin then pass the refreshHeatmapLayer as a callback
+          setMapLocation(scope.query.place.formatted_address, refreshHeatmapLayer); //set locatin then pass the refreshHeatmapLayer as a callback
 
+          refreshHeatmapLayer();
         });
 
+        var getGeoLocationOfUser = function (map) {
 
-        var addMapListeners = function(map){
+          navigator.geolocation.getCurrentPosition(function(position) {
+
+            var geolocate = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+            var infowindow = new google.maps.InfoWindow({
+              map: map,
+              position: geolocate,
+              content:
+              '<h1>Location pinned from HTML5 Geolocation!</h1>' +
+              '<h2>Latitude: ' + position.coords.latitude + '</h2>' +
+              '<h2>Longitude: ' + position.coords.longitude + '</h2>'
+            });
+
+            map.setCenter(geolocate);
+
+          });
+
+          if (!!navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+              var pos = new google.maps.LatLng(position.coords.latitude,
+                position.coords.longitude);
+
+              var marker = new google.maps.Marker({
+                position: pos,
+                map: map,
+                title: 'you!'
+              });
+
+              map.setCenter(pos);
+            }, function () {
+              handleNoGeolocation(true);
+            });
+          }
+        };
+
+        function handleNoGeolocation(errorFlag) {
+          if (errorFlag) {
+            var content = 'Error: The Geolocation service failed.';
+          } else {
+            var content = 'Error: Your browser doesn\'t support geolocation.';
+          }
+
+        }
+
+
+        var addMapListeners = function (map) {
           google.maps.event.addListener(map, 'zoom_changed', function () {
-            if(heatmapLayer){
-              setTimeout(function(){
+            if (heatmapLayer) {
+              setTimeout(function () {
                 heatmapLayer.setOptions({radius: getNewRadius()});
-              },2);
+              }, 2);
             }
           });
 
           //a listener is added to the map. whenever the user clicks the map, this listener is executed.
-          google.maps.event.addListener(map, 'click', function(event) {
+          google.maps.event.addListener(map, 'click', function (event) {
             //we bind the clickListener function from the parent scope to this listener. the controller can take the click and perform an action based on it
             scope.clickListener(event);
           });
@@ -73,24 +120,24 @@ angular.module('placeToBe')
             if (status == google.maps.GeocoderStatus.OK) {
               mapObj.setCenter(results[0].geometry.location);
               mapObj.fitBounds(results[0].geometry.bounds);
-              if(callback) callback(); //call callback if present
+              if (callback) callback(); //call callback if present
             }
           });
         };
 
 
-        var refreshHeatmapLayer = function(){
+        var refreshHeatmapLayer = function () {
           if (heatmapLayer != null) heatmapLayer.setMap(null);
 
           //here we use some reeeaaally nifty stuff. lets employ a webworker! (yep I'm pretty proud about doing this, lets see if it works too ;)
           var worker = new Worker('src/heatmap/heatmapLayerWebWorker.js');
-          worker.addEventListener('message', function(e){
+          worker.addEventListener('message', function (e) {
             var gMapsLatLngArray = [];
-            e.data.forEach(function(e){
+            e.data.forEach(function (e) {
               gMapsLatLngArray.push(new google.maps.LatLng(e.lat, e.lng));
             });
             setHeatmapDataArrayAsLayer(gMapsLatLngArray);
-          },false);
+          }, false);
           worker.postMessage(scope.data);
           //setHeatmapDataArrayAsLayer(getHeatmapDataArrayForEvents(scope.data));
         };
@@ -105,36 +152,36 @@ angular.module('placeToBe')
           heatmapLayer.setMap(mapObj);
         };
 
-         /*
+        /*
          * var getHeatmapDataArrayForEvents = function (events) {
-          var heatmapData = [];
-          events.forEach(function (element) {
-          addPointsForEachGuest(element, heatmapData);
-          }
-          );
-          return heatmapData;
-          };
+         var heatmapData = [];
+         events.forEach(function (element) {
+         addPointsForEachGuest(element, heatmapData);
+         }
+         );
+         return heatmapData;
+         };
 
-          //a method to create a heatmap around a coordinate
-          var addPointsForEachGuest = function (event, heatmapData) {
-          //create a random number generator. we always use the same seed to always get the same visual representation of an event
-          var rng = new Math.seedrandom("seed");
-          //if event has no coordinates ignore this event
-          if (!event.geoLocationCoordinates || !event.geoLocationCoordinates.coordinates) return;
-          //calculate the maximum radius that should be filled with heatpoint dots
-          var maxEventRadius = scope.SIZE_PER_PERSON * Math.pow(event.attending_count, 0.66666);
-          //we create points for every X people (PERSONS_PER_POINT)
-          for (var i = 0; i < Math.ceil(event.attending_count / scope.PERSONS_PER_POINT); i++) {
-          //how far away from the event center?
-          var heatPointDistance = maxEventRadius * rng.quick();
-          //which direction from the event center?
-          var angle = rng.quick() * Math.PI * 2;
-          var a = event.geoLocationCoordinates.coordinates[0] + Math.cos(angle) * heatPointDistance;
-          var b = event.geoLocationCoordinates.coordinates[1] + Math.sin(angle) * heatPointDistance;
-          var latLng = new google.maps.LatLng(a, b);
-          heatmapData.push(latLng);
-          }
-          };*/
+         //a method to create a heatmap around a coordinate
+         var addPointsForEachGuest = function (event, heatmapData) {
+         //create a random number generator. we always use the same seed to always get the same visual representation of an event
+         var rng = new Math.seedrandom("seed");
+         //if event has no coordinates ignore this event
+         if (!event.geoLocationCoordinates || !event.geoLocationCoordinates.coordinates) return;
+         //calculate the maximum radius that should be filled with heatpoint dots
+         var maxEventRadius = scope.SIZE_PER_PERSON * Math.pow(event.attending_count, 0.66666);
+         //we create points for every X people (PERSONS_PER_POINT)
+         for (var i = 0; i < Math.ceil(event.attending_count / scope.PERSONS_PER_POINT); i++) {
+         //how far away from the event center?
+         var heatPointDistance = maxEventRadius * rng.quick();
+         //which direction from the event center?
+         var angle = rng.quick() * Math.PI * 2;
+         var a = event.geoLocationCoordinates.coordinates[0] + Math.cos(angle) * heatPointDistance;
+         var b = event.geoLocationCoordinates.coordinates[1] + Math.sin(angle) * heatPointDistance;
+         var latLng = new google.maps.LatLng(a, b);
+         heatmapData.push(latLng);
+         }
+         };*/
 
         //=================================================================================
         //Mercator --BEGIN--   code from Google Maps Examples
@@ -230,8 +277,8 @@ angular.module('placeToBe')
       scope: {
         data: "=",
         query: "=",
-        clickListener:"=",
-        mapStyles:"="
+        clickListener: "=",
+        mapStyles: "="
       }
     };
   });

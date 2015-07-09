@@ -22,6 +22,8 @@ namespace FbCrawlerWebjob
         // Please set the following connection strings in app.config for this WebJob to run:
         // AzureWebJobsDashboard and AzureWebJobsStorage
         static void Main() {
+
+            Thread.Sleep(1000*40); // to be able to debug and fetch the first few things. 
             setRedirectOutputToLogfile();
             // The following code ensures that the WebJob will be running continuously
             Program p = new Program();
@@ -83,11 +85,10 @@ namespace FbCrawlerWebjob
         {
 
             cities.Sort((x, y) => DateTime.Compare(x.lastCheckedTime, y.lastCheckedTime));
-            cities.Reverse();
 
             var parallelOptions = new ParallelOptions
             {
-                MaxDegreeOfParallelism = 1
+                MaxDegreeOfParallelism = 3
             };
 
 

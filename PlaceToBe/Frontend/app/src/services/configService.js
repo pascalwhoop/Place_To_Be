@@ -11,6 +11,12 @@ angular.module('placeToBe')
   .factory('configService', function () {
     return{
       BASE_URL: "https://placetobe-koeln.azurewebsites.net/api",
+      STRINGS: {
+        backend_error: "An error occured. Try again later",
+        reset_email_sent: "Reset Email sent!",
+        registration_success: 'Registration successful. Check your email!',
+        registration_error: 'We had a problem with the registration. Try a different email or come back later!'
+      },
       //BASE_URL: "https://localhost:18172/api",
       MAPS_STYLE_ARRAY: [
         {

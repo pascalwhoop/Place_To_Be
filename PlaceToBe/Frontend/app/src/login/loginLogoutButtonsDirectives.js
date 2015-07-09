@@ -23,26 +23,22 @@ angular.module('placeToBe')
         };
 
 
-        function LoginDialogController($scope, $mdDialog, loginService, toastNotifyService) {
+        function LoginDialogController($scope, $mdDialog, loginService, toastNotifyService, configService) {
           $scope.cancel = function () {
             $mdDialog.cancel();
           };
 
 
-          $scope.registerDialog = false;
-          $scope.toggleRegister = function () {
-            $scope.registerDialog = !$scope.registerDialog;
-          };
+          $scope.dialog = "login"; //default. we can switch between "login" "register" and "forgotPassword"
 
           //we register a User. passing the values to our service
           $scope.registerUser = function (user) {
             $scope.serverWait = true;
             loginService.registerUser(user).then(function (successRes) {
-              toastNotifyService.showNotifyToast('Registration successful. Check your email!');
+              toastNotifyService.showNotifyToast(configService.STRINGS.registration_success);
               $mdDialog.hide();
-
             }, function (errResponse) {
-              uNotify.showNotifyToast('We had a problem with the registration. Try a different email or come back later!');
+              toastNotifyService.showNotifyToast(configService.STRINGS.registration_error);
             })
           };
 
@@ -61,6 +57,17 @@ angular.module('placeToBe')
               if (response.status == 'connected') $mdDialog.hide();
             });
           };
+
+          $scope.performPasswordReset = function (email) {
+            loginService.resetPassword(email)
+              .success(function(){
+                toastNotifyService.showNotifyToast(configService.STRINGS.reset_email_sent);
+              })
+              .error(function(){
+                toastNotifyService.showNotifyToast(configService.STRINGS.backend_error);
+              })
+          }
+
 
 
 
@@ -102,6 +109,7 @@ angular.module('placeToBe')
           $scope.logout = function(){
             loginService.logout();
             $mdDialog.hide();
+            location.reload();
           }
 
         }
