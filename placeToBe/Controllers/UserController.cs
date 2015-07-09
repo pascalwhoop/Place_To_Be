@@ -111,7 +111,7 @@ namespace placeToBe.Controllers
             try
             {
 
-                await accountService.ForgetPasswordReset(userEmail);
+                await accountService.forgetPasswordReset(userEmail);
                 HttpContext.Current.Response.StatusCode = (int)HttpStatusCode.OK;
                 return new JsonResponse
                 {
@@ -144,7 +144,7 @@ namespace placeToBe.Controllers
         public async Task<JsonResponse> Put(PasswordChangePair pcp)
         {
 
-            var code = await accountService.ChangePassword(pcp.email, pcp.oldPassword, pcp.newPassword);
+            var code = await accountService.changePassword(pcp.email, pcp.oldPassword, pcp.newPassword);
             HttpContext.Current.Response.StatusCode = (int)code;
             switch (code)
             {
