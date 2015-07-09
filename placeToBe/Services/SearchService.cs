@@ -93,10 +93,18 @@ namespace placeToBe.Services
         {
             List<FbUser> eventAttendingFriends = new List<FbUser>();
             List<Rsvp> eventAttendingPeople = currentEvent.attending;
-            List<Datum> fbUserFriends = fbUser.friends.data;
+            List<Datum> fbUserFriends;
+            try
+            {
+                fbUserFriends = fbUser.friends.data;
+            }
+            catch (NullReferenceException)
+            {
+                return currentEvent;
+            }
 
- 
-            if (eventAttendingPeople == null || fbUserFriends==null)
+
+            if (eventAttendingPeople == null)
             {
                 return currentEvent;
             }
