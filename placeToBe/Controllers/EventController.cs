@@ -20,7 +20,7 @@ namespace placeToBe.Controllers
         /// <summary>
         /// Return a list of events. The method needs the id, year, month, day and hour.
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">City id</param>
         /// <param name="year"></param>
         /// <param name="month"></param>
         /// <param name="day"></param>
