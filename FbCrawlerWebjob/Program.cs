@@ -88,7 +88,7 @@ namespace FbCrawlerWebjob
 
             var parallelOptions = new ParallelOptions
             {
-                MaxDegreeOfParallelism = 8
+                MaxDegreeOfParallelism = 3
             };
 
 

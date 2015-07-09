@@ -221,7 +221,7 @@ angular.module('placeToBe')
     };
 
     var resetPassword = function(email){
-      return $http.put(configService.BASE_URL+ '/user/' + email + '/password_reset', {});
+      return $http.post(configService.BASE_URL+ '/user/' + email + '/password_reset', {});
     };
 
     return {
