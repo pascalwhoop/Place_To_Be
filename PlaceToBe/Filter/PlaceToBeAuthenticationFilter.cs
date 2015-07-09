@@ -120,7 +120,7 @@ public class PlaceToBeAuthenticationFilter : AuthorizationFilterAttribute
     /// </summary>
     /// <param name="userEmail"></param>
     /// <param name="userPassword"></param>
-    /// <returns></returns>
+    /// <returns>bool</returns>
     private async Task<bool> checkPtbPassword(string userEmail, string userPassword)
     {
         try
