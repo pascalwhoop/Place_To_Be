@@ -10,11 +10,21 @@ using System.Collections.Generic;
 
 namespace placeToBe.Tests.Model
 {
+    //author: Merve Bas 
+
+    /// <summary>
+    /// Class is testing methods of the class UserRepository
+    /// Procedure: 
+    /// creating dummy- parameters and passing it over
+    /// </summary>
     [TestClass]
     public class UserRepositoryTest
     {
+        /// <summary>
+        /// Method inserts a dummy- city so other can be used with a non- filled database
+        /// </summary>
         [TestMethod]
-        public void InsertsADummyUserForTest()
+        public void insertsADummyUserForTest()
         {
             //Arrange
             MongoDbRepository<User> repo = new MongoDbRepository<User>();
@@ -29,7 +39,7 @@ namespace placeToBe.Tests.Model
         }
         /*
         [TestMethod]
-        public void GetByEmailAsync()
+        public void getByEmailAsync()
         {
             //Arrange
             UserRepository repo = new UserRepository();
@@ -44,6 +54,10 @@ namespace placeToBe.Tests.Model
             Assert.IsNotNull(task);
         }
         */
+
+        /// <summary>
+        /// Testing the method getAllAsync of class CityRepository for practicability 
+        /// </summary>
         [TestMethod]
         public void getByActivationCodeTest()
         {

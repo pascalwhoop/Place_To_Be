@@ -7,12 +7,21 @@ using System.Collections.Generic;
 
 namespace placeToBe.Tests.Model
 {
+    //author: Merve Bas 
+
+    /// <summary>
+    /// Class is testing methods of the class EventRepository
+    /// Procedure: 
+    /// creating dummy- parameters and passing it over 
+    /// </summary>
     [TestClass]
     public class EventRepositoryTest
     {
-
+        /// <summary>
+        /// Method inserts an event so other methods with a non- filled database
+        /// </summary>
         [TestMethod]
-        public void InsertAnEventForTestsEventRepository()
+        public void insertAnEventForTestsEventRepositoryTest()
         {
             //Arrange
             MongoDbRepository<Event> repo = new MongoDbRepository<Event>();
@@ -27,8 +36,11 @@ namespace placeToBe.Tests.Model
             repo.InsertAsync(eventtest);
         }
 
+        /// <summary>
+        /// Testing the method getEventsByTimeAndPolygon of class EventRepository for practicability 
+        /// </summary>
         [TestMethod]
-        public void getEventsByTimeAndPolygon()
+        public void getEventsByTimeAndPolygonTest()
         {
             //Arrange
             EventRepository repo = new EventRepository();

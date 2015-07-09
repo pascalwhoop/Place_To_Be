@@ -7,40 +7,49 @@ using System.Threading.Tasks;
 using System.Net;
 
 namespace placeToBe.Tests.Service
-{
+{   //author: Merve Bas 
+
+    /// <summary>
+    /// Class is testing methods of the class AccountService
+    /// Especially these methods are goint to be tested also by BlackBox tests by 
+    /// simulating a user passing correct and incorrect Inputs
+    /// Procedure: 
+    /// creating dummy- parameters and passing it over 
+    /// </summary>
+
     [TestClass]
     public class AccountServiceTest
     {
 
-        //Methods are goint to be tested also by BlackBox tests
-        //to check for correct and incorrect inputs
+        /// <summary>
+        /// Testing the method createUserTest of class AccountService for practicability 
+        /// </summary>
         [TestMethod]
-        public void SaveFbData()
+        public void createUserTest()
         {
             //Arrange
             AccountService account = new AccountService();
             UserRepository userrepo = new UserRepository();
 
-            FbUser usertest = new FbUser();
-            usertest.firstName = "Merve";
-            usertest.lastName = "Nur";
-            usertest.emailFB = "examplemailfbmerve@googlemail.com";
+            User usertest = new User();
+            usertest.city = "DummyCity";
+            usertest.email = "DummyEmail";
 
             //Act
-            var task = account.SaveFBData(usertest);
+            var task = account.createUser(usertest);
 
 
             //Assert
             Assert.IsNotNull(task);
 
-
-
         }
 
 
-
+        /// <summary>
+        /// Testing the method sendActivationEmail of class AccountService
+        /// </summary>
         [TestMethod]
-        public void SendActivationEmailInternalServerError()
+        public void sendActivationEmailTest()
         {   //Arrange
             AccountService account = new AccountService();
 
@@ -53,16 +62,11 @@ namespace placeToBe.Tests.Service
             String result = status.Result;
 
             //Assert
-            //result ist the activationcode for the user 
-            //the activationcode is changin everytime this methode is used
             Assert.IsNotNull(result);
 
         }
 
 
-
-
-        /*
 
             //[TestMethod]
             //public void ConfirmEmailOk()
@@ -97,47 +101,13 @@ namespace placeToBe.Tests.Service
             //    Assert.AreEqual(result, expected);
             //}
 
-            /*
-            [TestMethod]
-            public void Login()
-            {
-               //Arrange
 
-                AccountService account = new AccountService();
-                String usersEmail = "exampleplacetobe@hotmail.de";
-                String userpassword = "exampleplacetobe123";
-
-                //Act 
-
-                account.Login(usersEmail, userpassword);
-
-                //Assert
-
-           
-            
-
-                /*
-            
-                //versuch mit nicht registrierter mail adresse oder passwort
-                //Test funktioniert auch mit nicht registrierten Informationen 
-                //wird wahrscheinlich abgefangen durch try catch 
-
-                //Arrange
-
-                AccountService account = new AccountService();
-                string email = "exampleplacetobenicht@hotmail.de";
-                string password = "exampleplacetobe123678";
-
-
-                //Act 
-
-                account.Login(email, password);
-             
-            }
-        */
-
+        /// <summary>
+        /// Testing the method changePassword of class AccountService
+        /// with invalid input so the method returns a NotFound Exception
+        /// </summary>
         [TestMethod]
-        public void ChangePasswordNotFound()
+        public void changePasswordNotFoundTest()
         {
             //Arrange
             AccountService account = new AccountService();
@@ -155,8 +125,12 @@ namespace placeToBe.Tests.Service
 
         }
 
+        /// <summary>
+        /// Testing the method changePassword of class AccountService
+        /// with invalid input so the method returns a BasRequest Exception
+        /// </summary>
         [TestMethod]
-        public void ChangePasswordBasRequest()
+        public void changePasswordBasRequestTest()
         {
             //Arrange
             AccountService account = new AccountService();
@@ -173,17 +147,23 @@ namespace placeToBe.Tests.Service
             Assert.AreEqual(result, expected);
 
         }
+
+        /// <summary>
+        /// Testing the method saveFbData of class AccountService for practicatily 
+        /// </summary>
         [TestMethod]
-        public void createUser()
+        public void saveFbDataTest()
         {
             //Arrange
             AccountService account = new AccountService();
-            User usr = new User();
-            usr.status = true;
-            usr.city = "cologne";
+            FbUser usr = new FbUser();
+            usr.firstName = "Laura";
 
             //Act
-            Task<User> task = account.createUser(usr);
+            Task<FbUser> task = account.SaveFBData(usr);
+
+            //Assert
+            Assert.IsNotNull(task);
 
         }
 

@@ -7,14 +7,24 @@ using placeToBe.Model;
 
 namespace placeToBe.Tests.Model
 {
+    //author: Merve Bas 
+
+    /// <summary>
+    /// Class is testing methods of the class MongoDbRepository
+    /// Procedure: 
+    /// creating dummy- parameters and passing it over 
+    /// MongoDbRepository contains CRUD Operations
+    /// </summary>
     [TestClass]
     public class MongoDbRepositoryTest
     {
         MongoDbRepository<Event> model = new MongoDbRepository<Event>();
 
-
+        /// <summary>
+        /// Testing the method insertAsnyc of class MongoDbRepository for practicability 
+        /// </summary>
         [TestMethod]
-        public void InsertAsync()
+        public void insertAsync()
         {
             //Arrange
 
@@ -28,8 +38,11 @@ namespace placeToBe.Tests.Model
             //Arrange
         }
 
+        /// <summary>
+        /// Testing the method updateAsnyc of class MongoDbRepository for practicability 
+        /// </summary>
         [TestMethod]
-        public void UpdateAsync()
+        public void updateAsync()
         {
             //Arrange
             Event test = new Event();
@@ -43,8 +56,11 @@ namespace placeToBe.Tests.Model
             //Arrange
         }
 
+        /// <summary>
+        /// Testing the method deleteAsnyc of class MongoDbRepository for practicability 
+        /// </summary>
         [TestMethod]
-        public void DeleteAsync()
+        public void deleteAsyncTest()
         {
             //Arrange
             Event test = new Event();
@@ -55,8 +71,11 @@ namespace placeToBe.Tests.Model
             //Arrange
         }
 
+        /// <summary>
+        /// Testing the method searchForAsnyc of class MongoDbRepository for practicability 
+        /// </summary>
         [TestMethod]
-        public void SearchForAsync()
+        public void searchForAsync()
         {
             //Arrange
             string filtertext = "filter";
@@ -67,8 +86,11 @@ namespace placeToBe.Tests.Model
             //Arrange
         }
 
+        /// <summary>
+        /// Testing the method getAllAsnyc of class MongoDbRepository for practicability 
+        /// </summary>
         [TestMethod]
-        public void GetAllAsync()
+        public void getAllAsync()
         {
             //Arrange
 
@@ -79,18 +101,7 @@ namespace placeToBe.Tests.Model
             //Arrange
         }
 
-        [TestMethod]
-        public void GetByIdAsync()
-        {
-            //Arrange
-            String name = "";
-
-
-            //Act
-            model.GetByNameAsync(name);
-
-            //Arrange
-        }
+        
 
     }
 

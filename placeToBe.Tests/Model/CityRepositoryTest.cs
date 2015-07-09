@@ -7,11 +7,21 @@ using System.Collections.Generic;
 
 namespace placeToBe.Tests.Model
 {
+    //author: Merve Bas 
+
+    /// <summary>
+    /// Class is testing methods of the class CityRepository
+    /// Procedure: 
+    /// creating dummy- parameters and passing it over 
+    /// </summary>
     [TestClass]
     public class CityRepositoryTest
     {
+        /// <summary>
+        /// Testing the method getAllAsync of class CityRepository for practicability 
+        /// </summary>
         [TestMethod]
-        public void GetAllAsync()
+        public void getAllAsyncTest()
         {
             //Arrange
             CityRepository repo = new CityRepository();
@@ -24,9 +34,11 @@ namespace placeToBe.Tests.Model
 
 
         }
-
+        /// <summary>
+        /// Method inserts a city so method getByPlaceId can be used with a non- filled database
+        /// </summary>
         [TestMethod]
-        public void InsertAPlaceForTestgteByPlaceId()
+        public void insertAPlaceForTestGetByPlaceId()
         {
             //Arrange
             MongoDbRepository<City> repo = new MongoDbRepository<City>();
@@ -38,8 +50,12 @@ namespace placeToBe.Tests.Model
             repo.InsertAsync(city);
         }
 
+        /// <summary>
+        /// Testing the method getByPlaceID of class CityRepository for practicability 
+        /// The expected adress is compared to the actual result of the method
+        /// </summary>
         [TestMethod]
-        public void getByPlaceId()
+        public void getByPlaceIdTest()
         {
             //Arrange
             CityRepository repo = new CityRepository();

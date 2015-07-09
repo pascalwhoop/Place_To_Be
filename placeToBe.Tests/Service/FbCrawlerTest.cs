@@ -10,11 +10,23 @@ using placeToBe.Model.Entities;
 
 namespace placeToBe.Tests.Service
 {
+    //author: Merve Bas 
+
+    /// <summary>
+    /// Class is testing methods of the class FbCrawler
+    /// Procedure: 
+    /// creating dummy- parameters and passing it over 
+    /// </summary>
     [TestClass]
     public class FbCrawlerTest
     {
+        /// <summary>
+        /// Testing the method shuffle of class FbCrawler 
+        /// Procedure: 
+        /// crating dummy- parameters und comparing the expected results with the actual result of the method
+        /// </summary>
         [TestMethod]
-        public void Shuffle()
+        public void shuffle()
         {
             //Arrange
             FbCrawler crawler = new FbCrawler();
@@ -66,32 +78,26 @@ namespace placeToBe.Tests.Service
 
         }
 
-        /*
+
+        /// <summary>
+        /// Testing the method findEventsOnPage of class FbCrawler 
+        /// author: author of the method indEventsOnPage
+        /// </summary>
         [TestMethod]
-        public void HandlePlace() {
-            FbCrawler crawler = new FbCrawler();
-            var place =
-                "{\"id\":\"150350494981623\",\"can_post\":false,\"category\":\"Hotel\",\"category_list\":[{\"id\":\"164243073639257\",\"name\":\"Hotel\"},{\"id\":\"273819889375819\",\"name\":\"Restaurant\"},{\"id\":\"110290705711626\",\"name\":\"Bar\"}],\"checkins\":1434,\"cover\":{\"cover_id\":\"1086126261404037\",\"offset_x\":0,\"offset_y\":0,\"source\":\"https:\\/\\/scontent.xx.fbcdn.net\\/hphotos-xfa1\\/v\\/t1.0-9\\/s720x720\\/10308054_1086126261404037_3460166067659233902_n.jpg?oh=38131c7bbab83987955e70dce85de589&oe=55FCDA15\",\"id\":\"1086126261404037\"},\"description\":\"Tradition kombiniert mit moderner Gastronomie & gehobener K\\u00fcche\\n\\nVerwendet werden selbstverst\\u00e4ndlich nur Rohstoffe von ausgew\\u00e4hlten und erstklassigen Erzeugern. Mit dieser Einstellung gewinnen die Br\\u00fcder Wilbrand sowie ihr K\\u00fcchen-Team immer neue Freunde.\",\"general_info\":\"Der MICHELIN F\\u00fchrer 2013 k\\u00fcrte unser Team zum 9. mal mit 1 Stern (Gourmet Restaurant) und einem Bib Gourmand (Postsch\\u00e4nke).\\nDer GAULT MILLAU 2012 hat unserer Mannschaft 16 Punkte verliehen f\\u00fcr hohe KREATIVIT\\u00c4T und QUALIT\\u00c4T.\",\"has_added_app\":false,\"is_community_page\":false,\"is_published\":true,\"likes\":2173,\"link\":\"https:\\/\\/www.facebook.com\\/pages\\/Hotel-Restaurant-Zur-Post-in-Odenthal\\/150350494981623\",\"location\":{\"city\":\"Odenthal\",\"country\":\"Germany\",\"latitude\":51.03245398355,\"longitude\":7.1154067667291,\"street\":\"Altenberger Dom Stra\\u00dfe 23\",\"zip\":\"51519\"},\"name\":\"Hotel & Restaurant \\\"Zur Post\\\" in Odenthal\",\"parking\":{\"lot\":1,\"street\":0,\"valet\":0},\"phone\":\"+49 2202 977780\",\"price_range\":\"$$$ (30-50)\",\"talking_about_count\":29,\"website\":\"http:\\/\\/www.zurpost.eu\",\"were_here_count\":1434}";
-            var condition = "searchPlace";
-            var id = "150350494981623";
-
-            
-
-            crawler.handlePlace(place, condition, id);
-        }
-         */
-
-        [TestMethod]
-        public void FindEventsOnPageTest()
+        public void findEventsOnPageTest()
         {
             FbCrawler crawler = new FbCrawler();
-            var placeID = "346376098748775";    //Reinecke Fuchs. Gibt aktuell noch Probleme (können irgendwie nicht auf dessen Events zugreifen
-            placeID = "252874629056";           //Bootshaus. Da kommen wir irgendwie drauf... Altersbegrenzung??
+            var placeID = "346376098748775";    
+            placeID = "252874629056";           
             crawler.fetchEventsOnPage(placeID);
         }
 
+        /// <summary>
+        /// Testing the method fillEmptyEventFieldsTest of class FbCrawler 
+        /// author: author of the method fillEmptyEventFields
+        /// </summary>
         [TestMethod]
-        public void FillEmptyEventFieldsTest()
+        public void fillEmptyEventFieldsTest()
         {
             FbCrawler crawler = new FbCrawler();
             Place place = new Place();

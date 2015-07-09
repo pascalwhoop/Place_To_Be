@@ -7,11 +7,21 @@ using System.Threading.Tasks;
 
 namespace placeToBe.Tests.Controllers
 {
+    //author: Merve Bas 
+
+    /// <summary>
+    /// Class is testing methods of the class EventControllerService
+    /// Procedure: 
+    /// creating dummy- parameters and passing it over 
+    /// </summary>
     [TestClass]
     public class EventControllerTest
     {
+        /// <summary>
+        /// Testing the method getEventsByTimeAndCity of class EventController for practicability
+        /// </summary>
         [TestMethod]
-        public void getEventsByTimeAndCity()
+        public void getEventsByTimeAndCityTest()
         {
             //Arrange
             EventController controller = new EventController();
@@ -22,11 +32,17 @@ namespace placeToBe.Tests.Controllers
             String hour = "17:00";
 
             //Act
-            controller.getEventsByTimeAndCity(id, year, month, day, hour);
+            var task = controller.getEventsByTimeAndCity(id, year, month, day, hour);
+
+            //Assert
+            Assert.IsNotNull(task);
         }
 
+        /// <summary>
+        /// Testing the method getNearEventsByPointWithDescription of class EventController for practicability 
+        /// </summary>
         [TestMethod]
-        public void getNearEventsByPointWithDescription()
+        public void getNearEventsByPointWithDescriptionTest()
         {
             //Arrange
             EventController controller = new EventController();
@@ -39,19 +55,27 @@ namespace placeToBe.Tests.Controllers
             String hour = "17:00";
 
             //Act
-            controller.getNearEventsByPointWithDescription(latitude, longitude, radius, year, month, day, hour);
+            var task = controller.getNearEventsByPointWithDescription(latitude, longitude, radius, year, month, day, hour);
 
+            //Assert
+            Assert.IsNotNull(task);
         }
 
+        /// <summary>
+        /// Testing the method getEvent of class EventController for practicability 
+        /// </summary>
         [TestMethod]
-        public void GetEvent()
+        public void getEventTest()
         {
             //Arrange
             EventController controller = new EventController();
             Guid id = Guid.NewGuid();
 
             //Act
-            controller.GetEvent(id);
+            var task = controller.GetEvent(id);
+
+            //Assert 
+            Assert.IsNotNull(task);
 
 
         }
