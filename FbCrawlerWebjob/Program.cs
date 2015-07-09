@@ -34,6 +34,10 @@ namespace FbCrawlerWebjob
             }
         }
 
+        /// <summary>
+        /// Fetches all cities from db and if city has empty values, this fields of the city get filled
+        /// </summary>
+        /// <returns>all cities from db</returns>
         protected List<City> getAllCitiesFromDb()
         {
             var task = cityRepo.GetAllAsync();
@@ -81,9 +85,13 @@ namespace FbCrawlerWebjob
             }
         }
 
+        /// <summary>
+        /// start the facebookcrawler with a list of cities
+        /// </summary>
+        /// <param name="cities"></param>
         protected void runFacebookCrawlerOverCities(List<City> cities)
         {
-
+            //check when city got last time fetched
             cities.Sort((x, y) => DateTime.Compare(x.lastCheckedTime, y.lastCheckedTime));
 
             var parallelOptions = new ParallelOptions
@@ -91,7 +99,7 @@ namespace FbCrawlerWebjob
                 MaxDegreeOfParallelism = 3
             };
 
-
+            //do parallel crawling with MaxDegreeOfParallelism(Value) threads
             Parallel.ForEach(cities, parallelOptions,
             city =>
             {
@@ -111,6 +119,9 @@ namespace FbCrawlerWebjob
             });
         }
 
+        /// <summary>
+        /// save to log file
+        /// </summary>
         private static void setRedirectOutputToLogfile()
         {
             Trace.Listeners.Add(new TextWriterTraceListener("crawlerDebug.log"));
