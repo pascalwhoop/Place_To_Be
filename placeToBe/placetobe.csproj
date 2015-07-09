@@ -213,7 +213,6 @@
     <Compile Include="Services\AccountService.cs" />
     <Compile Include="Filter\PlaceToBeAuthenticationFilter.cs" />
     <Compile Include="Services\FbCrawler.cs" />
-    <Compile Include="Services\FbUserService.cs" />
     <Compile Include="Services\GenderizeService.cs" />
     <Compile Include="Services\SearchService.cs" />
     <Compile Include="Services\UtilService.cs" />
