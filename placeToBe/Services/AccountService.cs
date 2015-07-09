@@ -142,7 +142,7 @@ namespace placeToBe.Services
 
 
             var messageBody = "Mail confirmed.";
-            messageBody += "<br /><br />Thank you for the Registration";
+            messageBody += "<br /><br />Thank you for the registration";
 
             //Create smtp connection.
             var client = new SmtpClient
