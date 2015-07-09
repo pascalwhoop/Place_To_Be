@@ -83,7 +83,7 @@ namespace placeToBe.Services {
         /// <param name="oldPassword"></param>
         /// <param name="newPassword"></param>
         /// <returns></returns>
-        public async Task<HttpStatusCode> ChangePasswort(string userEmail, string oldPassword, string newPassword) {
+        public async Task<HttpStatusCode> ChangePassword(string userEmail, string oldPassword, string newPassword) {
             try {
                 var oldPasswordBytes = Encoding.UTF8.GetBytes(oldPassword);
                 var user = await GetUserByEmail(userEmail);

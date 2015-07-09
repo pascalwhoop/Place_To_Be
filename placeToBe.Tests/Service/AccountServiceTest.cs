@@ -147,7 +147,7 @@ namespace placeToBe.Tests.Service
             HttpStatusCode expected = HttpStatusCode.NotFound;
 
             //Act
-            Task<HttpStatusCode> status = account.ChangePasswort(userEmail, oldPassword, newPassword);
+            Task<HttpStatusCode> status = account.ChangePassword(userEmail, oldPassword, newPassword);
             HttpStatusCode result = status.Result;
 
             //Assert
@@ -166,7 +166,7 @@ namespace placeToBe.Tests.Service
             HttpStatusCode expected = HttpStatusCode.BadRequest;
 
             //Act
-            Task<HttpStatusCode> status = account.ChangePasswort(userEmail, oldPassword, newPassword);
+            Task<HttpStatusCode> status = account.ChangePassword(userEmail, oldPassword, newPassword);
             HttpStatusCode result = status.Result;
 
             //Assert

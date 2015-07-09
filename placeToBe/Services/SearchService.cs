@@ -92,11 +92,14 @@ namespace placeToBe.Services
         public async Task<Event> getEventAttendingFriends(FbUser fbUser, Event currentEvent)
         {
             List<FbUser> eventAttendingFriends = new List<FbUser>();
-            List<Datum> fbUserFriends = new List<Datum>();
             List<Rsvp> eventAttendingPeople = currentEvent.attending;
 
-            fbUserFriends = fbUser.friends.data;
+            var fbUserFriends = fbUser.friends.data;
 
+            if (eventAttendingPeople == null)
+            {
+                return currentEvent;
+            }
             for (int i = 0; i < fbUserFriends.Count; i++)
             {
                 for (int j = 0; j < eventAttendingPeople.Count; j++)

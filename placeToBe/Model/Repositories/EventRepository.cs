@@ -38,7 +38,7 @@ namespace placeToBe.Model.Repositories
             //creating a filter for the mongoDB event search
             var builder = Builders<Event>.Filter;
             var filter = builder.GeoWithinPolygon("geoLocationCoordinates", polygon) &
-                         builder.Gte("startDateTime", startTime.AddHours(-4)) & builder.Lt("startDateTime", endTime);
+                         builder.Gte("startDateTime", startTime.AddHours(-4)) & builder.Lt("endDateTime", endTime);
             
             //small version of an Event (Light Event) containing just a few important data fields.
             Dictionary<String, Object> projectionContent = new Dictionary<string, object>() {
