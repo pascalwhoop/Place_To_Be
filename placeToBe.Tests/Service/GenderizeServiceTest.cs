@@ -9,16 +9,26 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 
-
-
 namespace placeToBe.Tests.Service
 {
+    //author: Merve Bas 
 
+    /// <summary>
+    /// Class is testing methods of the class GenderizeService
+    /// Procedure: 
+    /// creating dummy- parameters and passing it over 
+    /// </summary>
     [TestClass]
     public class GenderizeServiceTest
     {
+        /// <summary>
+        /// Testing the method getGender of class GenderizeService 
+        /// Procedure: 
+        /// Passing a female name as dummy- parameter over and comparing the expected result
+        /// "female" with the actual result of the methode
+        /// </summary>
         [TestMethod]
-        public void GetGenderFemale()
+        public void getGenderFemale()
         {
 
             //Arrange 
@@ -42,8 +52,14 @@ namespace placeToBe.Tests.Service
 
         }
 
+        /// <summary>
+        /// Testing the method getGender of class GenderizeService 
+        /// Procedure: 
+        /// Passing a male name as dummy- parameter over and comparing the expected result
+        /// "male" with the actual result of the methode
+        /// </summary>
         [TestMethod]
-        public void GetGenderMale()
+        public void getGenderMale()
         {
             //Arrange
             GenderizeService service = new GenderizeService();
@@ -61,8 +77,15 @@ namespace placeToBe.Tests.Service
             Assert.AreEqual(resultmale, expectedmale);
         }
 
+        /// <summary>
+        /// Testing the method getGender of class GenderizeService 
+        /// Procedure: 
+        /// Passing an unisex name as dummy- parameter over and comparing the expected result
+        /// Test doesnt work with unisex names
+        /// Unisex names like kim are either getting the result "male" oder "female"
+        /// </summary>
         [TestMethod]
-        public void GetGenderUni()
+        public void getGenderUni()
         {
             //Test doenst work with unisex names
             //Test expects for "Kim" the gender female
@@ -86,8 +109,14 @@ namespace placeToBe.Tests.Service
 
         }
 
+        /// <summary>
+        /// Testing the method getGender of class GenderizeService 
+        /// Procedure: 
+        /// Passing a female name as dummy- parameter over and comparing the expected result
+        /// "female" with the actual result of the methode
+        /// </summary>
         [TestMethod]
-        public void GetGenderFromApiFemale()
+        public void getGenderFromApiFemale()
         {
             //Arrange
             GenderizeService service = new GenderizeService();
@@ -104,8 +133,14 @@ namespace placeToBe.Tests.Service
 
         }
 
+        /// <summary>
+        /// Testing the method getGender of class GenderizeService 
+        /// Procedure: 
+        /// Passing a male name as dummy- parameter over and comparing the expected result
+        /// "male" with the actual result of the methode
+        /// </summary>
         [TestMethod]
-        public void GetGenderFromApiMale()
+        public void getGenderFromApiMale()
         {
             //Arrange
             GenderizeService service = new GenderizeService();
@@ -122,8 +157,15 @@ namespace placeToBe.Tests.Service
 
         }
 
+        /// <summary>
+        /// Testing the method getGender of class GenderizeService 
+        /// Procedure: 
+        /// Passing an unisex name as dummy- parameter over and comparing the expected result
+        /// Test doesnt work with unisex names
+        /// Unisex names like kim are either getting the result "male" oder "female"
+        /// </summary>
         [TestMethod]
-        public void GetGenderFromApiUni()
+        public void getGenderFromApiUni()
         {
             //Test doenst work with unisex names
             //Test expects for "Kim" the gender female
@@ -144,58 +186,6 @@ namespace placeToBe.Tests.Service
             //Assert.AreEqual(resultuni, expecteduni2);
         }
 
-        [TestMethod]
-        public void GetNamesArray()
-        {
-            //Arrange
-            GenderizeService service = new GenderizeService();
-            //fragen wie das aussehen soll 
-            String[] ja;
-
-
-        }
-
-        [TestMethod]
-        public void GetGenderStat()
-        {
-            //TODO fixen
-            /*
-            //Arrange 
-            GenderizeService service = new GenderizeService();
-            Event test = new Event();
-            Rsvp n = new Rsvp();
-            List<Rsvp> rsvp= new List<Rsvp>();
-
-            rsvp.Add(new Rsvp() { name= "Laura" }); ;
-           /*test.attending.Add(new Rsvp() {i=> i.name = "Max", id = "a0123232", rsvp_status = "true" });
-            test.attending.Add(new Rsvp() { name = "Jasmin", id = "a0123233", rsvp_status = "true" });
-            test.attending.Add(new Rsvp() { name = "Thomas", id = "a123234", rsvp_status = "true" });
-            test.attending.Add(new Rsvp() { name = "Kim", id = "a123235", rsvp_status = "true" });
-            test.attending.Add(new Rsvp() { name = "Dominik", id = "a123236", rsvp_status = "true" });
-            test.attending.Add(new Rsvp() { name = "Lisa", id = "a123237", rsvp_status = "true" });
-
-            MongoDbRepository<Event> model = new MongoDbRepository<Event>();
-            var task = model.InsertAsync(test);
-
-
-            //Act
-            Task<Event> stat = service.createGenderStat(test);
-            Event genderstat = stat.Result;
-            int attendingfemale = genderstat.attendingFemale;
-            int attendingmale = genderstat.attendingMale;
-            int attendingUndefined = genderstat.attendingUndefined;
-            int attendingcount = genderstat.attendingCount;*/
-
-
-            //Assert
-            /*Assert.AreEqual(test.attendingFemale, attendingfemale);
-            Assert.AreEqual(test.attendingMale, attendingmale);
-            Assert.AreEqual(test.attendingUndefined, attendingUndefined);
-             */
-
-
-
-
-        }
+       
     }
 }

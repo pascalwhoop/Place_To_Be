@@ -4,11 +4,16 @@ using placeToBe.Controllers;
 
 namespace placeToBe.Tests.Controllers
 {
+    //author: Merve Bas 
+
+    /// <summary>
+    /// Class is testing method of the class CityController
+    /// </summary>
     [TestClass]
     public class CityControllerTest
     {
         [TestMethod]
-        public void GetCityController()
+        public void getCityControllerTest()
         {
             //Arrange
             CityController controller = new CityController();

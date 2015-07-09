@@ -3,16 +3,26 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using placeToBe.Services;
 using placeToBe.Model.Repositories;
 using placeToBe.Model.Entities;
+using System.Web;
 
 namespace placeToBe.Tests.Service
 {
+    //author: Merve Bas 
+
+    /// <summary>
+    /// Class is testing methods of the class SearchService
+    /// Procedure: 
+    /// creating dummy- parameters and passing it over 
+    /// </summary>
     [TestClass]
     public class SearchServiceTest
     {
 
-
+        /// <summary>
+        /// Testing the method heatSearch of class AccountService for practicability 
+        /// </summary>
         [TestMethod]
-        public void HeatSearch()
+        public void heatSearchTest()
         {
             //Arrange
             SearchService search = new SearchService();
@@ -21,46 +31,47 @@ namespace placeToBe.Tests.Service
             DateTime endtime = new DateTime(2015, 5, 3, 23, 0, 0);
 
             //Act
-            search.HeatSearch(id, startime, endtime);
+            var task = search.HeatSearch(id, startime, endtime);
+
+            //Assert 
+            Assert.IsNotNull(task);
         }
 
+        /// <summary>
+        /// Testing the method textSearch of class AccountService for practicability 
+        /// </summary>
         [TestMethod]
-        public void TextSearch()
+        public void textSearchTest()
         {
             //Arrange
             SearchService search = new SearchService();
             String filter = "HipHop";
 
             //Act
-            search.TextSearch(filter);
+            var task = search.TextSearch(filter);
+
+            //Assert 
+            Assert.IsNotNull(task);
         }
 
+        /// <summary>
+        /// Testing the method eventSearch of class AccountService for practicability 
+        /// </summary>
         [TestMethod]
-        public void EventSearch()
+        public void eventSearchTest()
         {
             //Arrange
             SearchService search = new SearchService();
             Guid id = Guid.NewGuid();
 
             //Act
-            search.EventSearch(id);
+            var task = search.EventSearch(id);
+
+            //Assert 
+            Assert.IsNotNull(task);
         }
 
-        [TestMethod]
-        public void findNearEventFromAPoint()
-        {
-            //Arrange
-            SearchService search = new SearchService();
-            double latitude = 19;
-            double longitude = 23;
-            int radius = 50;
-            DateTime startime = new DateTime(2015, 5, 3, 20, 0, 0);
-            DateTime endtime = new DateTime(2015, 5, 3, 23, 0, 0);
-
-            search.findNearEventFromAPoint(latitude, longitude, radius, startime, endtime);
-
-
-        }
+      
     }
 
 
