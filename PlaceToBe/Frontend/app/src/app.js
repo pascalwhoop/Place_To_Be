@@ -1,7 +1,7 @@
 /**
  * This is our main entry point to our app. we declare our dependencies, ...
  */
-angular.module('placeToBe', ['ngMaterial', 'ngRoute', 'ngMap', 'ngResource', 'ngFacebook', 'ngMessages'])
+angular.module('placeToBe', ['ngMaterial', 'ngRoute', 'ngMap', 'ngResource', 'ngFacebook', 'ngMessages', 'ngTable'])
 
 /**
  *  our style config,
@@ -29,6 +29,13 @@ angular.module('placeToBe', ['ngMaterial', 'ngRoute', 'ngMap', 'ngResource', 'ng
       .when('/heatmap', {
         templateUrl: 'src/heatmap/heatmapView.html',
         controller: 'heatmapController',
+        access: {
+          requiresLogin: true
+        }
+      })
+      .when('/statistic', {
+        templateUrl: 'src/statistic/statisticView.html',
+        controller: 'statisticController',
         access: {
           requiresLogin: true
         }

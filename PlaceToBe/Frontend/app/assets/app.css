@@ -279,3 +279,36 @@ placetobe-heatmap {
 event-list{
   margin: 20px;
 }
+
+/*table view */
+
+.ptb-event-table-container {
+  margin: 20px;
+  overflow: scroll;
+}
+
+.ptb-event-table-container, table.ptb-event-table{
+
+}
+
+table.ptb-event-table tbody, table.ptb-event-table thead{
+
+}
+
+/*
+
+    */
+
+
+table.ptb-event-table {
+  width: 100%;
+}
+
+
+table.ptb-event-table tr:nth-child(odd), table.ptb-event-table th {
+  background-color: rgba(0, 188, 212, 0.3);
+}
+
+table tr:nth-child(even) {
+  background-color: #ffffff;
+}

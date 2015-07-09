@@ -1,4 +1,4 @@
-<md-toolbar layout="row" layout-align="end center">
+﻿<md-toolbar layout="row" layout-align="end center">
   <span flex="5"></span>
   <md-select placeholder="City" ng-model="ctrl.userState" flex="20" ng-change="fetchEvents(query)">
     <md-option ng-repeat="city in cities |orderBy: 'formatted_address'" ng-click="query.place = city">{{city.formatted_address}}</md-option>
@@ -17,31 +17,18 @@
   <span flex></span>
   <login-button login-service="loginService"></login-button>
   <logout-button login-service="loginService"></logout-button>
-</md-toolbar>
-
-<!--Content View-->
-<md-content id="content" layout="row" flex>
-  <div ng-if="heatmapData" layout="row" flex>
-    <placetobe-heatmap query="query" data="heatmapData" click-listener="mapClick" flex layout="column" map-styles="mapStyles"></placetobe-heatmap>
-    <event-list layout="column" flex="33" event-data="eventData" ng-if="eventData.length > 0" class="md-whiteframe-z3">
-
-    <div ng-if="!heatmapData">
-    <p>
-      Select a city, time and date above and we'll show you our results!
-    </p>
-  </div>
-</md-content>
+</md-toolbar>        <!--todo directive instead-->
 
 
-
-
-
-
-
-
-
-
-
-
-
+<div class="md-whiteframe-z3 ptb-event-table-container">
+    <table ng-table="tableParams" template-pagination="custom/pager" class="table ptb-event-table">
+        <tr ng-repeat="event in $data">
+            <td data-title="'Name'" sortable="'name'">{{event.name}}</td>
+            <td data-title="'Attending Count'" sortable="'attending_count'">{{event.attending_count}}</td>
+            <td data-title="'Details'">
+                <stat-details></stat-details>
+            </td>
+        </tr>
+    </table>
+</div>
 

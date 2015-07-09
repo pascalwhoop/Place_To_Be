@@ -218,3 +218,7 @@ PlaceToBe/Frontend/app/src/.DS_Store
 
 PlaceToBe/Frontend/app/bower_components/seedrandom/test/
 PlaceToBe/Frontend/app/bower_components/angular-material/modules/
+
+PlaceToBe/Frontend/app/bower_components/ng-table/docs
+!/PlaceToBe/Frontend/app/bower_components/ng-table/dist
+

@@ -13,6 +13,7 @@
     "ng-annotate": "~1.0.1",
     "grunt-ng-annotate": "~1.0.1"
 
+
   },
   "scripts": {
     "postinstall": "bower update",

@@ -32,6 +32,7 @@
   <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
   <link rel="stylesheet" href="./bower_components/font-awesome-bower/css/font-awesome.css">
   <link rel="stylesheet" href="./bower_components/angular-material/angular-material.css"/>
+  <link rel="stylesheet" href="./bower_components/ng-table/dist/ng-table.css"/>
   <link rel="stylesheet" href="assets/app.css"/>
 </head>
 
@@ -56,6 +57,10 @@
 
     <md-list-item>
       <md-button go-click="heatmap" class="md-button" ng-disabled="!loggedIn">Heatmap Search</md-button>
+    </md-list-item>
+
+    <md-list-item>
+      <md-button go-click="statistic" class="md-button" ng-disabled="!loggedIn">List based Search</md-button>
     </md-list-item>
 
     <md-list-item ng-show="loggedIn">
@@ -94,6 +99,8 @@
 <script src="./bower_components/angular-messages/angular-messages.js"></script>
 <script src="./bower_components/ngmap/build/scripts/ng-map.js"></script>
 <script src="./bower_components/ng-facebook/ngFacebook.js"></script>
+<script src="./bower_components/ng-table/dist/ng-table.js"></script>
+
 <!-- endbuild -->
 
 
@@ -105,13 +112,14 @@
 <script src="./src/services/configService.js"></script>
 <script src="src/util/utilFilters.js"></script>
 <script src="./src/mainController.js"></script>
-<script src="./src/heatmap/heatmapController.js"></script>
+<script src="src/heatmap/heatmap.js"></script>
 <script src="./src/login/loginController.js"></script>
 <script src="./src/profile/profileController.js"></script>
 <script src="./src/landingpage/landingpageController.js"></script>
 <script src="./src/login/loginLogoutButtonsDirectives.js"></script>
 <script src="./src/eventlist/EventListDirective.js"></script>
 <script src="./src/heatmap/heatmapDirective.js"></script>
+<script src="src/statistic/statistic.js"></script>
 
 
 </body>

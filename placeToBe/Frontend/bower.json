@@ -18,6 +18,7 @@
     "font-awesome-bower": "~4.3.0"
   },
   "devDependencies": {
-    "angular-material": "~0.9.4"
+    "angular-material": "~0.9.4",
+    "ng-table": "~0.5.5"
   }
 }
