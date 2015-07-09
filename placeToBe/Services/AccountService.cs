@@ -217,8 +217,8 @@ namespace placeToBe.Services
                                "'>Click here to activate your account.</a>";
                 messageBody += "<br /><br />Thanks";
                 messageBody +=
-                    "<br /><br />Notice: If your browser does not allow linking in your emails go and type this:  http://localhost:18172/api/user?activationcode=" +
-                    activationCode + "in your adress bar.";
+                    "<br /><br />Notice: If your browser does not allow linking in your emails go and type this:  https://placetobe-koeln.azurewebsites.net/api/user?activationcode=" +
+                    activationCode + " in your adress bar.";
 
                 //Create smtp connection.
                 var client = new SmtpClient();
@@ -299,7 +299,7 @@ namespace placeToBe.Services
 
             var messageBody = "Your new password is: " + passwordString;
             messageBody +=
-                "<br /><a href = ' http://localhost:18172/api/login/ '>Click here to login with the new password.</a>";
+                "<br /><a href = ' https://placetobe-koeln.azurewebsites.net/ '>Click here to login with the new password.</a>";
             messageBody += "<br /><br />Have Fun with placeToBe.";
 
             //Create smtp connection.
