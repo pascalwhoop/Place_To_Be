@@ -16,10 +16,10 @@ namespace placeToBe.Model.Repositories
             /// </summary>
             public UserRepository() {
             //unique index on email of a user            
-            CreateIndexOptions options = new CreateIndexOptions {Unique = true};    
-            _collection.Indexes.CreateOneAsync(Builders<User>.IndexKeys.Ascending(_ => _.email), options)
-            
-        }
+            CreateIndexOptions options = new CreateIndexOptions {Unique = true};
+                _collection.Indexes.CreateOneAsync(Builders<User>.IndexKeys.Ascending(_ => _.email), options);
+
+            }
             /// <summary>
             /// Retrieves an user by his/her email address.
             /// </summary>
