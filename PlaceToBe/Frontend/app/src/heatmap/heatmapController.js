@@ -42,10 +42,15 @@ angular.module('placeToBe')
     };
 
     $scope.mapClick = function(event){
+      $rootScope.$emit('serverCallStart');
       $http.get(buildEventClickQueryUrl(event.latLng))
         .success(function(data, status, headers, config){
+          $rootScope.$emit('serverCallEnd');
           console.log("fetched events for location");
           $scope.eventData = data;
+        })
+        .error(function(data, status, headers, config){
+          $rootScope.$emit('serverCallEnd');
         })
     };
 

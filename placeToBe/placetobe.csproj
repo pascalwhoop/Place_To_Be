@@ -298,8 +298,9 @@
     <Content Include="Frontend\app\src\statistic\statDetailsTemplate.html" />
     <Content Include="Frontend\app\src\statistic\statisticDirective.js" />
     <Content Include="Frontend\app\src\statistic\statisticDirectiveTemplate.html" />
-    <Content Include="Frontend\app\src\util\directives\utilDirectives.js" />
-    <Content Include="Frontend\app\src\util\filters\utilFilters.js" />
+    <Content Include="Frontend\app\src\util\utilDirectives.js" />
+    <Content Include="Frontend\app\src\util\utilFilters.js" />
+    <Content Include="Frontend\app\src\util\utilServices.js" />
     <Content Include="Global.asax" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

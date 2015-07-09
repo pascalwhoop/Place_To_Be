@@ -6,6 +6,8 @@
 
 
 <md-content layout="row" class="md-padding">
+
+  <!--a short facebook profile view-->
   <md-card ng-show="loginType == 'facebook'" flex="50" style="max-width: 300px">
     <!--max width due to pixel density of FB pic-->
     <img ng-src="{{fbProfilePicUrl}}" alt=""/>
@@ -30,8 +32,51 @@
 
   </md-card>
 
-  <!--a short facebook profile view-->
+  <md-card ng-show="loginType == 'placeToBe'" flex="50" style="max-width: 300px">
+    <!--max width due to pixel density of FB pic-->
+    <md-card-content layout="column">
+      <h2 class="md-title">PlaceToBe Profile</h2>
 
+      <p>
+        <span style="font-weight: bold">Email: </span>{{ptbMe.email}}
+      </p>
+
+      <md-button ng-click="changePsw = !changePsw" class="md-warn md-raised">Change Password
+      </md-button>
+      <form name="dummy"></form>
+
+      <form name="changePswForm" ng-show="changePsw">
+        <md-input-container>
+          <label>Old password</label>
+          <input ng-model="changePassword.old" type="password" name="passwordOld" equals="{{ptbMe.password}}" required>
+
+          <div ng-messages="changePswForm.passwordOld.$error">
+            <div ng-message="required">This is required.</div>
+            <div ng-message="equals">This isn't your old Password...</div>
+          </div>
+        </md-input-container>
+
+        <md-input-container>
+          <label>new password</label>
+          <input ng-model="changePassword.newPassword1" type="password" required equals="{{changePassword.newPassword2}}" name="newPassword1"
+                 name="password">
+        </md-input-container>
+        <md-input-container>
+          <label>Repeat password</label>
+          <input ng-model="changePassword.newPassword2" type="password" equals="{{changePassword.newPassword1}}" name="newPassword2">
+
+          <div ng-messages="changePswForm.newPassword2.$error">
+            <div ng-message="equals">Both passwords must match!</div>
+          </div>
+        </md-input-container>
+        <md-button class="md-raised" ng-click="performPasswordChange(changePassword)"
+                   ng-disabled="!changePassword.old || !changePassword.newPassword1 || changePassword.newPassword1 != changePassword.newPassword2 || changePassword.old != ptbMe.password">Change!
+        </md-button>
+      </form>
+
+    </md-card-content>
+
+  </md-card>
 
   </div>
 </md-content>

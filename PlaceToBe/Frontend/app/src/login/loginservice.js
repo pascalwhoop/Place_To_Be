@@ -22,7 +22,7 @@ angular.module('placeToBe')
 
       userInfo = {
         fb: {},
-        ptp: {}
+        ptb: {}
       };
     };
     initialize();
@@ -30,7 +30,7 @@ angular.module('placeToBe')
 
     var getLoginType = function () {
       if (loggedIn.fb == 'connected') return 'facebook';
-      else if (loggedIn.ptp == 'connected') return 'placeToBe';
+      else if (loggedIn.ptb == 'connected') return 'placeToBe';
 
     };
 
@@ -79,6 +79,16 @@ angular.module('placeToBe')
       $http.defaults.headers.common['Authorization'] = 'Basic ' + btoa(id + ':' + pass);
     };
 
+    var getUserInfo = function () {
+      if (getLoginType() == 'facebook') return userInfo.fb;
+      if (getLoginType() == 'placeToBe') return userInfo.ptb;
+    };
+
+    var setUserInfo = function (newUserInfo) {
+      if (getLoginType() == 'facebook') userInfo.fb = newUserInfo;
+      if (getLoginType() == 'placeToBe') userInfo.ptb = newUserInfo;
+    };
+
     //================================== FB LOGIN/LOGOUT STUFF  ====================================
 
     /**
@@ -113,8 +123,8 @@ angular.module('placeToBe')
         uNotify.showNotifyToast('Login successful', null, 1500); //we show a little toast to the user notifying him of a successful login
         //this causes all following requests to be sent with a token in the authorization header
         setAuthHeader(response.authResponse.userID, response.authResponse.accessToken);
-      }else{
-        if(response.status != 'unknown')uNotify.showNotifyToast('Login unsuccessful. Your Facebook status to our app is ' + response.status);
+      } else {
+        if (response.status != 'unknown')uNotify.showNotifyToast('Login unsuccessful. Your Facebook status to our app is ' + response.status);
       }
 
     };
@@ -189,6 +199,31 @@ angular.module('placeToBe')
     };
 
 
+    var changePassword = function (oldPassword, newPassword) {
+      var changePassData = {
+        email: userInfo.ptb.email,
+        oldPassword: oldPassword,
+        newPassword: newPassword
+      };
+
+      //the actual web request
+      return $http.put(configService.BASE_URL+ '/user/' + userInfo.ptb.email + '/password_change', changePassData)
+        .success(function(data, status, headers, config){
+
+          if(status == 200){
+            //change the password in our local scope
+            userInfo.ptb.password = changePassData.newPassword;
+            //change the password in all future http requests for this session
+            setAuthHeader(userInfo.ptb.email, userInfo.ptb.password);
+          }
+
+        })
+    };
+
+    var resetPassword = function(email){
+      return $http.put(configService.BASE_URL+ '/user/' + email + '/password_reset', {});
+    };
+
     return {
       checkFacebookLogin: checkFacebookLogin,
       getLoginType: getLoginType,
@@ -198,7 +233,11 @@ angular.module('placeToBe')
       registerUser: registerUser,
       loginUser: loginUser,
       logout: logout,
-      facebook: $facebook
+      facebook: $facebook,
+      setUserInfo: setUserInfo,
+      getUserInfo: getUserInfo,
+      changePassword:changePassword,
+      resetPassword:resetPassword
 
     }
   });

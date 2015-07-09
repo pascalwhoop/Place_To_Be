@@ -7,7 +7,7 @@
     <md-dialog-content>
 
       <!--LOGIN USER FORM-->
-      <div layout="column" ng-if="!registerDialog">
+      <div layout="column" ng-show="dialog == 'login'">
         <!--<md-content layout-padding layout="row" layout-sm="column">
           <md-input-container>
             <label>Username</label>
@@ -37,13 +37,23 @@
             <input ng-model="user.password" type="password" required name="password">
           </md-input-container>
 
+
           <div layout="row">
             <md-button class="md-raised" ng-click="ptbLogin(user)" flex
                        ng-disabled="!user.password || !user.email">Login
             </md-button>
           </div>
+
+          <div layout="row" class="forgot-password" ng-click="forgotPassword = !forgotPassword">
+            <a href="" ng-click="dialog = 'forgotPassword'">forgot password?</a>
+          </div>
         </form>
 
+        <div class="divider-container">
+          <div class="divider">
+            <strong class="divider-title">or</strong>
+          </div>
+        </div>
         <md-button class="md-raised fb-login-button" ng-click="fbLogin()" flex>
           <md-icon md-font-icon="fa-facebook-official" class="fa" style="padding-right: 5px;">
           </md-icon>
@@ -56,17 +66,9 @@
 
 
       <!--REGISTER USER FORM-->
-      <div layout="column" ng-if="registerDialog">
+      <div layout="column" ng-show="dialog == 'register'">
 
         <form name="registerForm">
-          <!-- <md-input-container>
-             <label>Username</label>
-             <input ng-model="user.username" required name="username">
-
-             <div ng-messages="registerForm.username.$error">
-               <div ng-message="required">This is required.</div>
-             </div>
-           </md-input-container>-->
 
           <md-input-container>
             <label>Email</label>
@@ -96,7 +98,31 @@
         <wait-bar show-event="serverCallStart" hide-event="serverCallEnd" message="Logging in...">
         </wait-bar>
       </div>
+
+      <!--FORGOT PASSWORD USER FORM-->
+      <div layout="column" ng-show="dialog == 'forgotPassword'">
+        <form name="forgotPassword">
+
+          <md-input-container>
+            <label>Email</label>
+            <input ng-model="forgotPass.email" type="email" name="email">
+
+            <div ng-messages="forgotPassword.email.$error">
+              <div ng-message="required">This is required.</div>
+            </div>
+          </md-input-container>
+          <md-button class="md-raised md-warn" ng-click="performPasswordReset(forgotPassword.email)"
+                     ng-disabled="forgotPassword.email.$error || !forgotPass.email">Request Reset Email
+          </md-button>
+
+        </form>
+
+        <wait-bar show-event="serverCallStart" hide-event="serverCallEnd" message="Logging in...">
+        </wait-bar>
+      </div>
     </md-dialog-content>
+
+
 
     <!--the bottom rows-->
     <div class="md-actions" layout="row">
@@ -104,8 +130,11 @@
       <md-button ng-click="cancel()" class="md-primary">
         Cancel
       </md-button>
-      <md-button ng-click="toggleRegister();" class="md-primary">
-        {{registerDialog ? 'Login': 'Register'}} <!--show "login" if in register mode or 'register' if in login mode -->
+      <md-button ng-click="dialog = 'register'" class="md-primary" ng-hide="dialog == 'register' || dialog == 'forgotPassword'">
+        Register
+      </md-button>
+      <md-button ng-click="dialog = 'login'" class="md-primary" ng-show="dialog != 'login'">
+        Login
       </md-button>
     </div>
 </md-dialog>
