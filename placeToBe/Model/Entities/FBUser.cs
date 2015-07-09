@@ -34,6 +34,7 @@ namespace placeToBe.Model.Entities
         public string updatedTimeFB { get; set; }
         [JsonProperty("verified")]
         public bool verified { get; set; }
+        [JsonProperty("friends")]
         public Friends friends { get; set; }
         public string shortAccessToken { get; set; }
         public string longAccessToken { get; set; }

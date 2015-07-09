@@ -27,7 +27,10 @@ namespace placeToBe.Model.Entities {
         //to have a way of checking the oldest cities first.
         public DateTime lastCheckedTime { get; set; }
 
-        //builds a polygon array as needed by MongoDb.
+        
+        /// <summary>
+        /// builds a polygon array as needed by MongoDb.
+        /// </summary>
         public double[,] getPolygon() {
             var a = new double[5, 2];
             //northwest
