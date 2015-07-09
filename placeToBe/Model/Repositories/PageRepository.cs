@@ -13,7 +13,7 @@ namespace placeToBe.Model.Repositories
         public PageRepository() {
             //unique index on fb pages id
             CreateIndexOptions options = new CreateIndexOptions {Unique = true};
-            _collection.Indexes.CreateOneAsync(Builders<Page>.IndexKeys.Text(_ => _.fbId), options);           
+            _collection.Indexes.CreateOneAsync(Builders<Page>.IndexKeys.Ascending(_ => _.fbId), options);           
         }
     }
 }

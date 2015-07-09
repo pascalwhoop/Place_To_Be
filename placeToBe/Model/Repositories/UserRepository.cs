@@ -15,9 +15,9 @@ namespace placeToBe.Model.Repositories
             /// a constructor that makes sure we have a user email index over our users list.
             /// </summary>
             public UserRepository() {
-            //unique index on email of a user
-            CreateIndexOptions options = new CreateIndexOptions {Unique = true};
-            _collection.Indexes.CreateOneAsync(Builders<User>.IndexKeys.Text(_ => _.email), options);
+            //unique index on email of a user            
+            CreateIndexOptions options = new CreateIndexOptions {Unique = true};    
+            _collection.Indexes.CreateOneAsync(Builders<User>.IndexKeys.Ascending(_ => _.email), options)
             
         }
             /// <summary>

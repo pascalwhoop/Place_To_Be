@@ -23,7 +23,7 @@ namespace placeToBe.Model.Repositories
         public EventRepository() {
             //unique index on fb events
             CreateIndexOptions options = new CreateIndexOptions {Unique = true};
-            _collection.Indexes.CreateOneAsync(Builders<Event>.IndexKeys.Text(_ => _.fbId), options);
+            _collection.Indexes.CreateOneAsync(Builders<Event>.IndexKeys.Ascending(_ => _.fbId), options);
             _collection.Indexes.CreateOneAsync(Builders<Event>.IndexKeys.Geo2DSphere(_ => _.geoLocationCoordinates)); //an index on the location attribute
             _collection.Indexes.CreateOneAsync(Builders<Event>.IndexKeys.Descending(_ => _.startDateTime)); //an index on the startTime attribute
         }

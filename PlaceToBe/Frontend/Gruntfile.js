@@ -63,12 +63,25 @@ module.exports = function (grunt) {
       css: ['dist/styles/{,*/}*.css']
     },
 
+    dgeni: {
+      options: {
+        // Base directory of the JavaScript file to be read
+        basePath: 'app/'
+      },
+      // JavaScript file to be read
+      src: ['src/**/*.js'],
+      // Directory to output the document
+      dest: 'doc/'
+    }
+
   });
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-html2js');
   grunt.loadNpmTasks('grunt-ng-annotate');
+  grunt.loadNpmTasks('grunt-dgeni');
+
 
   //grunt.registerTask('build', ['html2js']);
   //grunt.registerTask('release', ['html2js']);

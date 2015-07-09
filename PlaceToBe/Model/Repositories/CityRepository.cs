@@ -16,7 +16,8 @@ namespace placeToBe.Model.Repositories
         /// </summary>
         public CityRepository() {        
             CreateIndexOptions options = new CreateIndexOptions {Unique = true};
-            _collection.Indexes.CreateOneAsync(Builders<City>.IndexKeys.Text(_ => _.place_id), options);
+            _collection.Indexes.CreateOneAsync(Builders<City>.IndexKeys.Ascending(_ => _.place_id), options);
+
         }
 
 

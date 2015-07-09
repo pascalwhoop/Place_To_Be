@@ -1,8 +1,8 @@
 ﻿'use strict';
 
 angular.module('placeToBe')
-  .controller('statisticController', function ($scope, $resource, $filter, $mdDialog, toastNotifyService, configService, eventService, ngTableParams) {
-
+  .controller('statisticController', function ($scope, $resource, $filter, $mdDialog, loginService, toastNotifyService, configService, eventService, ngTableParams) {
+    $scope.loginService = loginService;
     //default values
     $scope.query = {
       place: {},

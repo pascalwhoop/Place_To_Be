@@ -21,24 +21,26 @@ angular.module('placeToBe')
         scope.TILE_SIZE = 256;
         scope.METER_RADIUS_PER_POINT = 100;
 
-        //watch both data & query attributes for changes
-        scope.$watch('data', function (newValue, oldValue) {
-          if (newValue && mapObj) //if value has changed and we have a map object already initialized
-          {
-            refreshHeatmapLayer();
-          }
-        });
-
-        //only change map location if place changed
-        scope.$watch('query', function (newValue, oldValue) {
-          if (newValue && mapObj) //if value has changed and we have a map object already initialized
-          {
-            if (newValue.place.place_id != oldValue.place.place_id) {
-              setMapLocation(newValue.place.formatted_address);
+        var registerDataWatchers = function(){
+          //watch both data & query attributes for changes
+          scope.$watch('data', function (newValue, oldValue) {
+            if (newValue && mapObj) //if value has changed and we have a map object already initialized
+            {
+              refreshHeatmapLayer();
             }
-          }
-        }, true); // watch the query value. deep value dirty checking here! so compares every part of the object
+          });
 
+          //only change map location if place changed
+          scope.$watch('query', function (newValue, oldValue) {
+            if (newValue && mapObj) //if value has changed and we have a map object already initialized
+            {
+              if (newValue.place.place_id != oldValue.place.place_id) {
+                setMapLocation(newValue.place.formatted_address);
+              }
+            }
+          }, true); // watch the query value. deep value dirty checking here! so compares every part of the object
+
+        };
         //once map is initialized (google maps internal) we fetch our first set of data
         scope.$on('mapInitialized', function (event, map) {
           mapObj = map;
@@ -48,9 +50,10 @@ angular.module('placeToBe')
           setMapLocation(scope.query.place.formatted_address, refreshHeatmapLayer); //set locatin then pass the refreshHeatmapLayer as a callback
 
           refreshHeatmapLayer();
+          registerDataWatchers();
         });
 
-        var getGeoLocationOfUser = function (map) {
+        /*var getGeoLocationOfUser = function (map) {
 
           navigator.geolocation.getCurrentPosition(function(position) {
 
@@ -85,16 +88,16 @@ angular.module('placeToBe')
               handleNoGeolocation(true);
             });
           }
-        };
+        };*/
 
-        function handleNoGeolocation(errorFlag) {
+       /* function handleNoGeolocation(errorFlag) {
           if (errorFlag) {
             var content = 'Error: The Geolocation service failed.';
           } else {
             var content = 'Error: Your browser doesn\'t support geolocation.';
           }
 
-        }
+        }*/
 
 
         var addMapListeners = function (map) {

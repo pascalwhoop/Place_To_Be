@@ -17,8 +17,8 @@ namespace placeToBe.Model.Repositories
             /// </summary>
             public GenderRepository() {
             //unique index on name
-            CreateIndexOptions options = new CreateIndexOptions {Unique = true};
-            _collection.Indexes.CreateOneAsync(Builders<Gender>.IndexKeys.Text(_ => _.name), options);
+            CreateIndexOptions options = new CreateIndexOptions {Unique = true};    
+            _collection.Indexes.CreateOneAsync(Builders<User>.IndexKeys.Ascending(_ => _.name), options)
             
         }
     }
