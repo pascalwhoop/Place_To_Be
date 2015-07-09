@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
 using Microsoft.Owin.Security.Facebook;
+using MongoDB.Driver;
 using placeToBe.Model.Entities;
 using placeToBe.Model.Repositories;
 using placeToBe.Services;
@@ -23,9 +24,39 @@ namespace placeToBe.Controllers
         /// <param name="userPassword"></param>
         /// <returns></returns>
         [System.Web.Http.Route("api/user/")]
-        public async Task<User> Post(User user)
+        public async Task<JsonResponse> Post(User user)
         {
-            return await accountService.createUser(user);
+            try
+            {
+                await accountService.createUser(user);
+                HttpContext.Current.Response.StatusCode = (int) HttpStatusCode.OK;
+                return new JsonResponse
+                {
+                    status = "OK",
+                    message = "User created successfully.",
+                    showUser = true
+                };
+            }
+            catch (AggregateException)
+            {
+                HttpContext.Current.Response.StatusCode = (int) HttpStatusCode.Conflict;
+                return new JsonResponse
+                {
+                    status = "Error",
+                    message = "Email already in use.",
+                    showUser = true
+                };
+            }
+            catch (Exception e)
+            {
+                HttpContext.Current.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                return new JsonResponse
+                {
+                    status = "Error",
+                    message = e.ToString(),
+                    showUser = false
+                };
+            }
         }
 
         /// <summary>
@@ -34,9 +65,29 @@ namespace placeToBe.Controllers
         /// <param name="activationcode"></param>
         /// <returns></returns>
         [System.Web.Http.Route("api/user/")]
-        public async Task<bool> Get([FromUri] string activationcode)
+        public async Task<JsonResponse> Get([FromUri] string activationcode)
         {
-            return await accountService.ConfirmEmail(activationcode);
+            try
+            {
+                await accountService.ConfirmEmail(activationcode);
+                HttpContext.Current.Response.StatusCode = (int)HttpStatusCode.OK;
+                return new JsonResponse
+                {
+                    status = "OK",
+                    message = "Account activated.",
+                    showUser = true
+                };
+            }
+            catch (Exception e)
+            {
+                HttpContext.Current.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                return new JsonResponse
+                {
+                    status = "Error",
+                    message = e.ToString(),
+                    showUser = false
+                };
+            }
         }
 
         /// <summary>
@@ -56,9 +107,32 @@ namespace placeToBe.Controllers
         /// <param name="userEmail"></param>
         /// <returns></returns>
         [System.Web.Http.Route("api/user/{userEmail}/password_reset")]
-        public async Task Post([FromUri] string userEmail)
+        public async Task<JsonResponse> Post([FromUri] string userEmail)
         {
-            await accountService.ForgetPasswordReset(userEmail);
+            try
+            {
+
+                await accountService.ForgetPasswordReset(userEmail);
+                HttpContext.Current.Response.StatusCode = (int)HttpStatusCode.OK;
+                return new JsonResponse
+                {
+                    status = "OK",
+                    message = "Password reset successful. Check your mails.",
+                    showUser = true
+                };
+            }
+            catch (Exception e)
+            {
+
+                HttpContext.Current.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                return new JsonResponse
+                {
+                    status = "Error",
+                    message = e.ToString(),
+                    showUser = false
+                };
+            }
+
         }
 
         /// <summary>
