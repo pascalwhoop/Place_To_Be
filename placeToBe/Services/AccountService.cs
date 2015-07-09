@@ -21,7 +21,6 @@ namespace placeToBe.Services
         ///     Get the email data from the ConfigurationManager.
         /// </summary>
         private readonly string fromAddress = ConfigurationManager.AppSettings["placeToBeEmail"];
-
         private readonly string mailPassword = ConfigurationManager.AppSettings["placeToBePasswordFromMail"];
         private readonly int saltSize = 20;
         private readonly UserRepository userRepo = new UserRepository();
@@ -30,12 +29,12 @@ namespace placeToBe.Services
         ///     SaveFBData to out database.
         /// </summary>
         /// <param name="fbuser"></param>
-        /// <returns></returns>
-        public async Task<FbUser> SaveFBData(FbUser fbuser)
+        /// <returns>FbUser</returns>
+        public async Task<FbUser> saveFbData(FbUser fbUser)
         {
-            if (await facebookVerifier.authorizeRequest(fbuser.shortAccessToken, fbuser.fbId))
-                await fbUserRepo.InsertAsync(fbuser);
-            return fbuser;
+            if (await facebookVerifier.authorizeRequest(fbUser.shortAccessToken, fbUser.fbId))
+                await fbUserRepo.InsertAsync(fbUser);
+            return fbUser;
         }
 
         /// <summary>
@@ -80,13 +79,13 @@ namespace placeToBe.Services
          }*/
 
         /// <summary>
-        ///     Changes the password from user (with given email) from old password to new password.
+        ///  Changes the password from user (with given email) from old password to new password.
         /// </summary>
-        /// <param name="userEmail"></param>
-        /// <param name="oldPassword"></param>
-        /// <param name="newPassword"></param>
-        /// <returns></returns>
-        public async Task<HttpStatusCode> ChangePassword(string userEmail, string oldPassword, string newPassword)
+        /// <param name="userEmail">Email from given user</param>
+        /// <param name="oldPassword">Password from user</param>
+        /// <param name="newPassword">Password the user wish</param>
+        /// <returns>´HttpStatusCode</returns>
+        public async Task<HttpStatusCode> changePassword(string userEmail, string oldPassword, string newPassword)
         {
             try
             {
@@ -132,10 +131,10 @@ namespace placeToBe.Services
         }
 
         /// <summary>
-        ///     Send a confirmation-email to the users email and activate the account, by setting (user.status==true).
+        /// Send a confirmation-email to the users email and activate the account, by setting (user.status==true).
         /// </summary>
-        /// <param name="activationcode"></param>
-        /// <returns></returns>
+        /// <param name="activationcode">(String) activationcode</param>
+        /// <returns>bool</returns>
         public async Task<bool> ConfirmEmail(string activationcode)
         {
             //user already activated --> return
@@ -143,7 +142,7 @@ namespace placeToBe.Services
 
 
             var messageBody = "Mail confirmed.";
-            messageBody += "<br /><br />Thank you for the Registration";
+            messageBody += "<br /><br />Thank you for the registration";
 
             //Create smtp connection.
             var client = new SmtpClient
@@ -178,6 +177,11 @@ namespace placeToBe.Services
             return true;
         }
 
+        /// <summary>
+        /// Create a user 
+        /// </summary>
+        /// <param name="usr"></param>
+        /// <returns>User</returns>
         public async Task<User> createUser(User usr)
         {
             //check if user already exists. if the user is null, the user does not exists- so we can send a activationmail
@@ -187,7 +191,7 @@ namespace placeToBe.Services
             var salt = GenerateSalt(saltSize);
             var passwordSalt = GenerateSaltedHash(plainText, salt);
 
-            var activationCode = await SendActivationEmail(usr.email, usr.password);
+            var activationCode = await sendActivationEmail(usr.email, usr.password);
             var user = new User(usr.email, passwordSalt, salt) { status = false, activationcode = activationCode };
             await InsertUserToDB(user);
             return user;
@@ -200,7 +204,7 @@ namespace placeToBe.Services
         /// <param name="userEmail"></param>
         /// <param name="userPassword"></param>
         /// <returns>HttpStatusCode.OK if the user can be written in the database. Otherwise it returns refusal HttpStatusCode</returns>
-        public async Task<String> SendActivationEmail(string userEmail, string userPassword)
+        public async Task<String> sendActivationEmail(string userEmail, string userPassword)
         {
             try
             {
@@ -213,8 +217,8 @@ namespace placeToBe.Services
                                "'>Click here to activate your account.</a>";
                 messageBody += "<br /><br />Thanks";
                 messageBody +=
-                    "<br /><br />Notice: If your browser does not allow linking in your emails go and type this:  http://localhost:18172/api/user?activationcode=" +
-                    activationCode + "in your adress bar.";
+                    "<br /><br />Notice: If your browser does not allow linking in your emails go and type this:  https://placetobe-koeln.azurewebsites.net/api/user?activationcode=" +
+                    activationCode + " in your adress bar.";
 
                 //Create smtp connection.
                 var client = new SmtpClient();
@@ -270,7 +274,7 @@ namespace placeToBe.Services
         /// </summary>
         /// <param name="userEmail"></param>
         /// <returns></returns>
-        public async Task ForgetPasswordReset(string userEmail)
+        public async Task forgetPasswordReset(string userEmail)
         {
 
             var forgetUserPassword = userRepo.GetByEmailAsync(userEmail);
@@ -280,7 +284,7 @@ namespace placeToBe.Services
             forgetUserPassword.passwordSalt = passwordSalt;
             forgetUserPassword.salt = salt;
             await userRepo.UpdateAsync(forgetUserPassword);
-            SendForgetPassword(newPassword, userEmail);
+            sendForgetPassword(newPassword, userEmail);
 
         }
 
@@ -289,13 +293,13 @@ namespace placeToBe.Services
         /// </summary>
         /// <param name="bytePassword"></param>
         /// <param name="userEmail"></param>
-        public void SendForgetPassword(byte[] bytePassword, string userEmail)
+        public void sendForgetPassword(byte[] bytePassword, string userEmail)
         {
             var passwordString = Encoding.UTF8.GetString(bytePassword);
 
             var messageBody = "Your new password is: " + passwordString;
             messageBody +=
-                "<br /><a href = ' http://localhost:18172/api/login/ '>Click here to login with the new password.</a>";
+                "<br /><a href = ' https://placetobe-koeln.azurewebsites.net/ '>Click here to login with the new password.</a>";
             messageBody += "<br /><br />Have Fun with placeToBe.";
 
             //Create smtp connection.

@@ -18,11 +18,10 @@ namespace placeToBe.Controllers
         private readonly AccountService accountService = new AccountService();
 
         /// <summary>
-        ///     PUT- Send an activationemail and register a accountService with email and passwort
+        ///    PUT- Send an activationemail and register a accountService with email and passwort
         /// </summary>
-        /// <param name="userEmail"></param>
-        /// <param name="userPassword"></param>
-        /// <returns></returns>
+        /// <param name="user">Post a user to DB</param>
+        /// <returns>JsonResponse</returns>
         [System.Web.Http.Route("api/user/")]
         public async Task<JsonResponse> Post(User user)
         {
@@ -60,10 +59,10 @@ namespace placeToBe.Controllers
         }
 
         /// <summary>
-        ///     GET- accountService by activationcode for confirm mail.
+        ///     GET- Activate the user by activationcode.
         /// </summary>
-        /// <param name="activationcode"></param>
-        /// <returns></returns>
+        /// <param name="activationcode">Get Request with activationcode</param>
+        /// <returns>JsonResponse</returns>
         [System.Web.Http.Route("api/user/")]
         public async Task<JsonResponse> Get([FromUri] string activationcode)
         {
@@ -90,13 +89,13 @@ namespace placeToBe.Controllers
             }
         }
 
-        /// <summary>
-        ///     PUT- Login - Get AuthenticationTicket for 5 minutes
+        /// <summary>   
+        /// PUT- Login - Get AuthenticationTicket for 5 minutes
         /// </summary>
         /// <param name="resetPasswordByMail"></param>
         /// <param name="userPassword"></param>
         /// <returns></returns>
-        /*[PlaceToBeAuthenticationFilter]
+        /*
         public async Task<Cookie> Put([FromUri] string userEmail) {
             return await accountService.Login(userEmail);
         }*/
@@ -104,7 +103,7 @@ namespace placeToBe.Controllers
         /// <summary>
         ///     PUT- Reset the old password and send a new one to the email.
         /// </summary>
-        /// <param name="userEmail"></param>
+        /// <param name="userEmail">userEmail has to be a string</param>
         /// <returns></returns>
         [System.Web.Http.Route("api/user/{userEmail}/password_reset")]
         public async Task<JsonResponse> Post([FromUri] string userEmail)
@@ -112,7 +111,7 @@ namespace placeToBe.Controllers
             try
             {
 
-                await accountService.ForgetPasswordReset(userEmail);
+                await accountService.forgetPasswordReset(userEmail);
                 HttpContext.Current.Response.StatusCode = (int)HttpStatusCode.OK;
                 return new JsonResponse
                 {
@@ -136,18 +135,16 @@ namespace placeToBe.Controllers
         }
 
         /// <summary>
-        ///     PUT- Change the password from accountService
+        /// Change the password from a User
         /// </summary>
-        /// <param name="userEmail"></param>
-        /// <param name="oldPassword"></param>
-        /// <param name="newPassword"></param>
-        /// <returns></returns>
+        /// <param name="pcp">Contains an email, an old password and a newPassword as a string</param>
+        /// <returns>JsonResponse</returns>
         [PlaceToBeAuthenticationFilter]
         [System.Web.Http.Route("api/user/{userEmail}/password_change")]
         public async Task<JsonResponse> Put(PasswordChangePair pcp)
         {
 
-            var code = await accountService.ChangePassword(pcp.email, pcp.oldPassword, pcp.newPassword);
+            var code = await accountService.changePassword(pcp.email, pcp.oldPassword, pcp.newPassword);
             HttpContext.Current.Response.StatusCode = (int)code;
             switch (code)
             {
@@ -190,6 +187,10 @@ namespace placeToBe.Controllers
 
         }
 
+        /// <summary>
+        /// Authorize a user
+        /// </summary>
+        /// <returns></returns>
         [PlaceToBeAuthenticationFilter]
         [System.Web.Http.Route("api/user/authorize")]
         public async Task<ActionResult> Get()
