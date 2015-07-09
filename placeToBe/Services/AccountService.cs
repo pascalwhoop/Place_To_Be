@@ -10,8 +10,10 @@ using placeToBe.Filter;
 using placeToBe.Model.Entities;
 using placeToBe.Model.Repositories;
 
-namespace placeToBe.Services {
-    public class AccountService {
+namespace placeToBe.Services
+{
+    public class AccountService
+    {
         private readonly FbUserRepository fbUserRepo = new FbUserRepository();
         private readonly FacebookUserVerification facebookVerifier = new FacebookUserVerification();
 
@@ -29,9 +31,10 @@ namespace placeToBe.Services {
         /// </summary>
         /// <param name="fbuser"></param>
         /// <returns></returns>
-        public async Task<FbUser> SaveFBData(FbUser fbuser) {
-            if(await facebookVerifier.authorizeRequest(fbuser.shortAccessToken, fbuser.fbId))
-            await fbUserRepo.InsertAsync(fbuser);
+        public async Task<FbUser> SaveFBData(FbUser fbuser)
+        {
+            if (await facebookVerifier.authorizeRequest(fbuser.shortAccessToken, fbuser.fbId))
+                await fbUserRepo.InsertAsync(fbuser);
             return fbuser;
         }
 
@@ -69,12 +72,12 @@ namespace placeToBe.Services {
         }*/
 
         //Log out the user and redirect to login-page.
-       /* public async Task<HttpStatusCode> Logout(string userEmail) {
-            var user1 = await userRepo.GetByEmailAsync(userEmail);
-            user1.ticket = null;
-            await userRepo.UpdateAsync(user1);
-            return HttpStatusCode.Unauthorized;
-        }*/
+        /* public async Task<HttpStatusCode> Logout(string userEmail) {
+             var user1 = await userRepo.GetByEmailAsync(userEmail);
+             user1.ticket = null;
+             await userRepo.UpdateAsync(user1);
+             return HttpStatusCode.Unauthorized;
+         }*/
 
         /// <summary>
         ///     Changes the password from user (with given email) from old password to new password.
@@ -83,18 +86,22 @@ namespace placeToBe.Services {
         /// <param name="oldPassword"></param>
         /// <param name="newPassword"></param>
         /// <returns></returns>
-        public async Task<HttpStatusCode> ChangePassword(string userEmail, string oldPassword, string newPassword) {
-            try {
+        public async Task<HttpStatusCode> ChangePassword(string userEmail, string oldPassword, string newPassword)
+        {
+            try
+            {
                 var oldPasswordBytes = Encoding.UTF8.GetBytes(oldPassword);
                 var user = await GetUserByEmail(userEmail);
-                if (user != null) {
+                if (user != null)
+                {
                     /*find out the old password from user and compare it.*/
                     var oldSalt = user.salt;
                     var oldPasswordSalt = GenerateSaltedHash(oldPasswordBytes, oldSalt);
                     var comparePasswords = CompareByteArrays(oldPasswordSalt, user.passwordSalt);
 
                     /*statement: when users password is correct and status is activated  -> true */
-                    if (comparePasswords && user.status) {
+                    if (comparePasswords && user.status)
+                    {
                         /*set the new password now and insert into DB*/
                         var newPasswordBytes = Encoding.UTF8.GetBytes(newPassword);
                         var newSalt = GenerateSalt(saltSize);
@@ -110,12 +117,14 @@ namespace placeToBe.Services {
                 //User is null - User with email do not exists in database.
                 return HttpStatusCode.NotFound;
             }
-            catch (TimeoutException e) {
+            catch (TimeoutException e)
+            {
                 //Database Error
                 Console.WriteLine("{0} Exception caught: Database-Timeout. ", e);
                 return HttpStatusCode.Conflict;
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 //Database Error
                 Console.WriteLine("{0} Exception caught. ", e);
                 return HttpStatusCode.Conflict;
@@ -127,64 +136,50 @@ namespace placeToBe.Services {
         /// </summary>
         /// <param name="activationcode"></param>
         /// <returns></returns>
-        public async Task<bool> ConfirmEmail(string activationcode) {
+        public async Task<bool> ConfirmEmail(string activationcode)
+        {
             //user already activated --> return
             if (await isUserActivated(activationcode)) return true;
-            
-            try {
-                var messageBody = "Mail confirmed.";
-                messageBody += "<br /><br />Thank you for the Registration";
 
-                //Create smtp connection.
-                var client = new SmtpClient {
-                    Port = 587, //outgoing port for the mail-server.
-                    Host = "smtp.gmail.com", //smtp host from gmail.
-                    EnableSsl = true, //EnabledSsl, because Email-Server need it.
-                    Timeout = 10000,
-                    DeliveryMethod = SmtpDeliveryMethod.Network,
-                    UseDefaultCredentials = false,
-                    Credentials = new NetworkCredential(fromAddress, mailPassword)
-                };
 
-                // Fill the mail form.
-                var sendMail = new MailMessage();
-                sendMail.IsBodyHtml = true;
-                //address from where mail will be sent.
-                sendMail.From = new MailAddress(fromAddress);
-                //address to which mail will be sent.           
-                var user = await GetUserbyActivationCode(activationcode);
-                sendMail.To.Add(new MailAddress(user.email));
-                //subject of the mail.
-                sendMail.Subject = "Confirmation: PlaceToBe";
-                sendMail.Body = messageBody;
+            var messageBody = "Mail confirmed.";
+            messageBody += "<br /><br />Thank you for the Registration";
 
-                try {
-                    //activate user
-                    var u = await GetUserbyActivationCode(activationcode);
-                    u.status = true;
-                    await userRepo.UpdateAsync(u);
-                    //Send the mail 
-                    client.Send(sendMail);
-                    return true;
-                }
-                catch (SmtpException cantsend) {
-                    //Email cannot be sent.
-                    Console.WriteLine("{0} Exception caught. Email cannot be sent.", cantsend);
-                    return false;
-                }
-                catch (ArgumentNullException messagenull) {
-                    //Email-message is null
-                    Console.WriteLine("{0} Exception caught. Email is null.", messagenull);
-                    return false;
-                }
-            }
-            catch (Exception e) {
-                Console.WriteLine("{0} Exception caught. Confirmmail can not be done.", e);
-                return false;
-            }
+            //Create smtp connection.
+            var client = new SmtpClient
+            {
+                Port = 587, //outgoing port for the mail-server.
+                Host = "smtp.gmail.com", //smtp host from gmail.
+                EnableSsl = true, //EnabledSsl, because Email-Server need it.
+                Timeout = 10000,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(fromAddress, mailPassword)
+            };
+
+            // Fill the mail form.
+            var sendMail = new MailMessage();
+            sendMail.IsBodyHtml = true;
+            //address from where mail will be sent.
+            sendMail.From = new MailAddress(fromAddress);
+            //address to which mail will be sent.           
+            var user = await GetUserbyActivationCode(activationcode);
+            sendMail.To.Add(new MailAddress(user.email));
+            //subject of the mail.
+            sendMail.Subject = "Confirmation: PlaceToBe";
+            sendMail.Body = messageBody;
+
+            //activate user
+            var u = await GetUserbyActivationCode(activationcode);
+            u.status = true;
+            await userRepo.UpdateAsync(u);
+            //Send the mail 
+            client.Send(sendMail);
+            return true;
         }
 
-        public async Task<User> createUser(User usr) {
+        public async Task<User> createUser(User usr)
+        {
             //check if user already exists. if the user is null, the user does not exists- so we can send a activationmail
             if (userRepo.GetByEmailAsync(usr.email) != null) throw new DuplicateNameException();
             //Register the user with inactive status (status==false)
@@ -193,7 +188,7 @@ namespace placeToBe.Services {
             var passwordSalt = GenerateSaltedHash(plainText, salt);
 
             var activationCode = await SendActivationEmail(usr.email, usr.password);
-            var user = new User(usr.email, passwordSalt, salt) {status = false, activationcode = activationCode};
+            var user = new User(usr.email, passwordSalt, salt) { status = false, activationcode = activationCode };
             await InsertUserToDB(user);
             return user;
         }
@@ -205,8 +200,10 @@ namespace placeToBe.Services {
         /// <param name="userEmail"></param>
         /// <param name="userPassword"></param>
         /// <returns>HttpStatusCode.OK if the user can be written in the database. Otherwise it returns refusal HttpStatusCode</returns>
-        public async Task<String> SendActivationEmail(string userEmail, string userPassword) {
-            try {
+        public async Task<String> SendActivationEmail(string userEmail, string userPassword)
+        {
+            try
+            {
                 //activationcode to identify the user in the email.
                 var activationCode = Guid.NewGuid().ToString();
 
@@ -242,23 +239,27 @@ namespace placeToBe.Services {
                 sendMail.Body = messageBody;
 
                 //Send the mail 
-                try {
+                try
+                {
                     client.Send(sendMail);
                     return activationCode;
                 }
-                catch (SmtpException cantsend) {
+                catch (SmtpException cantsend)
+                {
                     //email cannot be sent.
                     Console.WriteLine("{0} Exception caught. Email cannot be sent.", cantsend);
                     throw;
                 }
-                catch (ArgumentNullException messagenull) {
+                catch (ArgumentNullException messagenull)
+                {
                     //Email-message is null
                     Console.WriteLine("{0} Exception caught. Email is null.", messagenull);
                     throw;
                 }
             }
 
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 Console.WriteLine("{0} Exception caught. ", e);
                 throw;
             }
@@ -269,26 +270,18 @@ namespace placeToBe.Services {
         /// </summary>
         /// <param name="userEmail"></param>
         /// <returns></returns>
-        public async Task ForgetPasswordReset(string userEmail) {
-            try {
-                var forgetUserPassword = userRepo.GetByEmailAsync(userEmail);
-                var newPassword = Encoding.UTF8.GetBytes(CreateRandomString(8));
-                var salt = GenerateSalt(saltSize);
-                var passwordSalt = GenerateSaltedHash(newPassword, salt);
-                forgetUserPassword.passwordSalt = passwordSalt;
-                forgetUserPassword.salt = salt;
-                await userRepo.UpdateAsync(forgetUserPassword);
-                SendForgetPassword(newPassword, userEmail);
-            }
-            catch (NullReferenceException usernull) {
-                Console.WriteLine("{0} ForgetPassword: User is null", usernull);
-            }
-            catch (TimeoutException e) {
-                Console.WriteLine("{0} ForgetPassword: Cant update database ", e);
-            }
-            catch (Exception e) {
-                Console.WriteLine("{0} Exception caught. ", e);
-            }
+        public async Task ForgetPasswordReset(string userEmail)
+        {
+
+            var forgetUserPassword = userRepo.GetByEmailAsync(userEmail);
+            var newPassword = Encoding.UTF8.GetBytes(CreateRandomString(8));
+            var salt = GenerateSalt(saltSize);
+            var passwordSalt = GenerateSaltedHash(newPassword, salt);
+            forgetUserPassword.passwordSalt = passwordSalt;
+            forgetUserPassword.salt = salt;
+            await userRepo.UpdateAsync(forgetUserPassword);
+            SendForgetPassword(newPassword, userEmail);
+
         }
 
         /// <summary>
@@ -296,7 +289,8 @@ namespace placeToBe.Services {
         /// </summary>
         /// <param name="bytePassword"></param>
         /// <param name="userEmail"></param>
-        public void SendForgetPassword(byte[] bytePassword, string userEmail) {
+        public void SendForgetPassword(byte[] bytePassword, string userEmail)
+        {
             var passwordString = Encoding.UTF8.GetString(bytePassword);
 
             var messageBody = "Your new password is: " + passwordString;
@@ -325,14 +319,17 @@ namespace placeToBe.Services {
             sendMail.Subject = "PlaceToBe: New password";
             sendMail.Body = messageBody;
             //Send the mail 
-            try {
+            try
+            {
                 client.Send(sendMail);
             }
-            catch (SmtpException cantsend) {
+            catch (SmtpException cantsend)
+            {
                 //Email cannot be sent.
                 Console.WriteLine("{0} Exception caught. Email cannot be sent.", cantsend);
             }
-            catch (ArgumentNullException messagenull) {
+            catch (ArgumentNullException messagenull)
+            {
                 //Email-message is null
                 Console.WriteLine("{0} Exception caught. Email is null.", messagenull);
             }
@@ -345,7 +342,8 @@ namespace placeToBe.Services {
         /// </summary>
         /// <param name="length"></param>
         /// <returns>string</returns>
-        public string CreateRandomString(int length) {
+        public string CreateRandomString(int length)
+        {
             var stringBuilder = new StringBuilder();
             var content = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
             var rnd = new Random();
@@ -359,7 +357,8 @@ namespace placeToBe.Services {
         /// </summary>
         /// <param name="activationcode"></param>
         /// <returns></returns>
-        public async Task<bool> isUserActivated(string activationcode) {
+        public async Task<bool> isUserActivated(string activationcode)
+        {
             var user = await GetUserbyActivationCode(activationcode);
             return user.status;
         }
@@ -368,7 +367,8 @@ namespace placeToBe.Services {
         /// <param name="activationcode"
         /// </param>
         /// <returns>User</returns>
-        public async Task<User> GetUserbyActivationCode(string activationcode) {
+        public async Task<User> GetUserbyActivationCode(string activationcode)
+        {
             return await userRepo.GetByActivationCode(activationcode);
         }
 
@@ -377,7 +377,8 @@ namespace placeToBe.Services {
         /// </summary>
         /// <param name="email">email of the user</param>
         /// <returns>User</returns>
-        public async Task<User> GetUserByEmail(string email) {
+        public async Task<User> GetUserByEmail(string email)
+        {
             return userRepo.GetByEmailAsync(email);
         }
 
@@ -386,7 +387,8 @@ namespace placeToBe.Services {
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        private async Task<Guid> InsertUserToDB(User user) {
+        private async Task<Guid> InsertUserToDB(User user)
+        {
             return await userRepo.InsertAsync(user);
         }
 
@@ -395,7 +397,8 @@ namespace placeToBe.Services {
         /// </summary>
         /// <param name="userEmail"></param>
         /// <returns>true, if user exists, else false.</returns>
-        public async Task<Boolean> CheckIfUserExists(string userEmail) {
+        public async Task<Boolean> CheckIfUserExists(string userEmail)
+        {
             if (await GetUserByEmail(userEmail) == null) return false;
             return true;
         }
@@ -404,7 +407,8 @@ namespace placeToBe.Services {
         ///     Generate Salt
         /// </summary>
         /// <returns>Salt</returns>
-        public byte[] GenerateSalt(int saltSize) {
+        public byte[] GenerateSalt(int saltSize)
+        {
             var saltCrypt = new byte[saltSize];
             var rng = new RNGCryptoServiceProvider();
             rng.GetBytes(saltCrypt);
@@ -417,7 +421,8 @@ namespace placeToBe.Services {
         /// <param name="plainText">password text</param>
         /// <param name="salt">generated Salt</param>
         /// <returns>Value with plaintext+salt</returns>
-        public byte[] GenerateSaltedHash(byte[] plainText, byte[] salt) {
+        public byte[] GenerateSaltedHash(byte[] plainText, byte[] salt)
+        {
             HashAlgorithm algorithm = new SHA256Managed();
 
             var plainTextWithSaltBytes =
@@ -435,7 +440,8 @@ namespace placeToBe.Services {
         /// <param name="array1"></param>
         /// <param name="array2"></param>
         /// <returns></returns>
-        public bool CompareByteArrays(byte[] array1, byte[] array2) {
+        public bool CompareByteArrays(byte[] array1, byte[] array2)
+        {
             if (array1.Length != array2.Length) return false;
 
             for (var i = 0; i < array1.Length; i++) if (array1[i] != array2[i]) return false;
