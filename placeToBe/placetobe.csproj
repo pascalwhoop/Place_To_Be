@@ -316,7 +316,6 @@
     <Content Include="Frontend\app\bower_components\font-awesome-bower\fonts\fontawesome-webfont.woff" />
     <Content Include="Frontend\app\bower_components\font-awesome-bower\fonts\fontawesome-webfont.woff2" />
     <Content Include="Frontend\app\bower_components\font-awesome-bower\fonts\FontAwesome.otf" />
-    <Content Include="ClassDiagram2.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
