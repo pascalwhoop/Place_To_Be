@@ -23,9 +23,6 @@ namespace placeToBe.Services {
         private readonly String AppGoogleKey = "AIzaSyArx67_z9KxbrVMurzBhS2mzqDhrpz66s0";
         private String accessToken { get; set; }
         private String url;
-        private readonly QueueManager functionsQueue;
-        private readonly int maxWorkerThreads = 25;
-        private readonly int maxAsyncThreads = 2000;
 
     
         ///
@@ -47,19 +44,8 @@ namespace placeToBe.Services {
                     }
                 }
             }
-
-            //Limit Threads
-            ThreadPool.SetMaxThreads(maxWorkerThreads, maxAsyncThreads);
-            functionsQueue = new QueueManager();
         }
 
-        //Get the accesToken for the given AppSecret and AppId
-        //public void AuthenticateWithFb(String fbAppId, String fbAppSecret)
-        //{
-        //    String _response=GraphApiGet("oauth/access_token?client_id="+fbAppId+"&client_secret="+fbAppSecret+"&grant_type=client_credentials");
-        //    //String [] split = _response.Split(new char[]{'|'});
-        //    accessToken = _response;
-        //}
 
         //GET 
         
@@ -267,33 +253,9 @@ namespace placeToBe.Services {
                 //put fetched page into our collecting list
                 pagingResults.AddRange(fbApiPagingResponse.data);
             }
-
-            //Paging complete now the next step to get more information with these id's
-            //ThreadPool.QueueUserWorkItem(new WaitCallback(
-            //    (_) =>
-            //    {
             return pagingResults;
-
-            //}));
         }
 
-        public async Task<Page> pageSearchDb(String fbId) {
-            //Task<Page> page = null;
-            //var waitHandler = new ManualResetEvent(false);
-            //ThreadPool.QueueUserWorkItem(new WaitCallback((_) =>
-            //{
-            var pagePage = await pageRepo.GetByFbIdAsync(fbId);
-            //    waitHandler.Set();
-            //}));
-            //waitHandler.WaitOne();
-            //Page pagePage = await page;
-            //if (pagePage == null || page==null)
-            //{
-            //    System.Diagnostics.Debug.WriteLine("nicht geklappt");
-
-            //}
-            return pagePage;
-        }
 
         public async Task<Event> eventSearchByFbId(String fbId) {
             return await eventRepo.GetByFbIdAsync(fbId);
@@ -324,32 +286,6 @@ namespace placeToBe.Services {
             return cityCoordArray;
         }
 
-        /**
-         * handles an array of placeIDs and gets the full information for each of them from the FB API
-         * @param arr
-         */
-        /*public async void fetchDataForFbIdArray(FacebookPagingResult[] results, String condition, Event eventNewZ)
-        {
-
-            if (condition == "attendingList" && eventNewZ.attendingCount > 15)
-            {
-                eventNewZ.attending = makeAttendingList(results, eventNewZ);
-                functionsQueue.AddToDbQueue(() => eventRepo.InsertAsync(eventNewZ));
-                return;
-            }
-
-            foreach (FacebookPagingResult result in results) {
-                if (condition == "searchPlace" && result.is_community_page != true) {
-                    
-                    await fetchAndStorePage(condition, result);
-                }
-
-                if (condition == "searchEvent" && result.attending_count > 15) {
-                    await fetchAndStoreEvent(condition, result);
-                }
-            }
-            
-        }*/
 
         private async Task<Event> fetchAndStoreEvent(FacebookPagingResult result) {
             var e = await eventSearchByFbId(result.fbId);
@@ -402,50 +338,6 @@ namespace placeToBe.Services {
 
         public List<Rsvp> makeAttendingList(List<FacebookPagingResult> result) {
             return result.Select(r => new Rsvp {id = r.fbId, name = r.name, rsvp_status = r.rsvp_status}).ToList();
-        }
-
-        /**
-        * handles a single FB place and saves it in the DB
-        * @param place
-        * @param callback
-        */
-
-        
-
-        //Insert page to Db
-        public async void pushPageToDb(Page newPage) {
-            try {
-                Task<Guid> pageTask = null;
-                var waitHandler = new ManualResetEvent(false);
-                ThreadPool.QueueUserWorkItem(_ => {
-                    Debug.WriteLine("\n**** PAGE: " + newPage.fbId);
-                    pageTask = pageRepo.InsertAsync(newPage);
-                    waitHandler.Set();
-                });
-                waitHandler.WaitOne();
-                await pageTask;
-            }
-            catch (MongoWaitQueueFullException ex) {
-                //Thread.Sleep(15000);
-                Console.WriteLine("{0} Exception caught.", ex);
-                functionsQueue.AddToDbQueue(() => pushPageToDb(newPage));
-
-                //pushPageToDb(newPage);
-            }
-            catch (MongoWriteException ex) {
-                if (ex.WriteError.Code == 11000) {
-                    //this just means the object is already in the DB most of the time.                    
-                }
-            }
-            catch (MongoConnectionException ex) {
-                Console.WriteLine("{0} Exception caught.", ex);
-                pageRepo = new PageRepository();
-                functionsQueue.AddToDbQueue(() => pushPageToDb(newPage));
-                //pushPageToDb(newPage);
-            }
-            catch (Exception ex) {
-                Debug.WriteLine(ex.ToJson());
-            }
         }
 
         public double getHopDistance(City city, String angle, int hops) {
@@ -516,40 +408,4 @@ namespace placeToBe.Services {
         }
     }
 
-    #region QueueManager
-
-    public class QueueManager {
-        private BlockingCollection<Action> dbOperationsQueue;
-        private Thread workerDb;
-
-        public QueueManager() {
-            startDbOperations();
-        }
-
-        //public void handlePlacesIdQueue()
-        //{
-
-        //}
-        public void startDbOperations() {
-            dbOperationsQueue = new BlockingCollection<Action>();
-            workerDb = new Thread(DoWorkDbQueue);
-            workerDb.IsBackground = true;
-            workerDb.Start();
-        }
-
-        private void DoWorkDbQueue() {
-            bool actionAvailable;
-            do {
-                Action action;
-                actionAvailable = dbOperationsQueue.TryTake(out action, Timeout.Infinite);
-                if (actionAvailable) ThreadPool.QueueUserWorkItem(_ => { action.Invoke(); });
-            } while (true);
-        }
-
-        public void AddToDbQueue(Action action) {
-            dbOperationsQueue.TryAdd(action);
-        }
-
-        #endregion
-    }
 }
