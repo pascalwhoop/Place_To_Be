@@ -58,7 +58,7 @@ namespace placeToBe.Tests.Service
 
 
             //Act
-            Task<String> status = account.SendActivationEmail(userEmail, userPassword);
+            Task<String> status = account.sendActivationEmail(userEmail, userPassword);
             String result = status.Result;
 
             //Assert
@@ -117,7 +117,7 @@ namespace placeToBe.Tests.Service
             HttpStatusCode expected = HttpStatusCode.NotFound;
 
             //Act
-            Task<HttpStatusCode> status = account.ChangePassword(userEmail, oldPassword, newPassword);
+            Task<HttpStatusCode> status = account.changePassword(userEmail, oldPassword, newPassword);
             HttpStatusCode result = status.Result;
 
             //Assert
@@ -140,7 +140,7 @@ namespace placeToBe.Tests.Service
             HttpStatusCode expected = HttpStatusCode.BadRequest;
 
             //Act
-            Task<HttpStatusCode> status = account.ChangePassword(userEmail, oldPassword, newPassword);
+            Task<HttpStatusCode> status = account.changePassword(userEmail, oldPassword, newPassword);
             HttpStatusCode result = status.Result;
 
             //Assert
@@ -160,7 +160,7 @@ namespace placeToBe.Tests.Service
             usr.firstName = "Laura";
 
             //Act
-            Task<FbUser> task = account.SaveFBData(usr);
+            Task<FbUser> task = account.saveFbData(usr);
 
             //Assert
             Assert.IsNotNull(task);

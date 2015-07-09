@@ -34,7 +34,7 @@ namespace placeToBe.Tests.Controllers
             user.email = "DummyEmail";
 
             //Act
-            Task<User> status = controller.Post(user);
+            Task<JsonResponse> status = controller.Post(user);
 
         }
         /// <summary>
@@ -54,10 +54,10 @@ namespace placeToBe.Tests.Controllers
             //Act
             var task = controller.Put(pair);
 
-            HttpStatusCodeResult result = (HttpStatusCodeResult)task.Result;
+            
 
             //Assert
-            Assert.IsNotNull(result);
+            Assert.IsNotNull(task);
         }
 
         /// <summary>
@@ -77,10 +77,10 @@ namespace placeToBe.Tests.Controllers
             //Act
             var task = controller.Put(pair);
 
-            HttpStatusCodeResult result = (HttpStatusCodeResult)task.Result;
+            
 
             //Assert
-            Assert.IsNotNull(result);
+            Assert.IsNotNull(task);
         }
 
     }
