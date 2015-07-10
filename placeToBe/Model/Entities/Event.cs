@@ -40,6 +40,7 @@ namespace placeToBe.Model.Entities
 
         [DataMember]
         public int invitedCount { get; set; }
+        [DataMember]
         public List<Rsvp> attending { get; set; }
         [DataMember]
         public List<Rsvp> maybe { get; set; }

@@ -67,19 +67,21 @@ namespace placeToBe.Services
             String fbId = utilService.getFbIdFromHttpContext(httpContext);
 
             List<Event> nearEvents = await eventRepo.getFullEventListByPointInRadius(latitude, longitude, radius, startTime, endTime);
-
+            FbUser fbUser = null;
             //Only for fb-Users
             //fill friends who attend the event
             if (fbId != null)
             {
-                FbUser fbUser = await fbUserRepo.GetByFbIdAsync(fbId);
-                for (int i = 0; i < nearEvents.Count; i++)
+                fbUser = await fbUserRepo.GetByFbIdAsync(fbId);
+            }
+            for (int i = 0; i < nearEvents.Count; i++)
+            {
+                if (fbUser != null)
                 {
                     nearEvents[i] = await getEventAttendingFriends(fbUser, nearEvents[i]);
-                    nearEvents[i].attending = null;
                 }
+                nearEvents[i].attending = null;
             }
-
             return nearEvents;
         }
 
