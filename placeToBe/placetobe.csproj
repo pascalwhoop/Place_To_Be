@@ -208,6 +208,8 @@
     <Content Include="Frontend\app\bower_components\angular\angular.min.js" />
     <Content Include="Frontend\app\bower_components\font-awesome-bower\css\font-awesome.css" />
     <Content Include="Frontend\app\bower_components\font-awesome-bower\fonts\fontawesome-webfont.svg" />
+    <Content Include="Frontend\app\bower_components\md-date-time\dist\md-date-time.css" />
+    <Content Include="Frontend\app\bower_components\md-date-time\dist\md-date-time.js" />
     <Content Include="Frontend\app\bower_components\ng-facebook\ngFacebook.js" />
     <Content Include="Frontend\app\bower_components\ng-table\dist\ng-table.css" />
     <Content Include="Frontend\app\bower_components\ng-table\dist\ng-table.js" />

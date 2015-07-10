@@ -1,7 +1,7 @@
 /**
  * This is our main entry point to our app. we declare our dependencies, ...
  */
-angular.module('placeToBe', ['ngMaterial', 'ngRoute', 'ngMap', 'ngResource', 'ngFacebook', 'ngMessages', 'ngTable'])
+angular.module('placeToBe', ['ngMaterial', 'ngRoute', 'ngMap', 'ngResource', 'ngFacebook', 'ngMessages', 'ngTable', 'mdDateTime'])
 
 /**
  *  our style config,
