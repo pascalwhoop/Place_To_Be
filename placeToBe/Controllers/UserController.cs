@@ -71,12 +71,6 @@ namespace placeToBe.Controllers
             catch (Exception e)
             {
                 HttpContext.Current.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                return new JsonResponse
-                {
-                    status = "Error",
-                    message = e.ToString(),
-                    showUser = false
-                };
             }
         }
 
