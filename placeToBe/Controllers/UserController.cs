@@ -66,6 +66,7 @@ namespace placeToBe.Controllers
             {
                 await accountService.ConfirmEmail(activationcode);
                 HttpContext.Current.Response.StatusCode = (int)HttpStatusCode.OK;
+                HttpContext.Current.Response.Redirect("https://placetobe-koeln.azurewebsites.net/Frontend/app/#/");
                 return new JsonResponse
                 {
                     status = "OK",
