@@ -287,7 +287,11 @@ namespace placeToBe.Services {
             return cityCoordArray;
         }
 
-
+        /// <summary>
+        /// fetches the events from a page and stores them into the db
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
         private async Task<Event> fetchAndStoreEvent(FacebookPagingResult result) {
             var e = await eventSearchByFbId(result.fbId);
             var eventDbId = Guid.Empty; //put empty Guid in Place. this is the quivalent of a NULL for an object
@@ -314,6 +318,11 @@ namespace placeToBe.Services {
             return e;
         }
 
+        /// <summary>
+        /// fetches all pages and stores them to db
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
         private async Task<Page> fetchAndStorePage(FacebookPagingResult result) {
             var pageInDb = pageRepo.GetByFbIdAsync(result.fbId).Result;
             var pageDbId = Guid.Empty; //put empty Guid in Place. this is the quivalent of a NULL for an object
@@ -337,10 +346,22 @@ namespace placeToBe.Services {
             return pageInDb;
         }
 
+        /// <summary>
+        /// creates an attending list
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
         public List<Rsvp> makeAttendingList(List<FacebookPagingResult> result) {
             return result.Select(r => new Rsvp {id = r.fbId, name = r.name, rsvp_status = r.rsvp_status}).ToList();
         }
 
+        /// <summary>
+        /// creates a grid by hopping
+        /// </summary>
+        /// <param name="city"></param>
+        /// <param name="angle"></param>
+        /// <param name="hops"></param>
+        /// <returns></returns>
         public double getHopDistance(City city, String angle, int hops) {
             //First Coordinate: Southwest, Second: Northeast
 
