@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -18,9 +19,9 @@ namespace placeToBe.Services {
         private PageRepository pageRepo = new PageRepository();
         private readonly EventRepository eventRepo = new EventRepository();
         GenderizeService genderizeService=new GenderizeService();
-        private readonly String fbAppSecret = "469300d9c3ed9fe6ff4144d025bc1148";
-        private readonly String fbAppId = "857640940981214";
-        private readonly String AppGoogleKey = "AIzaSyArx67_z9KxbrVMurzBhS2mzqDhrpz66s0";
+        private readonly String fbAppSecret = ConfigurationManager.AppSettings["fbAppSecret"];
+        private readonly String fbAppId = ConfigurationManager.AppSettings["fbAppId"];
+        private readonly String appGoogleKey = ConfigurationManager.AppSettings["googleAppKey"];
         private String accessToken { get; set; }
         private String url;
 
@@ -58,7 +59,7 @@ namespace placeToBe.Services {
         public String graphApiGet(String getData, String requestToPerform) //synchrone Operation
         {
             if (requestToPerform == "GOOGLE")
-                url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + getData + "&key=" + AppGoogleKey;
+                url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + getData + "&key=" + appGoogleKey;
             else {
                 switch (requestToPerform) {
                     case "pageData":

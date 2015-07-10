@@ -4,6 +4,7 @@ using placeToBe.Model.Repositories;
 using placeToBe.Services;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -17,8 +18,8 @@ namespace placeToBe.Filter
     /// </summary>
     public class FacebookUserVerification
     {
-        private readonly String fbAppSecret = "469300d9c3ed9fe6ff4144d025bc1148";
-        private readonly String fbAppId = "857640940981214";
+        private readonly String fbAppSecret = ConfigurationManager.AppSettings["fbAppSecret"];
+        private readonly String fbAppId = ConfigurationManager.AppSettings["fbAppId"];
         FbUserRepository fbUserRepo = new FbUserRepository();
 
         /// <summary>
