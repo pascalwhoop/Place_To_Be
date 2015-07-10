@@ -229,6 +229,8 @@
     <Content Include="Frontend\app\ms-icon-310x310.png" />
     <Content Include="Frontend\app\ms-icon-70x70.png" />
     <Content Include="Frontend\app\src\app.js" />
+    <Content Include="Frontend\app\src\details\detailDirective.js" />
+    <Content Include="Frontend\app\src\details\detailView.html" />
     <Content Include="Frontend\app\src\eventlist\EventListDirective.js" />
     <Content Include="Frontend\app\src\eventlist\EventListDirectiveTemplate.html" />
     <Content Include="Frontend\app\src\heatmap\heatmap.js" />

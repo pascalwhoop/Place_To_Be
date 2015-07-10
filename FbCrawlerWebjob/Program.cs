@@ -23,7 +23,7 @@ namespace FbCrawlerWebjob
         // AzureWebJobsDashboard and AzureWebJobsStorage
         static void Main() {
 
-            Thread.Sleep(1000*40); // to be able to debug and fetch the first few things. 
+            //Thread.Sleep(1000*40); // to be able to debug and fetch the first few things. 
             setRedirectOutputToLogfile();
             // The following code ensures that the WebJob will be running continuously
             Program p = new Program();

@@ -1,0 +1,96 @@
+<md-dialog aria-label="Eventdetails">
+  <form>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Eventdetails</h2>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+
+      <md-card>
+        <img ng-src="{{event.cover.source}}" class="md-card-image" alt="Washed Out">
+        <md-card-content>
+          <h2 class="md-title">{{event.name}}</h2>
+
+          <div layout="row">
+            <div flex>
+
+              <div layout="row">
+                <p flex="33"><i class="fa fa-calendar-o"></i> {{event.start_time | date:"dd. MMM
+                  HH:mm"}}</p>
+
+                <p flex="33"><i class="fa fa-map-marker"></i> {{event.place.name}}</p>
+              </div>
+              <!--a relation between male / female-->
+              <div layout="row">
+                <p flex="33"><i class="fa fa-users"></i> {{event.attending_count}}</p>
+                <!--<p flex="33" ng-if="event.attendingMale > 0"><i class="fa fa-mars"></i> {{event.attendingMale/(event.attendingMale+event.attendingFemale)*100}}%</p>-->
+                <p flex="33" ng-if="event.attendingMale > 0"><i class="fa fa-venus"></i>
+                  {{event.attendingMale}}</p>
+
+                <p flex="33" ng-if="event.attendingFemale > 0"><i class="fa fa-venus"></i>
+                  {{event.attendingFemale}}</p>
+              </div>
+
+              <p flex style="padding-right: 20px;">
+                {{event.description}}
+              </p>
+            </div>
+
+            <div flex="25" class="md-whiteframe-z1 md-padding">
+              <div ng-show="event.place.location">
+                <h3>Location: </h3>
+
+                <p><strong>Street: </strong><span>{{event.place.location.street}}</span></p>
+
+                <p><strong>ZIP: </strong><span>{{event.place.location.zip}}</span></p>
+
+                <p><strong>City: </strong><span>{{event.place.location.city}}</span></p>
+
+                <a ng-show="event.place.location.longitude" target="_blank"
+                   ng-href="{{'http://maps.google.com/?daddr='+ event.place.location.latitude + ',' + event.place.location.longitude }}"
+                   href="" class="md-button"> <i class="fa fa-location-arrow"></i> Navigate</a>
+
+
+              </div>
+
+              <h3>Friends also attending:</h3>
+              <md-list>
+
+                <md-list-item class="md-2-line" ng-repeat="friend in event.attendingFriends">
+
+                  <img ng-src="{{'https://graph.facebook.com/' + friend._id + '/picture'}}"
+                       class="md-avatar" ng-click="showFriendFb(friend.httpLink)"/>
+
+                  <div class="md-list-item-text">
+                    <h3>{{friend.name}}</h3>
+
+                    <p>{{}}</p>
+                  </div>
+
+                </md-list-item>
+
+              </md-list>
+              <p ng-show="!event.attendingFriends">No friends attending this event. Invite them to use
+                this app to see them too.</p>
+            </div>
+          </div>
+
+
+        </md-card-content>
+      </md-card>
+
+
+    </md-dialog-content>
+
+    <!--the bottom rows-->
+    <div class="md-actions" layout="row">
+      <span flex></span>
+      <md-button ng-click="hide()" class="md-primary">
+        Close
+      </md-button>
+    </div>
+  </form>
+</md-dialog>
+
+
