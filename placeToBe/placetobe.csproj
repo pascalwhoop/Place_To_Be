@@ -260,6 +260,7 @@
     <Content Include="Frontend\app\src\util\utilDirectives.js" />
     <Content Include="Frontend\app\src\util\utilFilters.js" />
     <Content Include="Frontend\app\src\util\utilServices.js" />
+    <Content Include="Frontend\app\src\util\dateDialog.html" />
     <Content Include="Global.asax" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
