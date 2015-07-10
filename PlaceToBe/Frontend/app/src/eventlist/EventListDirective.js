@@ -16,7 +16,7 @@ angular.module('placeToBe')
             },
 
             //this is the HTML template for the directive
-            templateUrl: 'src/eventlist/EventListDirectiveTemdgplate.html',
+            templateUrl: 'src/eventlist/EventListDirectiveTemplate.html',
             //we set it so only element tags are relevant
             restrict: 'E',
             //linking the attribute "city" value to the scope.city variable (maybe others too)
