@@ -147,8 +147,8 @@ namespace placeToBe.Services
             //Create smtp connection.
             var client = new SmtpClient
             {
-                Port = 587, //outgoing port for the mail-server.
-                Host = "smtp.gmail.com", //smtp host from gmail.
+                Port = int.Parse(ConfigurationManager.AppSettings["emailPort"]), //outgoing port for the mail-server.
+                Host = ConfigurationManager.AppSettings["emailHost"], //smtp host from gmail.
                 EnableSsl = true, //EnabledSsl, because Email-Server need it.
                 Timeout = 10000,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
@@ -221,15 +221,17 @@ namespace placeToBe.Services
                     activationCode + " in your adress bar.";
 
                 //Create smtp connection.
-                var client = new SmtpClient();
+                var client = new SmtpClient
+                {
+                    Port = int.Parse(ConfigurationManager.AppSettings["emailPort"]), //outgoing port for the mail-server.
+                    Host = ConfigurationManager.AppSettings["emailHost"], //smtp host from gmail.
+                    EnableSsl = true,
+                    Timeout = 10000,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential(fromAddress, mailPassword)
+                };
                 //outgoing port for the mail-server.
-                client.Port = 587;
-                client.Host = "smtp.gmail.com";
-                client.EnableSsl = true;
-                client.Timeout = 10000;
-                client.DeliveryMethod = SmtpDeliveryMethod.Network;
-                client.UseDefaultCredentials = false;
-                client.Credentials = new NetworkCredential(fromAddress, mailPassword);
 
                 // Fill the mail form.
                 var sendMail = new MailMessage();
