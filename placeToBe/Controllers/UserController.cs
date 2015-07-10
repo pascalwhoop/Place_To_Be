@@ -60,19 +60,13 @@ namespace placeToBe.Controllers
         /// <param name="activationcode">Get Request with activationcode</param>
         /// <returns>JsonResponse</returns>
         [System.Web.Http.Route("api/user/")]
-        public async Task<JsonResponse> Get([FromUri] string activationcode)
+        public async Task Get([FromUri] string activationcode)
         {
             try
             {
-                await accountService.ConfirmEmail(activationcode);
-                HttpContext.Current.Response.StatusCode = (int)HttpStatusCode.OK;
+                await accountService.ConfirmEmail(activationcode);                
                 HttpContext.Current.Response.Redirect("https://placetobe-koeln.azurewebsites.net/Frontend/app/#/");
-                return new JsonResponse
-                {
-                    status = "OK",
-                    message = "Account activated.",
-                    showUser = true
-                };
+                
             }
             catch (Exception e)
             {
