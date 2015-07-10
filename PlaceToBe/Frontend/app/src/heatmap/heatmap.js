@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc function
- * @name frontendApp.controller:MainCtrl
+ * @name placeToBe.controller:MainCtrl
  * @description
  * # MainCtrl
  * Controller of the frontendApp

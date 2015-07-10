@@ -1,9 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using placeToBe;
 using placeToBe.Controllers;
-using placeToBe.Model.Entities;
-using System.Threading.Tasks;
 
 namespace placeToBe.Tests.Controllers
 {
@@ -72,7 +69,7 @@ namespace placeToBe.Tests.Controllers
             Guid id = Guid.NewGuid();
 
             //Act
-            var task = controller.GetEvent(id);
+            var task = controller.getEvent(id);
 
             //Assert 
             Assert.IsNotNull(task);

@@ -26,18 +26,7 @@ module.exports = function (grunt) {
       }
     },
 
-    /*concat: {
-      options: {
-        // define a string to put between each file in the concatenated output
-        separator: ';'
-      },
-      dist: {
-        // the files to concatenate
-        src: ['app/src/!**!/!*.js'],
-        // the location of the resulting JS file
-        dest: 'dist/<%= pkg.name %>.js'
-      }
-    },*/
+
     uglify: {
       options: {
         // the banner is inserted at the top of the output
@@ -63,6 +52,7 @@ module.exports = function (grunt) {
       css: ['dist/styles/{,*/}*.css']
     },
 
+
     dgeni: {
       options: {
         // Base directory of the JavaScript file to be read
@@ -72,19 +62,35 @@ module.exports = function (grunt) {
       src: ['src/**/*.js'],
       // Directory to output the document
       dest: 'doc/'
-    }
+    },
+
+    concat: {
+     options: {
+     // define a string to put between each file in the concatenated output
+     separator: ';'
+     },
+     dist: {
+     // the files to concatenate
+     src: ['doc/**/*.md'],
+     // the location of the resulting JS file
+     dest: 'doc/all.md'
+     }
+     }
 
   });
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-html2js');
   grunt.loadNpmTasks('grunt-ng-annotate');
   grunt.loadNpmTasks('grunt-dgeni');
+
 
 
   //grunt.registerTask('build', ['html2js']);
   //grunt.registerTask('release', ['html2js']);
   //grunt.registerTask('default', ['concat', 'uglify']);
   grunt.registerTask('jsSmall', ['ngAnnotate', 'uglify']);
+  grunt.registerTask('makeDocs', ['dgeni', 'concat'])
 };

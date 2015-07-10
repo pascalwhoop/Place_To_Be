@@ -2,9 +2,9 @@
 
 /**
  * @ngdoc directive
- * @name frontendApp.directive:goClick
+ * @name placeToBe.directive:goClick
  * @description
- * # goClick
+ * goClick is a small helper directive that binds a navigation action to a button,
  */
 angular.module('placeToBe')
   .directive('goClick', function ($location) {
@@ -26,9 +26,23 @@ angular.module('placeToBe')
 
 /**
  * @ngdoc directive
- * @name frontendApp.directive:equals
+ * @name placeToBe.directive:equals
+ * @element input
  * @description
- * # equals
+ * The equals filter compares two input fields
+ * * @example
+ <md-input-container>
+ <label>Password</label>
+ <input ng-model="user.password" type="password" required equals="{{user.password2}}" name="password">
+ </md-input-container>
+ <md-input-container>
+ <label>repeat Password</label>
+ <input ng-model="user.password2" type="password" equals="{{user.password}}" name="password2">
+
+ <div ng-messages="registerForm.password2.$error">
+ <div ng-message="equals">Both passwords must match!</div>
+ </div>
+ </md-input-container>
  */
   .directive('equals', function () {
     return {
@@ -62,7 +76,7 @@ angular.module('placeToBe')
 
 /**
  * @ngdoc directive
- * @name frontendApp.directive:equals
+ * @name placeToBe.directive:equals
  * @description
  * A directive to show and hide a loading bar. it takes two attributes (show-event and hide-event) which must be the event names it should listen on on the rootScope.
  */

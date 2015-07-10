@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Net;
-using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
-using Microsoft.Owin.Security.Facebook;
-using MongoDB.Driver;
 using placeToBe.Model.Entities;
-using placeToBe.Model.Repositories;
 using placeToBe.Services;
 
 namespace placeToBe.Controllers

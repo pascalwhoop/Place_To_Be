@@ -2,9 +2,10 @@
 
 /**
  * @ngdoc directive
- * @name frontendApp.directive:heatmapDirective
+ * @name placeToBe.directive:eventList
+ *
  * @description
- * # heatmapDirective
+ * An Eventlist, which shows a scrollable list of event cards including the event image, name, attening count, description etc.
  */
 angular.module('placeToBe')
     .directive('eventList', function () {
@@ -15,7 +16,7 @@ angular.module('placeToBe')
             },
 
             //this is the HTML template for the directive
-            templateUrl: 'src/eventlist/EventListDirectiveTemplate.html',
+            templateUrl: 'src/eventlist/EventListDirectiveTemdgplate.html',
             //we set it so only element tags are relevant
             restrict: 'E',
             //linking the attribute "city" value to the scope.city variable (maybe others too)

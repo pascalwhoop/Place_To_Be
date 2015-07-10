@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using System.Web.Http.Controllers;
 using placeToBe.Model.Entities;
-using placeToBe.Model.Repositories;
 using placeToBe.Services;
 
 namespace placeToBe.Controllers
@@ -14,9 +13,7 @@ namespace placeToBe.Controllers
     public class EventController : ApiController
     {
         readonly SearchService search = new SearchService();
-        readonly MongoDbRepository<Event> repo = new MongoDbRepository<Event>();
 
-       
         /// <summary>
         /// Return a list of events. The method needs the id, year, month, day and hour.
         /// </summary>
@@ -54,8 +51,8 @@ namespace placeToBe.Controllers
 
             DateTime time = new DateTime(int.Parse(year), int.Parse(month), int.Parse(day), int.Parse(hour), 0, 0);
             Debug.WriteLine(time);
-            double latitudeDouble = double.Parse(latitude, System.Globalization.CultureInfo.InvariantCulture);
-            double longitudeDouble = double.Parse(longitude, System.Globalization.CultureInfo.InvariantCulture); 
+            double latitudeDouble = double.Parse(latitude, CultureInfo.InvariantCulture);
+            double longitudeDouble = double.Parse(longitude, CultureInfo.InvariantCulture); 
             return await search.findNearEventFromAPoint(latitudeDouble, longitudeDouble, int.Parse(radius), time, time.AddHours(8), httpContext);
         }
 
@@ -65,7 +62,7 @@ namespace placeToBe.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [PlaceToBeAuthenticationFilter]
-        public async Task<Event> GetEvent(Guid id)
+        public async Task<Event> getEvent(Guid id)
         {
             
             Event setEvent = await search.EventSearch(id);

@@ -5,7 +5,7 @@
  * @name placeToBe.configService
  * @description
  * # gaussianService code taken from https://github.com/errcw/gaussian
- * Service in the frontendApp.
+ * Service in the placeToBe.
  */
 angular.module('placeToBe')
   .factory('configService', function () {

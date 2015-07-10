@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name frontendApp.directive:heatmapDirective
+ * @name placeToBe.directive:heatmapDirective
  * @description
  * # heatmapDirective
  */

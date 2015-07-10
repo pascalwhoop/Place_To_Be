@@ -2,11 +2,11 @@
 
 /**
  * @ngdoc filter
- * @name frontendApp.filter:range
+ * @name placeToBe.filter:range
  * @function
  * @description
  * # range
- * Filter in the frontendApp.
+ * Filter in the placeToBe.
  */
 angular.module('placeToBe')
   .filter('range', function () {
