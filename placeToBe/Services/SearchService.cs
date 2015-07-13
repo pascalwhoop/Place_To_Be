@@ -46,10 +46,14 @@ namespace placeToBe.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<Event> EventSearch(Guid id)
+        public async Task<Event> getEventByIdAsync(Guid id)
         {
             Event _event = await eventRepo.GetByIdAsync(id);
             return _event;
+        }
+
+        public async Task<Event> getEventByFbIdAsync(String fbId) {
+            return await eventRepo.GetByFbIdAsync(fbId);
         }
 
         /// <summary>

@@ -65,7 +65,7 @@ namespace placeToBe.Tests.Service
             Guid id = Guid.NewGuid();
 
             //Act
-            var task = search.EventSearch(id);
+            var task = search.getEventByIdAsync(id);
 
             //Assert 
             Assert.IsNotNull(task);

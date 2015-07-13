@@ -57,17 +57,15 @@ namespace placeToBe.Controllers
         }
 
         /// <summary>
-        /// Return a certain event with a specific id.
+        /// Return a certain event with a specific facebook id.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [Route("api/event/{fbId}")]
         [PlaceToBeAuthenticationFilter]
-        public async Task<Event> getEvent(Guid id)
-        {
-            
-            Event setEvent = await search.EventSearch(id);
-            return setEvent;
-          
+        public async Task<Event> Get(string fbId)
+        {            
+            return await search.getEventByFbIdAsync(fbId); 
         }
     }
 }
