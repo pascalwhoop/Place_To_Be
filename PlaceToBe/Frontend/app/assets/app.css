@@ -351,3 +351,9 @@ table tr:nth-child(even) {
   max-width: 100%;
   overflow: hidden;
 }
+
+/*fix md-dialog not scrolling*/
+
+md-dialog-content{
+  overflow-y:scroll;
+}

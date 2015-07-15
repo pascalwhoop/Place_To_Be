@@ -62,7 +62,7 @@ angular.module('placeToBe')
     initialize()
   })
 
-  .directive("statDetails", function ($mdDialog, eventService) {
+  .directive("statDetails", function ($mdDialog, eventService, toastNotifyService, configService) {
     return {
       link: function (scope, element, attr) {
 
@@ -71,10 +71,13 @@ angular.module('placeToBe')
          * @param eventId
          */
         scope.showDetails = function (mouseEvent) {
-              eventService.getEventById(scope.eventId).then(
+              eventService.getEventById(scope.eventId).success(
                 function(data, status){
                   scope.eventData = data;
                   showDialog(data, mouseEvent);
+                })
+                .error(function(data, status){
+                  toastNotifyService.showNotifyToast(configService.STRINGS.backend_error);
                 })
 
         };

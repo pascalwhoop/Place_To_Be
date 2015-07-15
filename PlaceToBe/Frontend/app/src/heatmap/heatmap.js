@@ -53,18 +53,18 @@ angular.module('placeToBe')
         parent: angular.element(document.body),
         targetEvent: ev,
       }).then(function (answer) {
-          $scope.query.startDate = answer;
-          $scope.fetchEvents($scope.query);
-        }, function () {
+        $scope.query.startDate = answer;
+        $scope.fetchEvents($scope.query);
+      }, function () {
 
-        });
+      });
     };
 
     var datePickerController = function ($scope, $mdDialog) {
-      $scope.hide = function() {
+      $scope.hide = function () {
         $mdDialog.hide();
       };
-      $scope.answer = function(answer) {
+      $scope.answer = function (answer) {
         $mdDialog.hide(answer);
       };
     };
@@ -118,10 +118,14 @@ angular.module('placeToBe')
      * gets an event from the backend based on its ID
      * @param eventId
      */
-    var getEventById = function(eventId){
-      return performServerCall(function(){
-        return $http.get(BASE_URL + '/event/' + eventId);
+    var getEventById = function (eventId) {
+      $rootScope.$emit('serverCallStart');
+      return $http.get(BASE_URL + '/event/' + eventId, {cache: true}).success(function (data) {
+        $rootScope.$emit('serverCallEnd');
       })
+        .error(function () {
+          $rootScope.$emit('serverCallEnd');
+        })
     };
 
     /**
@@ -129,11 +133,11 @@ angular.module('placeToBe')
      * @param serverCall
      * @param callback
      */
-    var performServerCall = function(serverCall, callback){
+    var performServerCall = function (serverCall, callback) {
       $rootScope.$emit('serverCallStart');
-      return serverCall().then(function(){
+      return serverCall().then(function () {
         $rootScope.$emit('serverCallEnd');
-      }, function(){
+      }, function () {
         $rootScope.$emit('serverCallEnd');
       })
 
