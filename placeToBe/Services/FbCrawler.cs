@@ -147,7 +147,7 @@ namespace placeToBe.Services {
             Debug.WriteLine(
                 "==================================================================================================");
 
-            for (var i=0;i<coordArrayCityShuffled.Length/2;i++) { //we only fetch one half of the search grid. usually after having fetched 25% of it, most events are already found and also most are already up to date. very few will be missed and those will likely be updated the next time
+            for (var i=0;i<coordArrayCityShuffled.Length/3;i++) { //we only fetch one half of the search grid. usually after having fetched 25% of it, most events are already found and also most are already up to date. very few will be missed and those will likely be updated the next time
                 var coord = coordArrayCityShuffled[i];
                 var getData = coord.latitude + "|" + coord.longitude + "|" + distance + "|" + limit;
                 getData = getData.Replace(",", ".");

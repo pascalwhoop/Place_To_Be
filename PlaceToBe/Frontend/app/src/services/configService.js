@@ -10,8 +10,8 @@
 angular.module('placeToBe')
   .factory('configService', function () {
     return{
-      /*BASE_URL: "https://placetobe-koeln.azurewebsites.net/api",*/
-      BASE_URL: 'http://192.168.1.156:18172/api',
+      BASE_URL: "https://placetobe-koeln.azurewebsites.net/api",
+      /*BASE_URL: 'http://192.168.1.156:18172/api',*/
       STRINGS: {
         backend_error: "An error occured. Try again later",
         reset_email_sent: "Reset Email sent!",
