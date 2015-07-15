@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -82,9 +83,14 @@ namespace placeToBe.Services
                     switch (((HttpWebResponse)ex.Response).StatusCode)
                     {
                         case HttpStatusCode.NotFound:
+                            Debug.WriteLine(ex.InnerException);
                             response = null;
                             break;
 
+                        case HttpStatusCode.BadRequest:
+                            response= null;
+                            Debug.WriteLine(ex.InnerException);
+                            break;
                         default:
                             throw ex;
                     }

@@ -1,4 +1,9 @@
-﻿using MongoDB.Driver;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using placeToBe.Model.Entities;
 
 namespace placeToBe.Model.Repositories
 {
@@ -15,5 +20,6 @@ namespace placeToBe.Model.Repositories
             CreateIndexOptions options = new CreateIndexOptions {Unique = true};
             _collection.Indexes.CreateOneAsync(Builders<Page>.IndexKeys.Ascending(_ => _.fbId), options);           
         }
+
     }
 }

@@ -25,6 +25,7 @@
         <tr ng-repeat="event in $data">
             <td data-title="'Name'" sortable="'name'">{{event.name}}</td>
             <td data-title="'Attending Count'" sortable="'attending_count'">{{event.attending_count}}</td>
+          <td data-title="'Detail view'"><stat-details event-id="event.id"></stat-details></td>
         </tr>
     </table>
 </div>

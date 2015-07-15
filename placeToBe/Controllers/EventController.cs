@@ -13,6 +13,8 @@ namespace placeToBe.Controllers
     public class EventController : ApiController
     {
         readonly SearchService search = new SearchService();
+        readonly FbCrawler crawler = new FbCrawler();
+        readonly FbPageSpecificCrawler pageCrawler = new FbPageSpecificCrawler();
 
         /// <summary>
         /// Return a list of events. The method needs the id, year, month, day and hour.
@@ -67,5 +69,19 @@ namespace placeToBe.Controllers
         {            
             return await search.getEventByFbIdAsync(fbId); 
         }
+
+        /// <summary>
+        /// Posts an event to the Server, who will then crawl the event right away and store it in the Database. We use the FbCrawler for this.
+        /// </summary>
+        /// <param name="fbId"></param>
+        /// <returns></returns>
+        [Route("api/event/{fbId}")]
+        [PlaceToBeAuthenticationFilter]
+        public async Task<bool> Post(string fbId) {
+            var ret = await crawler.fetchAndStoreEvent(fbId);
+            await pageCrawler.addPageToDbBasedOnEventId(fbId);
+            return ret;
+        }
+
     }
 }

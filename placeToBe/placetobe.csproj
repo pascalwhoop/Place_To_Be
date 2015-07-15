@@ -127,6 +127,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\CityController.cs" />
     <Compile Include="Controllers\EventController.cs" />
+    <Compile Include="Controllers\PageController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Filter\FacebookUserVerification.cs" />
     <Compile Include="Global.asax.cs">
@@ -161,6 +162,8 @@
     <Compile Include="Services\AccountService.cs" />
     <Compile Include="Filter\PlaceToBeAuthenticationFilter.cs" />
     <Compile Include="Services\FbCrawler.cs" />
+    <Compile Include="Services\FbEventSpecificCrawler.cs" />
+    <Compile Include="Services\FbPageSpecificCrawler.cs" />
     <Compile Include="Services\GenderizeService.cs" />
     <Compile Include="Services\SearchService.cs" />
     <Compile Include="Services\UtilService.cs" />

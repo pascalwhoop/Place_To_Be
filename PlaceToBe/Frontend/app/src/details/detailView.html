@@ -55,7 +55,7 @@
               </div>
 
               <h3>Friends also attending:</h3>
-              <md-list>
+              <md-list ng-show="event.attendingFriends && event.attendingFriends.length > 0 && event.attendingFriends[0] != null">
 
                 <md-list-item class="md-2-line" ng-repeat="friend in event.attendingFriends">
 
@@ -71,7 +71,7 @@
                 </md-list-item>
 
               </md-list>
-              <p ng-show="!event.attendingFriends">No friends attending this event. Invite them to use
+              <p ng-show="!event.attendingFriends || event.attendingFriends.length == 0 || event.attendingFriends[0] == null">No friends attending this event. Invite them to use
                 this app to see them too.</p>
             </div>
           </div>

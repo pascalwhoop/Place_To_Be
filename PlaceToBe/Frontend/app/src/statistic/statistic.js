@@ -1,5 +1,4 @@
 ﻿'use strict';
-
 angular.module('placeToBe')
   .controller('statisticController', function ($scope, $resource, $filter, $mdDialog, loginService, toastNotifyService, configService, eventService, ngTableParams) {
     $scope.loginService = loginService;
@@ -63,24 +62,55 @@ angular.module('placeToBe')
     initialize()
   })
 
-
-  .directive("statDetails", function ($mdDialog) {
+  .directive("statDetails", function ($mdDialog, eventService) {
     return {
       link: function (scope, element, attr) {
-        scope.showStatDetailsDialog = function () {
+
+        /**
+         * fetch the data from the backend (or the supplied supplier) and then show the dialog
+         * @param eventId
+         */
+        scope.showDetails = function (mouseEvent) {
+              eventService.getEventById(scope.eventId).then(
+                function(data, status){
+                  scope.eventData = data;
+                  showDialog(data, mouseEvent);
+                })
+
+        };
+
+        /**
+         * show the actual details dialog
+         */
+        var showDialog = function(data, mouseEvent){
           $mdDialog.show({
-            controller: statDetailsController,
-            templateUrl: 'src/statistic/statDetailsTemplate.html',
-            parent: angular.element(document.body)
+            controller: detailsController,
+            templateUrl: 'src/details/detailView.html',
+            parent: angular.element(document.body),
+            targetEvent: mouseEvent,
+            locals:{
+              eventData: data
+            }
           })
         };
-        function statDetailsController($scope) {
-          $scope.cancel = function () {
-            $mdDialog.cancel();
+
+        function detailsController($scope, $mdDialog, eventData) {
+          $scope.event = eventData;
+          $scope.hide = function () {
+            $mdDialog.hide();
+          };
+          $scope.showFriendFb = function(url){
+            if(url.length > 0)window.open(url, '_blank');
           }
         }
       },
-      template: "<md-button class='md-raised' ng-click='showStatDetailsDialog()'>Details</md-button>",
-      restrict: 'E'
+      //this is the HTML template for the directive
+      template: "<md-button ng-click='showDetails($event)' class='md-primary md-raised'>Details</md-button>",
+      //we set it so only element tags are relevant
+      restrict: 'E',
+      //linking the attribute "city" value to the scope.city variable (maybe others too)
+      scope: {
+        eventId: "="
+      }
     }
   });

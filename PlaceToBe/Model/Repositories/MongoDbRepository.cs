@@ -56,7 +56,7 @@ namespace placeToBe.Model.Repositories {
                 return entity.Id;
             }
             catch (Exception ex) {
-                Debug.WriteLine(ex);
+                //Debug.WriteLine(ex);
                 return Guid.Empty;
             }
         }

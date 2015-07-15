@@ -17,7 +17,6 @@ angular.module('placeToBe')
           })
         };
 
-
         function detailsController($scope, $mdDialog, eventData) {
           $scope.event = eventData;
           $scope.hide = function () {

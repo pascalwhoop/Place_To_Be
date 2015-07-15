@@ -114,6 +114,31 @@ angular.module('placeToBe')
         })
     };
 
+    /**
+     * gets an event from the backend based on its ID
+     * @param eventId
+     */
+    var getEventById = function(eventId){
+      return performServerCall(function(){
+        return $http.get(BASE_URL + '/event/' + eventId);
+      })
+    };
+
+    /**
+     * wraps any call to a backend that returns a promise with a servercall start & end event on the rootScope
+     * @param serverCall
+     * @param callback
+     */
+    var performServerCall = function(serverCall, callback){
+      $rootScope.$emit('serverCallStart');
+      return serverCall().then(function(){
+        $rootScope.$emit('serverCallEnd');
+      }, function(){
+        $rootScope.$emit('serverCallEnd');
+      })
+
+    };
+
     var buildEventQueryUrl = function (city, startDate, hour) {
       return BASE_URL + "/event/filter/" + city.place_id + "/" + startDate.getFullYear() + "/" + (startDate.getMonth() + 1) + "/" + startDate.getDate() + "/" + hour
     };
@@ -137,6 +162,7 @@ angular.module('placeToBe')
     return {
       fetchEvents: fetchEvents,
       fetchEventDetailsForLocation: fetchEventDetailsForLocation,
-      getLastQuery: getLastQuery
+      getLastQuery: getLastQuery,
+      getEventById: getEventById
     }
   });

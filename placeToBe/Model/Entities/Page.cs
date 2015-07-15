@@ -69,6 +69,9 @@ namespace placeToBe.Model{
         public string website { get; set; }
         [DataMember]
         public int were_here_count { get; set; }
+
+        //we use this to store the amount of events we have crawled for this page. if it is 0 then we have never found an event on this page and therefore it is considered less itneresting than ones with a higher value
+        public int eventCount { get; set; }
     }
 
     public class CategoryList

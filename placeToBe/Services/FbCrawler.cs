@@ -147,7 +147,7 @@ namespace placeToBe.Services {
             Debug.WriteLine(
                 "==================================================================================================");
 
-            for (var i=0;i<coordArrayCityShuffled.Length/3;i++) { //we only fetch one third of the search grid. usually after having fetched 25% of it, most events are already found and also most are already up to date. very few will be missed and those will likely be updated the next time
+            for (var i=0;i<coordArrayCityShuffled.Length/2;i++) { //we only fetch one half of the search grid. usually after having fetched 25% of it, most events are already found and also most are already up to date. very few will be missed and those will likely be updated the next time
                 var coord = coordArrayCityShuffled[i];
                 var getData = coord.latitude + "|" + coord.longitude + "|" + distance + "|" + limit;
                 getData = getData.Replace(",", ".");
@@ -174,10 +174,16 @@ namespace placeToBe.Services {
             foreach (var page in pages) {
                 if (!page.is_community_page) {
                     try {
-                        var t = fetchAndStorePage(page); //TODO check if page is known to host events
-                        var p = t.Result;
-                        if (determineIfEventsShouldBeFetched(p))
-                            fetchEventsOnPage(p.fbId).Wait();
+                        var pageInDb = pageRepo.GetByFbIdAsync(page.fbId).Result;
+
+                        if (pageInDb == null) {
+                            var t = fetchAndStorePage(page.fbId); //only fetching events that arent in the DB yet.
+                            var p = t.Result;
+                            //for now we dont fetch events here anymore. we just get all the pages and place them in the DB. Another crawling task will take care of all the places and their events and fetch them.
+                            /*if (determineIfEventsShouldBeFetched(p))
+                                fetchEventsOnPage(p.fbId);*/
+                        }
+                        
                     }
                     catch (Exception exception) {
                         Debug.WriteLine(exception); // TODO VERY DIRTY FIX ASAP
@@ -191,7 +197,8 @@ namespace placeToBe.Services {
         /// </summary>
         /// <param name="p">the page in question</param>
         /// <returns>a boolean telling us to fetch data from the page or not</returns>
-        private static bool determineIfEventsShouldBeFetched(Page p) {
+        
+        /*private static bool determineIfEventsShouldBeFetched(Page p) {
             bool shouldFetchEvents;
             var pLastChecked = p.lastUpdatedTimestamp;
             var now = DateTime.Now;
@@ -199,28 +206,32 @@ namespace placeToBe.Services {
             if (timeDiff < TimeSpan.FromSeconds(5) || timeDiff > TimeSpan.FromHours(24)) shouldFetchEvents = true;
             else shouldFetchEvents = false;
             return shouldFetchEvents;
-        }
+        }*/
 
        /// <summary>
        /// fetch all events on a page. We first fetch a list of events, then get all the details for every page
        /// </summary>
        /// <param name="pageId">the fbid for the page to fetch the events for</param>
-       /// <returns>a task that can be awaited</returns>
+       /// <returns>a task that can be awaited and then a number of events fetched</returns>
         public async Task fetchEventsOnPage(String pageId) {
+           var page = await pageRepo.GetByFbIdAsync(pageId);
             var response = graphApiGet(pageId, "searchEvent");
             var results =
                 completePaging(JsonConvert.DeserializeObject<FacebookPageResults>(response));
             foreach (var e in results) {
                 if (e.attending_count > 5 && DateTime.Now < UtilService.getDateTimeFromISOString(e.start_time)) {
                     try {
-                        await fetchAndStoreEvent(e);
+                        //if event fetched and was new one increase eventCount by one
+                        if(await fetchAndStoreEvent(e.fbId)) page.eventCount++;
                     }
                     catch (Exception ex) {
                         Debug.WriteLine(ex.StackTrace);
                     }
                 }
             }
-        }
+           pageRepo.UpdateAsync(page); //safe the page which now has a hhigher eventCount
+
+       }
 
         /// <summary>
         /// GEt attending List of an event
@@ -291,9 +302,9 @@ namespace placeToBe.Services {
         /// fetches the events from a page and stores them into the db
         /// </summary>
         /// <param name="result"></param>
-        /// <returns></returns>
-        private async Task<Event> fetchAndStoreEvent(FacebookPagingResult result) {
-            var e = await eventSearchByFbId(result.fbId);
+        /// <returns>a boolean indicating wether the event was new (true) or just updated (false)</returns>
+        public async Task<bool> fetchAndStoreEvent(string fbId) {
+            var e = await eventSearchByFbId(fbId);
             var eventDbId = Guid.Empty; //put empty Guid in Place. this is the quivalent of a NULL for an object
 
             //if event not already in DB OR if already in DB but not up to date
@@ -303,7 +314,12 @@ namespace placeToBe.Services {
                 if (e != null)
                     eventDbId = e.Id; //if the Page was already in the DB, we make sure we dont loose our Guid
                 //Get Event information
-                e = JsonConvert.DeserializeObject<Event>(graphApiGet(result.fbId, "searchEventData"));
+                var data = graphApiGet(fbId, "searchEventData");
+                if (data == null && e != null) {
+                    removeEventFromDb(e);
+                    return false;
+                }
+                e = JsonConvert.DeserializeObject<Event>(data);
                 e.Id = eventDbId;
                 e.attending = fetchAttendingList(e.fbId);
                 e = FillEmptyEventFields(e); //fill location
@@ -315,7 +331,11 @@ namespace placeToBe.Services {
                 var task = eventRepo.InsertAsync(e);
                 task.Wait();
             }
-            return e;
+            return (eventDbId == Guid.Empty);
+        }
+
+        public void removeEventFromDb(Event e) {
+            eventRepo.DeleteAsync(e);
         }
 
         /// <summary>
@@ -323,25 +343,19 @@ namespace placeToBe.Services {
         /// </summary>
         /// <param name="result"></param>
         /// <returns></returns>
-        private async Task<Page> fetchAndStorePage(FacebookPagingResult result) {
-            var pageInDb = pageRepo.GetByFbIdAsync(result.fbId).Result;
+        public async Task<Page> fetchAndStorePage(string fbId) {
+            var pageInDb = pageRepo.GetByFbIdAsync(fbId).Result;
             var pageDbId = Guid.Empty; //put empty Guid in Place. this is the quivalent of a NULL for an object
-
-            //(if page is not yet in DB) OR (if it has been updated in the last 7 days) we update and push to DB
-            if (pageInDb == null || pageInDb.lastUpdatedTimestamp == DateTime.MinValue ||
-                (pageInDb.lastUpdatedTimestamp != DateTime.MinValue &&
-                 pageInDb.lastUpdatedTimestamp - DateTime.Now.AddDays(-7) < TimeSpan.Zero)) {
-                if (pageInDb != null)
-                    pageDbId = pageInDb.Id; //if the Page was already in the DB, we make sure we dont loose our Guid
+            
+            if (pageInDb != null) pageDbId = pageInDb.Id; //if the Page was already in the DB, we make sure we dont loose our Guid
                 //Get page information
-                pageInDb = JsonConvert.DeserializeObject<Page>(graphApiGet(result.fbId, "pageData"));
+                pageInDb = JsonConvert.DeserializeObject<Page>(graphApiGet(fbId, "pageData"));
                 pageInDb.Id = pageDbId;
                 //put the old Guid back in place or in case of a new Page the default value. we need this in our repo
                 //and push it to db
                 Debug.WriteLine("DB Push Page");
                 var task = pageRepo.InsertAsync(pageInDb);
                 task.Wait();
-            }
             //always return page, no matter if updated or now
             return pageInDb;
         }
