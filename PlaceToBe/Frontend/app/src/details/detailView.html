@@ -59,11 +59,11 @@
 
                 <md-list-item class="md-2-line" ng-repeat="friend in event.attendingFriends">
 
-                  <img ng-src="{{'https://graph.facebook.com/' + friend._id + '/picture'}}"
-                       class="md-avatar" ng-click="showFriendFb(friend.httpLink)"/>
+                  <img ng-src="{{'https://graph.facebook.com/' + friend.id + '/picture'}}"
+                       class="md-avatar" ng-click="showFriendFb(friend.link)"/>
 
                   <div class="md-list-item-text">
-                    <h3>{{friend.name}}</h3>
+                    <h3>{{friend.first_name}}</h3>
 
                     <p>{{}}</p>
                   </div>
