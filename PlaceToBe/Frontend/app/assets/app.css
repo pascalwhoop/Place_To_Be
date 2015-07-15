@@ -333,16 +333,16 @@ table tr:nth-child(even) {
 .time-date > .control > .slider > .date-control .day-cell {
   min-height: 0 !important;
   min-width: 0 !important;
-  margin: 0 !important;
+  margin: 0;
   padding: 0 !important;
 }
 
-/* switch control buttons */
+/* switch control buttons
 .time-date > .control > .slider > .switch-control {
   margin: 0 !important;
   min-width: 0 !important;
   font-size: 18px !important;
-}
+}*/
 
 
 /*IE FIX for Date & Time*/
