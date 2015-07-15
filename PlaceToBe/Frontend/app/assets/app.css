@@ -343,3 +343,11 @@ table tr:nth-child(even) {
   min-width: 0 !important;
   font-size: 18px !important;
 }
+
+
+/*IE FIX for Date & Time*/
+.md-select-label :first-child{
+  flex-basis: auto;
+  max-width: 100%;
+  overflow: hidden;
+}
